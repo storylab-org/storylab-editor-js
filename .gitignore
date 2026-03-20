@@ -25,3 +25,8 @@ dist-ssr
 
 storylab.sublime-project
 storylab.sublime-workspace
+
+# Environment variables (keep local configs out of git)
+.env
+.env.local
+.env.*.local

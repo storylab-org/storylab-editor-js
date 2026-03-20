@@ -10,7 +10,7 @@ export interface ResolvedDocument extends DocumentHead {
   content: string
 }
 
-const API_BASE = 'http://localhost:3000'
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000'
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
