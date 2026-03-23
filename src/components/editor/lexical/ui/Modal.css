@@ -33,6 +33,7 @@
   position: relative;
   box-shadow: 0 0 20px 0 #444;
   border-radius: 10px;
+  outline: none;
 }
 .Modal__title {
   color: #444;

@@ -142,12 +142,10 @@ export default function EditorLayout() {
       // Refresh chapter list from server to ensure consistency
       console.log('[CREATE] Refreshing chapter list...')
       const docs = await listDocuments()
-      console.log(`[CREATE] ✓ Got ${docs.length} chapters, selecting first: "${docs[0]?.id}"`)
+      console.log(`[CREATE] ✓ Got ${docs.length} chapters, selecting new chapter: "${newChapter.id}"`)
 
       setChapters(docs)
-      if (docs.length > 0) {
-        setActiveChapterId(docs[0].id)
-      }
+      setActiveChapterId(newChapter.id)
     } catch (error) {
       console.error('[CREATE] ✗ Failed to create chapter:', error)
     }
@@ -249,7 +247,7 @@ export default function EditorLayout() {
       <Sidebar
         activeChapterId={activeChapterId || ''}
         onSelectChapter={handleSelectChapter}
-        chapters={chapters}
+        chapters={[...chapters].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())}
         isLoading={isLoading}
         onCreateChapter={handleCreateChapter}
         onDeleteChapter={handleDeleteChapter}
@@ -286,11 +284,11 @@ export default function EditorLayout() {
         isOpen={isSettingsOpen && !!activeChapterId}
         onClose={() => setIsSettingsOpen(false)}
         title="Chapter Settings"
-        closeOnClickOutside={true}
+        closeOnClickOutside={false}
       >
         {activeChapterId && (
           <ChapterSettingsModal
-            chapterName={activeChapter?.name || 'Untitled'}
+            chapterName={activeChapter?.name ?? ''}
             onNameChange={async (name) => {
               if (activeChapterId) {
                 try {

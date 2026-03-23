@@ -41,7 +41,11 @@ export default function ChapterSettingsModal({
 
   const handleNameChange = (newName: string) => {
     setName(newName)
-    onNameChange(newName)
+    // Only call onNameChange if name is not empty
+    // Allows empty state in input without triggering unnecessary updates
+    if (newName.trim()) {
+      onNameChange(newName)
+    }
   }
 
   return (
