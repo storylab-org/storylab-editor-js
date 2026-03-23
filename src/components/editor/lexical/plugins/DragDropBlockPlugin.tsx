@@ -181,23 +181,13 @@ export default function DragDropBlockPlugin({
               key={dims.blockKey}
               style={{
                 position: 'absolute',
-                pointerEvents: 'auto',
+                pointerEvents: 'none',
                 top: `${dims.top}px`,
                 left: '0',
                 width: '100%',
                 height: `${dims.height}px`,
                 display: 'flex',
                 alignItems: 'center',
-              }}
-              onMouseEnter={() => {
-                setHoveredBlockKey(dims.blockKey)
-                if (activeDragKey) {
-                  setDropIndicatorPos({ top: dims.top })
-                }
-              }}
-              onMouseLeave={() => {
-                setHoveredBlockKey(null)
-                setDropIndicatorPos(null)
               }}
             >
               <div
@@ -207,6 +197,17 @@ export default function DragDropBlockPlugin({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  pointerEvents: 'auto',
+                }}
+                onMouseEnter={() => {
+                  setHoveredBlockKey(dims.blockKey)
+                  if (activeDragKey) {
+                    setDropIndicatorPos({ top: dims.top })
+                  }
+                }}
+                onMouseLeave={() => {
+                  setHoveredBlockKey(null)
+                  setDropIndicatorPos(null)
                 }}
               >
                 {hoveredBlockKey === dims.blockKey && (
