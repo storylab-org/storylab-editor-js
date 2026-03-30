@@ -1,6 +1,10 @@
-# CLAUDE.md
+# CLAUDE.md — Storylab Editor
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with the **Storylab Editor** implementation.
+
+> 📖 **For product vision, technical specs, and roadmap, see [storylab-org/storylab-specs](https://github.com/storylab-org/storylab-specs)**
+
+This repository contains **editor-specific implementation** (React + Tauri + Fastify). See the specs repo for product strategy, platform architecture, and Phase 1–3 roadmap.
 
 ## Quick Start
 
