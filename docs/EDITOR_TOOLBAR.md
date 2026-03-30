@@ -1,7 +1,7 @@
 # Editor Toolbar Guide
 
-**Last Updated:** March 24, 2026
-**Version:** Storylab v0.1.53
+**Last Updated:** March 30, 2026
+**Version:** Storylab v0.1.54
 
 ## Overview
 
@@ -50,7 +50,39 @@ Toggle on/off by clicking the button while in a list.
 - **Align Centre** — Centre-align text
 - **Align Right** — Right-align text
 
-### 6. Block Drag-and-Drop ⭐ (NEW - v0.1.53)
+### 6. Image Insert ⭐ (NEW - v0.1.54)
+
+**Insert images into the document:**
+- Click the **Image** button (picture icon) to open file picker
+- Or drag and drop PNG, JPEG, GIF, WebP images directly into the editor
+- Images are stored content-addressed in the blockstore (SHA-256 CID)
+- Maximum file size: **50MB** (configurable via `MAX_IMAGE_SIZE_MB` environment variable)
+
+**How it works:**
+1. Click the Image button → file picker opens
+2. Select PNG/JPEG/GIF/WebP image file
+3. File is uploaded to server, assigned a CID
+4. Image appears inline in the document
+5. Image is embedded in the saved document
+
+**Drag and drop:**
+1. Drag an image from your file manager
+2. Drop it anywhere in the editor
+3. Image uploads and inserts automatically
+4. Multiple images can be dropped at once (queues one by one)
+
+**Error handling:**
+- **File too large** — Amber warning toast: "File is too large (X.XXMB). Maximum size: 50MB"
+- **Upload failed** — Red error toast: "Upload failed: <error message>"
+- **Unsupported format** — Silently skipped, no toast
+
+**Technical details:**
+- File: `src/components/editor/lexical/nodes/ImageNode.tsx` — DecoratorNode rendering `<img>` tags
+- File: `src/components/editor/lexical/plugins/ImagePlugin.tsx` — handles file-drop and upload
+- Server: `server/src/routes/images.ts` — POST /images (upload), GET /images/:cid (serve)
+- Images are inline, participate in block reordering via dnd-kit (the wrapping paragraph is reordered)
+
+### 7. Block Drag-and-Drop ⭐ (v0.1.53)
 
 **Reorder document blocks by dragging:**
 - Hover over any block in the editor to reveal a **grip handle** (≡) on the left

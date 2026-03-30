@@ -4,6 +4,8 @@ import EditorArea from '@/components/editor/EditorArea'
 import EditorToolbar from '@/components/editor/EditorToolbar'
 import GenericModal from '@/components/shared/GenericModal'
 import ChapterSettingsModal from '@/components/editor/ChapterSettingsModal'
+import { ToastProvider } from '@/components/shared/ToastContext'
+import ToastContainer from '@/components/shared/ToastContainer'
 import {
   listDocuments,
   getDocument,
@@ -272,74 +274,77 @@ export default function EditorLayout() {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#ffffff' }}>
-      <Sidebar
-        activeChapterId={activeChapterId || ''}
-        onSelectChapter={handleSelectChapter}
-        chapters={[...chapters].sort((a, b) => a.order - b.order)}
-        isLoading={isLoading}
-        onCreateChapter={handleCreateChapter}
-        onDeleteChapter={handleDeleteChapter}
-        onReorder={handleReorder}
-      />
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-        <EditorToolbar
-          chapterId={activeChapterId || ''}
-          chapterTitle={activeChapter?.name || 'Untitled'}
-          saveStatus={saveStatus}
-          onSave={handleSave}
-          onSettings={() => setIsSettingsOpen(true)}
-          onExport={handleExport}
+    <ToastProvider>
+      <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#ffffff' }}>
+        <Sidebar
+          activeChapterId={activeChapterId || ''}
+          onSelectChapter={handleSelectChapter}
+          chapters={[...chapters].sort((a, b) => a.order - b.order)}
+          isLoading={isLoading}
+          onCreateChapter={handleCreateChapter}
+          onDeleteChapter={handleDeleteChapter}
+          onReorder={handleReorder}
         />
-        {activeChapterId && loadedChapterId === activeChapterId && (
-          <EditorArea
-            key={activeChapterId}
-            chapterId={activeChapterId}
-            content={content}
-            pageBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
-            showDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
-            onChange={(newContent) => {
-              console.log(`[EDITOR] Content changed: ${newContent.length} bytes`)
-              setContent(newContent)
-              setIsDirty(true)
-            }}
-            onWordCountChange={setWordCount}
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+          <EditorToolbar
+            chapterId={activeChapterId || ''}
+            chapterTitle={activeChapter?.name || 'Untitled'}
+            saveStatus={saveStatus}
+            onSave={handleSave}
+            onSettings={() => setIsSettingsOpen(true)}
+            onExport={handleExport}
           />
-        )}
-        <div style={{ padding: '8px 16px', fontSize: '12px', color: '#999', borderTop: '1px solid #e5e5e5' }}>
-          {wordCount} words
+          {activeChapterId && loadedChapterId === activeChapterId && (
+            <EditorArea
+              key={activeChapterId}
+              chapterId={activeChapterId}
+              content={content}
+              pageBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
+              showDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
+              onChange={(newContent) => {
+                console.log(`[EDITOR] Content changed: ${newContent.length} bytes`)
+                setContent(newContent)
+                setIsDirty(true)
+              }}
+              onWordCountChange={setWordCount}
+            />
+          )}
+          <div style={{ padding: '8px 16px', fontSize: '12px', color: '#999', borderTop: '1px solid #e5e5e5' }}>
+            {wordCount} words
+          </div>
         </div>
-      </div>
 
-      <GenericModal
-        isOpen={isSettingsOpen && !!activeChapterId}
-        onClose={() => setIsSettingsOpen(false)}
-        title="Chapter Settings"
-        closeOnClickOutside={false}
-      >
-        {activeChapterId && (
-          <ChapterSettingsModal
-            chapterName={activeChapter?.name ?? ''}
-            onNameChange={async (name) => {
-              if (activeChapterId) {
-                try {
-                  console.log(`[SETTINGS] Updating chapter name to "${name}"`)
-                  await updateDocument(activeChapterId, content, name)
-                  console.log(`[SETTINGS] ✓ Chapter name updated`)
-                  // Update the chapters list with the new name
-                  setChapters(chapters.map(c => c.id === activeChapterId ? { ...c, name } : c))
-                } catch (error) {
-                  console.error(`[SETTINGS] ✗ Failed to update chapter name:`, error)
+        <GenericModal
+          isOpen={isSettingsOpen && !!activeChapterId}
+          onClose={() => setIsSettingsOpen(false)}
+          title="Chapter Settings"
+          closeOnClickOutside={false}
+        >
+          {activeChapterId && (
+            <ChapterSettingsModal
+              chapterName={activeChapter?.name ?? ''}
+              onNameChange={async (name) => {
+                if (activeChapterId) {
+                  try {
+                    console.log(`[SETTINGS] Updating chapter name to "${name}"`)
+                    await updateDocument(activeChapterId, content, name)
+                    console.log(`[SETTINGS] ✓ Chapter name updated`)
+                    // Update the chapters list with the new name
+                    setChapters(chapters.map(c => c.id === activeChapterId ? { ...c, name } : c))
+                  } catch (error) {
+                    console.error(`[SETTINGS] ✗ Failed to update chapter name:`, error)
+                  }
                 }
-              }
-            }}
-            initialBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
-            onChange={(bg) => handleSettingsChange('pageBackground', bg)}
-            initialShowDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
-            onShowDragMenuChange={handleShowDragMenuChange}
-          />
-        )}
-      </GenericModal>
-    </div>
+              }}
+              initialBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
+              onChange={(bg) => handleSettingsChange('pageBackground', bg)}
+              initialShowDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
+              onShowDragMenuChange={handleShowDragMenuChange}
+            />
+          )}
+        </GenericModal>
+      </div>
+      <ToastContainer />
+    </ToastProvider>
   )
 }

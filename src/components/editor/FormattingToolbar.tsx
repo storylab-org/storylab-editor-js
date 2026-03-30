@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import DropDown, { DropDownItem } from './lexical/ui/DropDown'
 import { INSERT_IMAGE_COMMAND } from './lexical/commands'
+import { useToast } from '@/components/shared/ToastContext'
 import './FormattingToolbar.css'
 
 // Maximum image size: 50MB
@@ -38,6 +39,7 @@ type BlockType = 'paragraph' | 'h1' | 'h2' | 'h3' | 'bullet' | 'number' | 'check
 
 export default function FormattingToolbar() {
   const [editor] = useLexicalComposerContext()
+  const { addToast } = useToast()
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
@@ -118,7 +120,7 @@ export default function FormattingToolbar() {
           const fileSizeMB = (file.size / 1024 / 1024).toFixed(2)
           const message = `File is too large (${fileSizeMB}MB). Maximum size: ${MAX_IMAGE_SIZE_MB}MB`
           console.error(message)
-          alert(message)
+          addToast('warning', message)
           return
         }
 
@@ -133,7 +135,7 @@ export default function FormattingToolbar() {
           const errorData = await response.json().catch(() => ({}))
           const errorMessage = errorData.message || `Upload failed (${response.status})`
           console.error(`Failed to upload image: ${errorMessage}`)
-          alert(`Failed to upload image: ${errorMessage}`)
+          addToast('error', `Failed to upload image: ${errorMessage}`)
           return
         }
 
@@ -146,7 +148,7 @@ export default function FormattingToolbar() {
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error'
         console.error('Error uploading image:', error)
-        alert(`Error uploading image: ${message}`)
+        addToast('error', `Error uploading image: ${message}`)
       }
     }
     input.click()

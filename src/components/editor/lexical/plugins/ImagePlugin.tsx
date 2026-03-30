@@ -10,6 +10,7 @@ import { getCurrentWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api/core'
 import { INSERT_IMAGE_COMMAND } from '../commands'
 import { $createImageNode } from '../nodes/ImageNode'
+import { useToast } from '@/components/shared/ToastContext'
 
 // Maximum image size: 50MB default, configurable via environment
 const MAX_IMAGE_SIZE_MB = 50
@@ -30,6 +31,7 @@ function extToMime(ext: string | undefined): string | null {
 
 export default function ImagePlugin(): null {
   const [editor] = useLexicalComposerContext()
+  const { addToast } = useToast()
 
   // Register INSERT_IMAGE_COMMAND handler
   useEffect(() => {
@@ -85,7 +87,7 @@ export default function ImagePlugin(): null {
               const fileSizeMB = (uint8Array.length / 1024 / 1024).toFixed(2)
               const message = `File is too large (${fileSizeMB}MB). Maximum size: ${MAX_IMAGE_SIZE_MB}MB`
               console.error(message)
-              alert(message)
+              addToast('warning', message)
               continue
             }
 
@@ -100,7 +102,7 @@ export default function ImagePlugin(): null {
               const errorData = await response.json().catch(() => ({}))
               const errorMessage = errorData.message || `Failed to upload image (${response.status})`
               console.error(`Upload failed: ${errorMessage}`)
-              alert(`Upload failed: ${errorMessage}`)
+              addToast('error', `Upload failed: ${errorMessage}`)
               continue
             }
 
@@ -115,7 +117,7 @@ export default function ImagePlugin(): null {
             })
           } catch (error) {
             console.error('Error handling dropped file:', error)
-            alert(`Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+            addToast('error', `Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
           }
         }
       })
