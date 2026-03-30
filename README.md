@@ -1,6 +1,8 @@
-# Storylab
+# Storylab Editor
 
 A desktop book editor built with Tauri, React, TypeScript, and Fastify. Write novels with a beautiful, distraction-free interface.
+
+> 📖 **For product vision, technical specs, and roadmap, see [storylab-org/storylab-specs](https://github.com/storylab-org/storylab-specs)**
 
 ## Quick Start
 
