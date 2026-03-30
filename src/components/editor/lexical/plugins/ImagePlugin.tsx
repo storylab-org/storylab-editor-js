@@ -65,64 +65,69 @@ export default function ImagePlugin(): null {
     let unlisten: (() => void) | undefined
 
     const setupDropListener = async () => {
-      const unlistenFn = await getCurrentWindow().onDragDropEvent(async (event) => {
-        if (event.payload.type !== 'drop') return
+      try {
+        const unlistenFn = await getCurrentWindow().onDragDropEvent(async (event) => {
+          if (event.payload.type !== 'drop') return
 
-        for (const filePath of event.payload.paths) {
-          const ext = filePath.split('.').pop()
-          const mimeType = extToMime(ext)
+          for (const filePath of event.payload.paths) {
+            const ext = filePath.split('.').pop()
+            const mimeType = extToMime(ext)
 
-          if (!mimeType) {
-            console.warn(`Unsupported file type: ${ext}. Supported: PNG, JPEG, GIF, WebP`)
-            continue
-          }
-
-          try {
-            // Read file bytes using Tauri command
-            const bytes: number[] = await invoke('read_file_bytes', { path: filePath })
-            const uint8Array = new Uint8Array(bytes)
-
-            // Validate file size
-            if (uint8Array.length > MAX_IMAGE_SIZE_BYTES) {
-              const fileSizeMB = (uint8Array.length / 1024 / 1024).toFixed(2)
-              const message = `File is too large (${fileSizeMB}MB). Maximum size: ${MAX_IMAGE_SIZE_MB}MB`
-              console.error(message)
-              addToast('warning', message)
+            if (!mimeType) {
+              console.warn(`Unsupported file type: ${ext}. Supported: PNG, JPEG, GIF, WebP`)
               continue
             }
 
-            // Upload to server
-            const response = await fetch('http://localhost:3000/images', {
-              method: 'POST',
-              headers: { 'Content-Type': mimeType },
-              body: uint8Array,
-            })
+            try {
+              // Read file bytes using Tauri command
+              const bytes: number[] = await invoke('read_file_bytes', { path: filePath })
+              const uint8Array = new Uint8Array(bytes)
 
-            if (!response.ok) {
-              const errorData = await response.json().catch(() => ({}))
-              const errorMessage = errorData.message || `Failed to upload image (${response.status})`
-              console.error(`Upload failed: ${errorMessage}`)
-              addToast('error', `Upload failed: ${errorMessage}`)
-              continue
+              // Validate file size
+              if (uint8Array.length > MAX_IMAGE_SIZE_BYTES) {
+                const fileSizeMB = (uint8Array.length / 1024 / 1024).toFixed(2)
+                const message = `File is too large (${fileSizeMB}MB). Maximum size: ${MAX_IMAGE_SIZE_MB}MB`
+                console.error(message)
+                addToast('warning', message)
+                continue
+              }
+
+              // Upload to server
+              const response = await fetch('http://localhost:3000/images', {
+                method: 'POST',
+                headers: { 'Content-Type': mimeType },
+                body: uint8Array,
+              })
+
+              if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}))
+                const errorMessage = errorData.message || `Failed to upload image (${response.status})`
+                console.error(`Upload failed: ${errorMessage}`)
+                addToast('error', `Upload failed: ${errorMessage}`)
+                continue
+              }
+
+              const { cid } = await response.json()
+              const fileName = filePath.split('/').pop() ?? 'image'
+
+              // Insert image node
+              editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+                cid,
+                alt: fileName,
+                mimeType,
+              })
+            } catch (error) {
+              console.error('Error handling dropped file:', error)
+              addToast('error', `Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
             }
-
-            const { cid } = await response.json()
-            const fileName = filePath.split('/').pop() ?? 'image'
-
-            // Insert image node
-            editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-              cid,
-              alt: fileName,
-              mimeType,
-            })
-          } catch (error) {
-            console.error('Error handling dropped file:', error)
-            addToast('error', `Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
           }
-        }
-      })
+        })
 
-      unlisten = unlistenFn
+        unlisten = unlistenFn
+      } catch (error) {
+        // Tauri not available (e.g., running in web without Tauri context)
+        // Silently skip drag-drop setup — it will only work in Tauri desktop app
+      }
     }
 
     setupDropListener()
