@@ -31,6 +31,7 @@ import AutoLinkPlugin from './lexical/plugins/AutoLinkPlugin';
 import TreeViewPlugin from './lexical/plugins/TreeViewPlugin';
 import DragDropBlockPlugin from './lexical/plugins/DragDropBlockPlugin';
 import ImagePlugin from './lexical/plugins/ImagePlugin';
+import ImageResizePlugin from './lexical/plugins/ImageResizePlugin';
 import FormattingToolbar from './FormattingToolbar';
 
 import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
@@ -145,6 +146,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <HorizontalRulePlugin />
         <TreeViewPlugin />
         <DragDropBlockPlugin showDragMenu={showDragMenu} />
+        <ImageResizePlugin />
         <ImagePlugin />
       </div>
       <WordCountPlugin />
