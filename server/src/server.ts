@@ -1,8 +1,21 @@
+// Load environment variables from .env file FIRST, before anything else
+import dotenv from 'dotenv'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+dotenv.config({ path: join(__dirname, '..', '.env') })
+
 import Fastify from 'fastify'
 import app from './app.js'
 
 async function start() {
+  // Configurable max image size: default 50MB
+  const maxImageSizeMb = parseInt(process.env.MAX_IMAGE_SIZE_MB || '50', 10)
+  const bodyLimit = maxImageSizeMb * 1024 * 1024
+
   const fastify = Fastify({
+    bodyLimit,
     logger: {
       level: process.env.LOG_LEVEL || 'info',
       transport: {

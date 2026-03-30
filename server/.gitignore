@@ -63,3 +63,8 @@ test/types/index.js
 
 # compiled app
 dist
+
+# Environment variables (local configuration)
+.env
+.env.local
+.env.*.local

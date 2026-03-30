@@ -180,6 +180,13 @@ function nodeToMarkdown(node: LexicalNode, ctx: ConversionContext): string {
         return `[${inner}](${url})`
       }
 
+    case 'image':
+      {
+        const cid = node.cid || ''
+        const alt = node.alt || ''
+        return `![${alt}](http://localhost:3000/images/${cid})`
+      }
+
     default:
       // Unknown node type: render children
       return nodesToMarkdown(node.children || [], ctx)

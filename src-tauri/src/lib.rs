@@ -15,6 +15,15 @@ fn compute_server_status(handle_is_some: bool) -> String {
 }
 
 #[tauri::command]
+async fn read_file_bytes(path: String) -> Result<Vec<u8>, String> {
+    debug!("read_file_bytes command called with path: {}", path);
+    std::fs::read(&path).map_err(|e| {
+        error!("Failed to read file {}: {}", path, e);
+        e.to_string()
+    })
+}
+
+#[tauri::command]
 fn greet(name: &str) -> String {
     debug!("greet command called with name: {}", name);
     let message = format!("Hello, {}! You've been greeted from Rust!", name);
@@ -58,7 +67,7 @@ pub fn run() {
                 }
             }
         })
-        .invoke_handler(tauri::generate_handler![greet, get_server_status])
+        .invoke_handler(tauri::generate_handler![read_file_bytes, greet, get_server_status])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

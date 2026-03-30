@@ -150,6 +150,13 @@ function nodeToHtml(node: LexicalNode): string {
         return `<a href="${escapeHtml(url)}">${inner}</a>`
       }
 
+    case 'image':
+      {
+        const cid = node.cid || ''
+        const alt = escapeHtml(node.alt || '')
+        return `<img src="http://localhost:3000/images/${cid}" alt="${alt}" style="max-width:100%"/>`
+      }
+
     default:
       // Unknown node type: try to render children anyway
       return nodesToHtml(node.children || [])

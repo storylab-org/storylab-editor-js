@@ -5,7 +5,12 @@ import fastify from 'fastify'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export async function buildApp() {
+  // Read max image size from environment or use default
+  const maxImageSizeMb = parseInt(process.env.MAX_IMAGE_SIZE_MB || '50', 10)
+  const bodyLimit = maxImageSizeMb * 1024 * 1024
+
   const instance = fastify({
+    bodyLimit,
     logger: false // Disable logging in tests
   })
 

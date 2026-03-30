@@ -16,6 +16,7 @@ import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { CodeHighlightNode, CodeNode } from '@lexical/code';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
+import { ImageNode } from './lexical/nodes/ImageNode';
 
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
@@ -29,6 +30,7 @@ import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin
 import AutoLinkPlugin from './lexical/plugins/AutoLinkPlugin';
 import TreeViewPlugin from './lexical/plugins/TreeViewPlugin';
 import DragDropBlockPlugin from './lexical/plugins/DragDropBlockPlugin';
+import ImagePlugin from './lexical/plugins/ImagePlugin';
 import FormattingToolbar from './FormattingToolbar';
 
 import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
@@ -119,6 +121,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
           AutoLinkNode,
           LinkNode,
           HorizontalRuleNode,
+          ImageNode,
         ],
         theme,
         onError,
@@ -142,6 +145,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <HorizontalRulePlugin />
         <TreeViewPlugin />
         <DragDropBlockPlugin showDragMenu={showDragMenu} />
+        <ImagePlugin />
       </div>
       <WordCountPlugin />
     </LexicalComposer>

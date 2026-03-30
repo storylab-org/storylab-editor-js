@@ -15,7 +15,7 @@
         "title": "storylab",
         "width": 1100,
         "height": 800,
-        "dragDropEnabled": false
+        "dragDropEnabled": true
       }
     ],
     "security": {

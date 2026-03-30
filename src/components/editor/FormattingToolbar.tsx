@@ -24,9 +24,15 @@ import {
   Heading3,
   Quote,
   Code,
+  Image,
 } from 'lucide-react'
 import DropDown, { DropDownItem } from './lexical/ui/DropDown'
+import { INSERT_IMAGE_COMMAND } from './lexical/commands'
 import './FormattingToolbar.css'
+
+// Maximum image size: 50MB
+const MAX_IMAGE_SIZE_MB = 50
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024
 
 type BlockType = 'paragraph' | 'h1' | 'h2' | 'h3' | 'bullet' | 'number' | 'check' | 'quote' | 'code'
 
@@ -96,6 +102,54 @@ export default function FormattingToolbar() {
         $patchStyleText(selection, { 'font-size': size })
       }
     })
+  }, [editor])
+
+  const openImageFilePicker = useCallback(() => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/png,image/jpeg,image/gif,image/webp'
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+
+      try {
+        // Validate file size
+        if (file.size > MAX_IMAGE_SIZE_BYTES) {
+          const fileSizeMB = (file.size / 1024 / 1024).toFixed(2)
+          const message = `File is too large (${fileSizeMB}MB). Maximum size: ${MAX_IMAGE_SIZE_MB}MB`
+          console.error(message)
+          alert(message)
+          return
+        }
+
+        const bytes = await file.arrayBuffer()
+        const response = await fetch('http://localhost:3000/images', {
+          method: 'POST',
+          headers: { 'Content-Type': file.type },
+          body: bytes,
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          const errorMessage = errorData.message || `Upload failed (${response.status})`
+          console.error(`Failed to upload image: ${errorMessage}`)
+          alert(`Failed to upload image: ${errorMessage}`)
+          return
+        }
+
+        const { cid } = await response.json()
+        editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+          cid,
+          alt: file.name,
+          mimeType: file.type,
+        })
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error'
+        console.error('Error uploading image:', error)
+        alert(`Error uploading image: ${message}`)
+      }
+    }
+    input.click()
   }, [editor])
 
   const blockTypeLabels: Record<BlockType, string> = {
@@ -276,6 +330,16 @@ export default function FormattingToolbar() {
         className="format-btn"
       >
         <AlignRight size={16} />
+      </button>
+
+      <div className="separator" />
+
+      <button
+        title="Insert Image"
+        onClick={openImageFilePicker}
+        className="format-btn"
+      >
+        <Image size={16} />
       </button>
     </div>
   )
