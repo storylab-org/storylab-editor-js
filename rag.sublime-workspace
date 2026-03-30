@@ -1,0 +1,935 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"crea",
+				"createRelation"
+			],
+			[
+				"han",
+				"handleClick"
+			],
+			[
+				"relatio",
+				"relationKey"
+			],
+			[
+				"use",
+				"useRelation"
+			],
+			[
+				"Pro",
+				"ProfileCard"
+			],
+			[
+				"con",
+				"console"
+			],
+			[
+				"fo",
+				"formData"
+			],
+			[
+				"re",
+				"relation"
+			],
+			[
+				"on",
+				"onUnmounted"
+			],
+			[
+				"int",
+				"interest"
+			],
+			[
+				"cons",
+				"console"
+			],
+			[
+				"newIn",
+				"newInterests"
+			],
+			[
+				"fi",
+				"filteredOptions"
+			],
+			[
+				"compo",
+				"composables"
+			],
+			[
+				"user",
+				"userProfiles"
+			],
+			[
+				"getBy",
+				"getByEmail"
+			],
+			[
+				"auth",
+				"authReq"
+			],
+			[
+				"MagicL",
+				"MagicLink"
+			],
+			[
+				"handlemagi",
+				"handleMagicLinkLogin"
+			],
+			[
+				"handlemagicl",
+				"handleMagicLinkRegister"
+			],
+			[
+				"get",
+				"getAll"
+			],
+			[
+				"Fr",
+				"FormData"
+			],
+			[
+				"p",
+				"profileLocation"
+			],
+			[
+				"intere",
+				"interestRelations"
+			],
+			[
+				"Re",
+				"RelationListItem"
+			],
+			[
+				"rela",
+				"relationKeys"
+			],
+			[
+				"Other",
+				"OtherInterest"
+			],
+			[
+				"setS",
+				"searchResult"
+			],
+			[
+				"getLo",
+				"getLocationByBounds"
+			],
+			[
+				"loca",
+				"locationProfiles"
+			],
+			[
+				"profile",
+				"profileLocations"
+			],
+			[
+				"no",
+				"console"
+			],
+			[
+				"inte",
+				"interestId"
+			],
+			[
+				"profil",
+				"profiles"
+			],
+			[
+				"upd",
+				"updatedVotes"
+			],
+			[
+				"Disc",
+				"DiscussionListItem"
+			],
+			[
+				"comp",
+				"components"
+			],
+			[
+				"Dis",
+				"DisdussionListItem"
+			],
+			[
+				"def",
+				"defaultValue"
+			],
+			[
+				"find",
+				"findUnique"
+			],
+			[
+				"update",
+				"updatedInterest"
+			],
+			[
+				"wt",
+				"watchEffect"
+			],
+			[
+				"wa",
+				"watch"
+			],
+			[
+				"default",
+				"defaultPluginSettings"
+			],
+			[
+				"pl",
+				"pluginSettings"
+			],
+			[
+				"ro",
+				"routes"
+			],
+			[
+				"InterestPlu",
+				"InterestPluginRoutes"
+			],
+			[
+				"INterest",
+				"InterestPluginRoutes"
+			],
+			[
+				"file",
+				"fileURLToPath"
+			],
+			[
+				"in",
+				"InterestBadge"
+			],
+			[
+				"fetchI",
+				"fetchInterestChildren"
+			],
+			[
+				"wiki",
+				"wikiPage"
+			],
+			[
+				"interes",
+				"interests"
+			],
+			[
+				"remove",
+				"removeInterest"
+			],
+			[
+				"w",
+				"WikiEdit"
+			],
+			[
+				"location",
+				"locationId"
+			],
+			[
+				"findInter",
+				"findInterestById"
+			],
+			[
+				"flex",
+				"flex-col"
+			],
+			[
+				"Call",
+				"Callout"
+			],
+			[
+				"Ca",
+				"Callout"
+			],
+			[
+				"selet",
+				"selectedModel"
+			],
+			[
+				"inter",
+				"interestId"
+			],
+			[
+				"fl",
+				"flex-row"
+			],
+			[
+				"L",
+				"LocationBadge"
+			],
+			[
+				"cla",
+				"className"
+			],
+			[
+				"Profile",
+				"ProfileImage"
+			],
+			[
+				"too",
+				"Tooltip"
+			],
+			[
+				"pro",
+				"ProfileImage"
+			],
+			[
+				"ol-",
+				"ol-geolocation"
+			],
+			[
+				"create",
+				"createLocation"
+			],
+			[
+				"selecte",
+				"selectedImage"
+			],
+			[
+				"select",
+				"selectedOption"
+			],
+			[
+				"sele",
+				"selectedOption"
+			],
+			[
+				"pr",
+				"profile"
+			],
+			[
+				"Diamond",
+				"DiamondCard"
+			],
+			[
+				"f",
+				"false"
+			],
+			[
+				"pri",
+				"priority"
+			],
+			[
+				"item",
+				"item_ids"
+			],
+			[
+				"Tab",
+				"TableCell"
+			],
+			[
+				"cost",
+				"cost_credits"
+			],
+			[
+				"po",
+				"points_type"
+			],
+			[
+				"ite",
+				"items-center"
+			],
+			[
+				"size",
+				"sizeStyle"
+			],
+			[
+				"convers",
+				"conversationId"
+			],
+			[
+				"co",
+				"conversationId"
+			],
+			[
+				"conver",
+				"conversationId"
+			],
+			[
+				"Chat",
+				"ChatMessage2"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Users/yannik/js/rag-chatbot/.env.local",
+			"settings":
+			{
+				"buffer_size": 764,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAADIAAAAAAAAANAAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAyAAAAAAAAADIAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					8,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAAFMAAAAAAAAAVQAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABTAAAAAAAAAFMAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					9,
+					1,
+					"paste",
+					null,
+					"AQAAAFQAAAAAAAAAaAAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABUAAAAAAAAAFQAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					12,
+					1,
+					"paste",
+					null,
+					"AQAAADMAAAAAAAAAWwAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAzAAAAAAAAADMAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					13,
+					1,
+					"revert",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAAvAQAAIyBTdXBhYmFzZSBDb25maWd1cmF0aW9uCk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTD0iaHR0cHM6Ly9xdHJ0dnNtbGpuZmRxcHVpdGF1ai5zdXBhYmFzZS5jbyIKTkVYVF9QVUJMSUNfU1VQQUJBU0VfQU5PTl9LRVk9ImJvZ05lZC1wb3B0bzEtemltZGVwIgpTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZPQoKIyBPcGVuQUkgQ29uZmlndXJhdGlvbgpPUEVOQUlfQVBJX0tFWT0KCiMgQW50aHJvcGljIENvbmZpZ3VyYXRpb24KQU5USFJPUElDX0FQSV9LRVk9CgojIFJBRyBGZWF0dXJlCk5FWFRfUFVCTElDX1JBR19FTkFCTEVEPXRydWUKAAAAAAAAAAAaAQAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABbAAAAAAAAAFsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					14,
+					1,
+					"revert",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAAaAQAAIyBTdXBhYmFzZSBDb25maWd1cmF0aW9uCk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTD0KTkVYVF9QVUJMSUNfU1VQQUJBU0VfQU5PTl9LRVk9ICAjIFVzZSBQdWJsaXNoYWJsZSBLZXkgKGZvcm1lcmx5IEFub24gS2V5KQpTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZPQoKIyBPcGVuQUkgQ29uZmlndXJhdGlvbgpPUEVOQUlfQVBJX0tFWT0KCiMgQW50aHJvcGljIENvbmZpZ3VyYXRpb24KQU5USFJPUElDX0FQSV9LRVk9CgojIFJBRyBGZWF0dXJlCk5FWFRfUFVCTElDX1JBR19FTkFCTEVEPXRydWUKAAAAAAAAAAD2AAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABbAAAAAAAAAFsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					20,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAAFgAAAAAAAAAWgAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABYAAAAAAAAAFgAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					21,
+					1,
+					"paste",
+					null,
+					"AQAAAFkAAAAAAAAAhwAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABZAAAAAAAAAFkAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					30,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAADIAAAAAAAAANAAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAyAAAAAAAAADIAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					31,
+					1,
+					"paste",
+					null,
+					"AQAAADMAAAAAAAAAWwAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAzAAAAAAAAADMAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					38,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAAM0AAAAAAAAAzwAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADNAAAAAAAAAM0AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					39,
+					1,
+					"paste",
+					null,
+					"AQAAAM4AAAAAAAAA4QAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADOAAAAAAAAAM4AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					42,
+					1,
+					"insert",
+					{
+						"characters": "y"
+					},
+					"AQAAAM4AAAAAAAAAzwAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADOAAAAAAAAAM4AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					45,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAAAsBAAAAAAAADQEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAALAQAAAAAAAAsBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					46,
+					1,
+					"paste",
+					null,
+					"AQAAAAwBAAAAAAAAsAEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAMAQAAAAAAAAwBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					53,
+					1,
+					"insert_snippet",
+					{
+						"contents": "\"$0\""
+					},
+					"AQAAAN8BAAAAAAAA4QEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADfAQAAAAAAAN8BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					57,
+					1,
+					"insert",
+					{
+						"characters": "\""
+					},
+					"AQAAAAkCAAAAAAAACgIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAJAgAAAAAAAAkCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					60,
+					1,
+					"insert",
+					{
+						"characters": "\""
+					},
+					"AQAAAA4CAAAAAAAADwIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAOAgAAAAAAAA4CAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					75,
+					1,
+					"paste",
+					null,
+					"AQAAAOABAAAAAAAATAIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADgAQAAAAAAAOABAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					76,
+					1,
+					"revert",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAB8AgAAIyBTdXBhYmFzZSBDb25maWd1cmF0aW9uCk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTD0iaHR0cHM6Ly9xdHJ0dnNtbGpuZmRxcHVpdGF1ai5zdXBhYmFzZS5jbyIKTkVYVF9QVUJMSUNfU1VQQUJBU0VfUFVCTElTSEFCTEVfS0VZPSJzYl9wdWJsaXNoYWJsZV83Q0RLQnlNVTRPTHZGb09qby04c0pnX3k4ZEhPTzg1IgpTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZPSJ5b3VyLXNlY3JldC1rZXktaGVyZSIKCiMgT3BlbkFJIENvbmZpZ3VyYXRpb24KT1BFTkFJX0FQSV9LRVk9InNrLXByb2otOHcyT2ZHdUpHbnloVk1TNnAxVi1sRUc0djk5NVNNR0JhT2xuc1NmODdhVVBqNlQ4NHlMTEtZdWwtOTE0YWRvel9nT1I5R3gtS3VUM0JsYmtGSmtETWpqNVBwY3htX3B5ekxhWUlibEQ5eXF3SFlGWG9sZno1N3NmWm54a1lIV2lLZ2syWDhmUVVnekdyRUpGWS05a2tJUHUwMFlBIgoKIyBBbnRocm9waWMgQ29uZmlndXJhdGlvbgpBTlRIUk9QSUNfQVBJX0tFWT0ic2stYW50LWFwaTAzLVk2SGhoVUFWMkQyVm9tWENpRTVtVE9LbW1lX0RMcGlPaGw0WERLbF9zUjNBS2FFZzl6N3VmWE9JMlloeVhZanJEb1M4U0VEYWpGRk45Q3NBZmdYc2tnLUZZVl9tZ0FBIgoKIyBSQUcgRmVhdHVyZQpORVhUX1BVQkxJQ19SQUdfRU5BQkxFRD0idHJ1ZSIKAAAAAAAAAADlAgAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABMAgAAAAAAAEwCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					77,
+					1,
+					"revert",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAADlAgAAIyBTdXBhYmFzZSBDb25maWd1cmF0aW9uCk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTD0iaHR0cHM6Ly9xdHJ0dnNtbGpuZmRxcHVpdGF1ai5zdXBhYmFzZS5jbyIKTkVYVF9QVUJMSUNfU1VQQUJBU0VfUFVCTElTSEFCTEVfS0VZPSJzYl9wdWJsaXNoYWJsZV83Q0RLQnlNVTRPTHZGb09qby04c0pnX3k4ZEhPTzg1IgpTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZPSJ5b3VyLXNlY3JldC1rZXktaGVyZSIKCiMgT3BlbkFJIENvbmZpZ3VyYXRpb24KT1BFTkFJX0FQSV9LRVk9InNrLXByb2otOHcyT2ZHdUpHbnloVk1TNnAxVi1sRUc0djk5NVNNR0JhT2xuc1NmODdhVVBqNlQ4NHlMTEtZdWwtOTE0YWRvel9nT1I5R3gtS3VUM0JsYmtGSmtETWpqNVBwY3htX3B5ekxhWUlibEQ5eXF3SFlGWG9sZno1N3NmWm54a1lIV2lLZ2syWDhmUVVnekdyRUpGWS05a2tJUHUwMFlBIgoKIyBBbnRocm9waWMgQ29uZmlndXJhdGlvbgpBTlRIUk9QSUNfQVBJX0tFWT0ic2stYW50LWFwaTAzLVk2SGhoVUFWMkQyVm9tWENpRTVtVE9LbW1lX0RMcGlPaGw0WERLbF9zUjNBS2FFZzl6N3VmWE9JMlloeVhZanJEb1M4U0VEYWpGRk45Q3NBZmdYc2tnLUZZVl9tZ0FBIgoKIyBSQUcgRmVhdHVyZQpORVhUX1BVQkxJQ19SQUdfRU5BQkxFRD0idHJ1ZSIKCiMgVGVzdGluZyAoc2V0IHRvIHRydWUgdG8gbW9jayBPcGVuQUkgZW1iZWRkaW5ncyBhbmQgc2F2ZSBBUEkgcXVvdGEpCk5FWFRfUFVCTElDX01PQ0tfRU1CRURESU5HUz0idHJ1ZSIKAAAAAAAAAAASAwAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABMAgAAAAAAAEwCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					80,
+					1,
+					"revert",
+					null,
+					"AwAAAAAAAAAAAAAAAAAAAAAAAAASAwAAIyBTdXBhYmFzZSBDb25maWd1cmF0aW9uCk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTD0iaHR0cHM6Ly9xdHJ0dnNtbGpuZmRxcHVpdGF1ai5zdXBhYmFzZS5jbyIKTkVYVF9QVUJMSUNfU1VQQUJBU0VfUFVCTElTSEFCTEVfS0VZPSJzYl9wdWJsaXNoYWJsZV83Q0RLQnlNVTRPTHZGb09qby04c0pnX3k4ZEhPTzg1IgpTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZPSJ5b3VyLXNlY3JldC1rZXktaGVyZSIKCiMgT3BlbkFJIENvbmZpZ3VyYXRpb24KT1BFTkFJX0FQSV9LRVk9InNrLXByb2otOHcyT2ZHdUpHbnloVk1TNnAxVi1sRUc0djk5NVNNR0JhT2xuc1NmODdhVVBqNlQ4NHlMTEtZdWwtOTE0YWRvel9nT1I5R3gtS3VUM0JsYmtGSmtETWpqNVBwY3htX3B5ekxhWUlibEQ5eXF3SFlGWG9sZno1N3NmWm54a1lIV2lLZ2syWDhmUVVnekdyRUpGWS05a2tJUHUwMFlBIgoKIyBBbnRocm9waWMgQ29uZmlndXJhdGlvbgpBTlRIUk9QSUNfQVBJX0tFWT0ic2stYW50LWFwaTAzLVk2SGhoVUFWMkQyVm9tWENpRTVtVE9LbW1lX0RMcGlPaGw0WERLbF9zUjNBS2FFZzl6N3VmWE9JMlloeVhZanJEb1M4U0VEYWpGRk45Q3NBZmdYc2tnLUZZVl9tZ0FBIgoKIyBSQUcgRmVhdHVyZQpORVhUX1BVQkxJQ19SQUdfRU5BQkxFRD0idHJ1ZSIKCiMgVGVzdGluZyAoc2V0IHRvIHRydWUgdG8gbW9jayBPcGVuQUkgZW1iZWRkaW5ncyBhbmQgc2F2ZSBBUEkgcXVvdGEpCk5FWFRfUFVCTElDX01PQ0tfRU1CRURESU5HUz0idHJ1ZSIKCiMgRmlsZSB1cGxvYWQgbGltaXRzClJBR19NQVhfRklMRV9TSVpFX01CPTEKAAAAAAAAAAD8AgAAAAAAAAAAAAAAAAAAAAAAAPwCAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAHAwAAAAAAAAcDAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "/Users/yannik/js/rag-chatbot/.env.local.example",
+			"settings":
+			{
+				"buffer_size": 1616,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"rein",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"",
+				"Code Folding: Fold Tag Attributes"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/yannik/js/rag-chatbot",
+		"/Users/yannik/js/rag-chatbot/supabase",
+		"/Users/yannik/js/rag-chatbot/supabase/migrations"
+	],
+	"file_history":
+	[
+		"/Users/yannik/js/rag-chatbot/excempt-session.txt",
+		"/Users/yannik/js/storylab/README.md",
+		"/Users/yannik/js/storylab/src/components/editor/LexicalEditor.tsx",
+		"/Users/yannik/js/storylab/package.json",
+		"/Users/yannik/js/gwbar/package-lock.json",
+		"/Users/yannik/js/storylab/src/api/documents.ts",
+		"/Users/yannik/js/storylab/.gitignore",
+		"/Users/yannik/js/storylab/src/components/editor/EditorToolbar.tsx",
+		"/Users/yannik/js/glashaus/.env.local",
+		"/Users/yannik/js/glashaus/package.json",
+		"/Users/yannik/js/glashaus/docker-compose.yml",
+		"/Users/yannik/js/glashaus/src/components/system/PeerTracker.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Tracker.tsx",
+		"/Users/yannik/js/glashaus/src/components/files/FilesPageClient.tsx",
+		"/Users/yannik/js/glashaus/app/layout.tsx",
+		"/Users/yannik/js/glashaus/app/system/network-map/page.tsx",
+		"/Users/yannik/js/glashaus/app/system/peers/page.tsx",
+		"/Users/yannik/js/glashaus/src/actions/peers.ts",
+		"/Users/yannik/Downloads/files-2/architecture-node.md",
+		"/Users/yannik/js/glashaus/.env.local.example",
+		"/Users/yannik/js/glashaus/src/components/shared/CookieBanner.tsx",
+		"/Users/yannik/js/glashaus/plans.config.ts",
+		"/Users/yannik/js/glashaus/src/components/shared/EarlyAccessBanner.tsx",
+		"/Users/yannik/js/glashaus/app/pricing/page.tsx",
+		"/Users/yannik/js/glashaus/app/static/page.tsx",
+		"/Users/yannik/js/nitro/simple/.env",
+		"/Users/yannik/js/nitro/next-app/.env",
+		"/Users/yannik/.claude/projects/-Users-yannik-js-glashaus/memory/MEMORY.md",
+		"/Users/yannik/js/glashaus/app/account/quota-exceeded/page.tsx",
+		"/Users/yannik/js/glashaus/src/components/account/QuotaExceededClient.tsx",
+		"/Users/yannik/js/glashaus/src/components/shared/BannerStack.tsx",
+		"/Users/yannik/js/glashaus/CLAUDE.md",
+		"/Users/yannik/js/glashaus/app/payment/success/page.tsx",
+		"/Users/yannik/js/glashaus/src/lib/plans.ts",
+		"/Users/yannik/js/glashaus/deploy/production-setup.sh",
+		"/Users/yannik/js/glashaus/src/components/payments/SuccessContentClient.tsx",
+		"/Users/yannik/js/glashaus/app/account/plan/success/route.ts",
+		"/Users/yannik/js/glashaus/instrumentation.ts",
+		"/Users/yannik/js/glashaus/src/components/plans/AccountPlansClient.tsx",
+		"/Users/yannik/js/glashaus/src/components/feedback/FeedbackSuccessModal.tsx",
+		"/Users/yannik/js/glashaus/src/components/feedback/FeedbackModal.tsx",
+		"/Users/yannik/js/glashaus/app/api/gateway/ipfs/[cid]/route.ts",
+		"/Users/yannik/js/glashaus/src/components/common/Select.tsx",
+		"/Users/yannik/js/glashaus/app/admin/feedback/[id]/FeedbackDetailClient.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Textarea.tsx",
+		"/Users/yannik/js/glashaus/app/events/early-access/page.tsx",
+		"/Users/yannik/js/glashaus/app/account/plans/page.tsx",
+		"/Users/yannik/js/glashaus/src/components/plans/PlansPageClient.tsx",
+		"/Users/yannik/js/glashaus/app/account/settings/page.tsx",
+		"/Users/yannik/js/glashaus/.env.production",
+		"/Users/yannik/js/glashaus/app/pricing/[slug]/page.tsx",
+		"/Users/yannik/js/glashaus/app/(auth)/signup/page.tsx",
+		"/Users/yannik/js/glashaus/app/page.tsx",
+		"/Users/yannik/js/glashaus/src/components/layout/HeaderNavigationWrapper.tsx",
+		"/Users/yannik/js/glashaus/src/lib/navigation.ts",
+		"/Users/yannik/js/glashaus/app/(auth)/layout.tsx",
+		"/Users/yannik/js/glashaus/src/components/shared/UserAuthContent.tsx",
+		"/Users/yannik/js/glashaus/src/components/layout/MobileNavigation.tsx",
+		"/Users/yannik/js/glashaus/app/admin/layout.tsx",
+		"/Users/yannik/js/glashaus/app/files/layout.tsx",
+		"/Users/yannik/js/glashaus/auth.ts",
+		"/Users/yannik/js/glashaus/src/components/layout/Footer.tsx",
+		"/Users/yannik/js/glashaus/app/developer/api-keys/client.tsx",
+		"/Users/yannik/js/glashaus/app/docs/page.tsx",
+		"/Users/yannik/js/glashaus/app/docs/privacy/page.tsx",
+		"/Users/yannik/js/glashaus/app/docs/terms/page.tsx",
+		"/Users/yannik/js/glashaus/app/docs/tos/page.tsx",
+		"/Users/yannik/js/glashaus/app/docs/tos.tsx",
+		"/Users/yannik/js/glashaus/app/docs/layout.tsx",
+		"/Users/yannik/js/glashaus/src/components/files/FileUpload.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/ProgressBar.tsx",
+		"/Users/yannik/js/glashaus/src/lib/services/PlansSyncService.ts",
+		"/Users/yannik/js/glashaus/app/(auth)/login/page.tsx",
+		"/Users/yannik/js/glashaus/app/account/plans/[slug]/page.tsx",
+		"/Users/yannik/js/glashaus/src/components/layout/Header.tsx",
+		"/Users/yannik/js/glashaus/src/components/files/ImportByCid.tsx",
+		"/Users/yannik/js/glashaus/app/plans/[slug]/page.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Callout.tsx",
+		"/Users/yannik/js/glashaus/src/lib/services/ServiceFactory.ts",
+		"/Users/yannik/js/glashaus/src/components/layout/UserMenu.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/RadioCard.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Checkbox.tsx",
+		"/Users/yannik/js/glashaus/src/components/shared/QuotaDisplay.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Slider.tsx",
+		"/Users/yannik/js/glashaus/app/files/page.tsx",
+		"/Users/yannik/js/glashaus/README.md",
+		"/Users/yannik/js/glashaus/src/components/table/FileTable.tsx",
+		"/Users/yannik/js/glashaus/src/components/shared/FileIcon.tsx",
+		"/Users/yannik/js/glashaus/src/components/ipfs/DirectoryViewer.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/FileIcon.tsx",
+		"/Users/yannik/js/glashaus/src/components/table/UnifiedFileTable.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Table.tsx",
+		"/Users/yannik/js/glashaus/src/components/table/GenericTable.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Drawer.tsx",
+		"/Users/yannik/js/glashaus/tsconfig.json",
+		"/Users/yannik/js/glashaus/src/actions/files.ts",
+		"/Users/yannik/js/glashaus/src/components/forms/FileUpload.tsx",
+		"/Users/yannik/js/glashaus/src/components/table/AdminUsers.tsx",
+		"/Users/yannik/js/glashaus/src/components/common/Button.tsx",
+		"/Users/yannik/js/glashaus/docs/DESIGN.md",
+		"/Users/yannik/js/glashaus/src/components/common/Divider.tsx",
+		"/Users/yannik/js/ramunap/helia-ts/package.json",
+		"/Users/yannik/js/ramunap/helia-ts/.env",
+		"/Users/yannik/js/ramunap/helia-ts/src/bootstrap/dht.ts",
+		"/Users/yannik/js/ramunap/next-app/package.json",
+		"/Users/yannik/js/ramunap/next-app/.env.local",
+		"/Users/yannik/js/ramunap/helia-ts/src/index.ts",
+		"/Users/yannik/js/ramunap/helia-ts/CLAUDE.md",
+		"/Users/yannik/js/ramunap/next-app/src/app/system/node-status/page.tsx",
+		"/Users/yannik/js/ramunap/next-app/src/components/common/Slider.tsx",
+		"/Users/yannik/js/ramunap/CLAUDE.md",
+		"/Users/yannik/js/ramunap/next-app/src/components/files/PinFromCid.tsx",
+		"/Users/yannik/js/ramunap/next-app/src/app/early-access/page.tsx",
+		"/Users/yannik/js/ramunap/next-app/src/app/account/plan/[slug]/page.tsx",
+		"/Users/yannik/js/ramunap/next-app/src/lib/pricing/price-definitions.ts",
+		"/Users/yannik/js/ramunap/next-app/.env",
+		"/Users/yannik/js/ramunap/next-app/src/app/account/plan/page.tsx",
+		"/Users/yannik/js/ramunap/helia-ts/src/storage/helia.ts",
+		"/Users/yannik/js/ramunap/next-app/src/app/layout.tsx",
+		"/Users/yannik/js/ramunap/.env",
+		"/Users/yannik/js/ramunap/next-app/src/components/GlobalEnvironmentalImpact.tsx",
+		"/Users/yannik/js/ramunap/next-app/src/app/page.tsx",
+		"/Users/yannik/js/ramunap/next-app/src/app/use-cases/page.tsx",
+		"/Users/yannik/js/ramunap/deploy/README.md",
+		"/Users/yannik/js/ramunap/helia-ts/src/socket/handlers.ts",
+		"/Users/yannik/js/ramunap/deploy/post-receive",
+		"/Users/yannik/js/ramunap/next-app/src/components/layout/FooterFull.tsx",
+		"/Users/yannik/js/ramunap/next-app/src/app/(auth)/register/page.tsx"
+	],
+	"find":
+	{
+		"height": 30.0
+	},
+	"find_in_files":
+	{
+		"height": 101.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/yannik/js/rag-chatbot/.env.local",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 764,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								764,
+								764
+							]
+						],
+						"settings":
+						{
+							"allow_quiet_save": true,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/yannik/js/rag-chatbot/.env.local.example",
+					"selected": true,
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1616,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 30.0
+	},
+	"input":
+	{
+		"height": 42.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"pinned_build_system": "",
+	"project": "rag.sublime-project",
+	"replace":
+	{
+		"height": 56.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 249.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
