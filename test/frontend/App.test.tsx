@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event'
 import App from '../../src/App'
 
 describe('App — Book Editor Landing Page', () => {
-  it('should render the sidebar project title', () => {
+  it('should render the sidebar menu button', () => {
     render(<App />)
-    expect(screen.getByText(/📖 My Novel/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument()
   })
 
   it('should render 3 chapters in the sidebar', () => {

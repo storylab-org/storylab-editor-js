@@ -119,6 +119,17 @@ storylab/
 - **Server** = Business logic, API, data processing
 - **Rust** = Desktop-specific features, lifecycle management
 
+### ✅ Platform-Aware Features
+
+Some features behave differently on web vs desktop:
+
+**Example: Export functionality**
+- **Web:** Browser download dialog (standard `<a>` download)
+- **Tauri:** Native file save dialog (via `@tauri-apps/plugin-dialog`)
+- Implementation: Runtime detection in `src/api/export.ts`, platform-specific code paths
+
+See **[docs/SIDEBAR_MENU.md](SIDEBAR_MENU.md)** for export implementation details.
+
 ## Development vs Production
 
 ### Development

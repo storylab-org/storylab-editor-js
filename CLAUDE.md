@@ -112,6 +112,11 @@ Complete guide to the Lexical editor formatting toolbar — current features, im
 
 **Read this to:** Understand the editor toolbar, add formatting options (bold, italic, headings, quotes, code blocks), extend the editor UI.
 
+### [docs/SIDEBAR_MENU.md](docs/SIDEBAR_MENU.md)
+Complete guide to the sidebar menu system — export functionality, mocked features (import, key generation), platform-aware export (web vs Tauri).
+
+**Read this to:** Understand the sidebar menu, implement export formats, add new menu items, handle platform-specific functionality.
+
 ## Logging
 
 Three-layer logging system:

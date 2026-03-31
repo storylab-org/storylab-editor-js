@@ -163,8 +163,9 @@ Text renders with `font-weight: bold`
 src/components/editor/
 ├── FormattingToolbar.tsx       ← Main toolbar component (sticky)
 ├── FormattingToolbar.css       ← Toolbar styles
-├── EditorToolbar.tsx           ← Top toolbar (Save, Export, Settings)
+├── EditorToolbar.tsx           ← Top toolbar (Save, Settings)
 ├── EditorToolbar.css           ← Top toolbar styles
+└── NOTE: Export button moved to sidebar menu (see docs/SIDEBAR_MENU.md)
 └── lexical/
     ├── plugins/
     │   ├── DragDropBlockPlugin.tsx  ← Block reordering with dnd-kit
