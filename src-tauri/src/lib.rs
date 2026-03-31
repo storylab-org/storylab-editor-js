@@ -40,6 +40,31 @@ async fn get_server_status(state: State<'_, ServerState>) -> Result<String, Stri
     Ok(status)
 }
 
+#[tauri::command]
+async fn save_export_file(filename: String, data: Vec<u8>) -> Result<String, String> {
+    debug!("save_export_file command called for: {}", filename);
+
+    // filename is now a full path from the dialog, not just a filename
+    let file_path = std::path::PathBuf::from(&filename);
+
+    // Ensure parent directory exists
+    if let Some(parent) = file_path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| {
+            error!("Failed to create directory {}: {}", parent.display(), e);
+            e.to_string()
+        })?;
+    }
+
+    // Write file to disk
+    std::fs::write(&file_path, data).map_err(|e| {
+        error!("Failed to write export file {}: {}", file_path.display(), e);
+        e.to_string()
+    })?;
+
+    info!("Export file saved to: {}", file_path.display());
+    Ok(file_path.to_string_lossy().to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // Initialize logger
@@ -50,6 +75,7 @@ pub fn run() {
     info!("Starting Tauri application");
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .manage(ServerState {
             server_handle: Mutex::new(None),
@@ -67,7 +93,7 @@ pub fn run() {
                 }
             }
         })
-        .invoke_handler(tauri::generate_handler![read_file_bytes, greet, get_server_status])
+        .invoke_handler(tauri::generate_handler![read_file_bytes, greet, get_server_status, save_export_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

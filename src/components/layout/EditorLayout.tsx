@@ -15,7 +15,7 @@ import {
   reorderDocuments,
   type DocumentHead
 } from '@/api/documents'
-import { exportBook, triggerDownload, type ExportFormat } from '@/api/export'
+import { exportAndSave, type ExportFormat } from '@/api/export'
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
@@ -128,11 +128,19 @@ export default function EditorLayout() {
     }
   }, [isDirty, content])
 
-  const handleSelectChapter = (id: string) => {
+  const handleSelectChapter = async (id: string) => {
     console.log(`[SWITCH] Switching to chapter "${id}"`)
     // Cancel any pending autosave for the previous chapter
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
-    setIsDirty(false)
+
+    // Save before switching if dirty
+    if (isDirty) {
+      console.log(`[SWITCH] Saving dirty chapter before switching...`)
+      await handleSave()
+    } else {
+      setIsDirty(false)
+    }
+
     setActiveChapterId(id)
   }
 
@@ -200,9 +208,8 @@ export default function EditorLayout() {
 
     try {
       console.log(`[EXPORT] Starting ${format.toUpperCase()} export...`)
-      const blob = await exportBook(format as ExportFormat)
       const filename = `book.${format}`
-      triggerDownload(blob, filename)
+      await exportAndSave(format as ExportFormat, filename)
       console.log(`[EXPORT] ✓ ${format.toUpperCase()} export completed`)
     } catch (error) {
       console.error(`[EXPORT] ✗ Failed to export ${format}:`, error)
@@ -284,6 +291,7 @@ export default function EditorLayout() {
           onCreateChapter={handleCreateChapter}
           onDeleteChapter={handleDeleteChapter}
           onReorder={handleReorder}
+          onExport={handleExport}
         />
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
           <EditorToolbar
@@ -292,7 +300,6 @@ export default function EditorLayout() {
             saveStatus={saveStatus}
             onSave={handleSave}
             onSettings={() => setIsSettingsOpen(true)}
-            onExport={handleExport}
           />
           {activeChapterId && loadedChapterId === activeChapterId && (
             <EditorArea
