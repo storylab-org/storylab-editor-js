@@ -25,10 +25,12 @@ import {
   Quote,
   Code,
   Image,
+  Table2,
 } from 'lucide-react'
 import DropDown, { DropDownItem } from './lexical/ui/DropDown'
 import { INSERT_IMAGE_COMMAND } from './lexical/commands'
 import { useToast } from '@/components/shared/ToastContext'
+import InsertTableDialog from './InsertTableDialog'
 import './FormattingToolbar.css'
 
 // Maximum image size: 50MB
@@ -45,6 +47,7 @@ export default function FormattingToolbar() {
   const [isUnderline, setIsUnderline] = useState(false)
   const [blockType, setBlockType] = useState<BlockType>('paragraph')
   const [fontSize, setFontSize] = useState('15px')
+  const [showTableDialog, setShowTableDialog] = useState(false)
 
   const handleFormat = useCallback((command: string, arg?: string) => {
     editor.dispatchCommand(command as any, arg as any)
@@ -337,12 +340,22 @@ export default function FormattingToolbar() {
       <div className="separator" />
 
       <button
+        title="Insert Table"
+        onClick={() => setShowTableDialog(true)}
+        className="format-btn"
+      >
+        <Table2 size={16} />
+      </button>
+
+      <button
         title="Insert Image"
         onClick={openImageFilePicker}
         className="format-btn"
       >
         <Image size={16} />
       </button>
+
+      {showTableDialog && <InsertTableDialog onClose={() => setShowTableDialog(false)} />}
     </div>
   )
 }

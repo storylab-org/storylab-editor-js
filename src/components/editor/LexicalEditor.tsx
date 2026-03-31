@@ -26,6 +26,7 @@ import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPl
 import { TRANSFORMERS } from '@lexical/markdown';
 import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
 import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 
 import AutoLinkPlugin from './lexical/plugins/AutoLinkPlugin';
 import TreeViewPlugin from './lexical/plugins/TreeViewPlugin';
@@ -144,6 +145,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         {/* <LinkClickPlugin /> */}
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <HorizontalRulePlugin />
+        <TablePlugin hasCellMerge={true} hasCellBackgroundColor={false} />
         <TreeViewPlugin />
         <DragDropBlockPlugin showDragMenu={showDragMenu} />
         <ImageResizePlugin />
