@@ -188,6 +188,18 @@
   font-weight: bold;
 }
 
+.PlaygroundEditorTheme__tableCellSelected {
+  background-color: rgba(172, 206, 247, 0.3);
+}
+
+.PlaygroundEditorTheme__tableCellPrimarySelected {
+  border: 2px solid rgb(77, 137, 232);
+}
+
+.PlaygroundEditorTheme__tableScrollableWrapper {
+  overflow-x: auto;
+}
+
 .PlaygroundEditorTheme__mark {
   background-color: yellow;
 }
