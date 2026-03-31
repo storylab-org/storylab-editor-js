@@ -5,7 +5,7 @@ import type { DocumentHead } from '@/api/documents'
 
 interface SidebarProps {
   activeChapterId: string
-  onSelectChapter: (id: string) => void
+  onSelectChapter: (id: string) => void | Promise<void>
   chapters?: DocumentHead[]
   isLoading?: boolean
   onCreateChapter?: () => void

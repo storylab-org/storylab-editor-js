@@ -10,7 +10,7 @@ interface ChapterListProps {
   chapters: DocumentHead[]
   activeChapterId: string
   isLoading: boolean
-  onSelectChapter: (id: string) => void
+  onSelectChapter: (id: string) => void | Promise<void>
   onCreateChapter: () => void
   onDeleteChapter?: (id: string) => void
   onReorder?: (chapters: DocumentHead[]) => void
@@ -19,7 +19,7 @@ interface ChapterListProps {
 interface SortableChapterItemProps {
   chapter: DocumentHead
   activeChapterId: string
-  onSelectChapter: (id: string) => void
+  onSelectChapter: (id: string) => void | Promise<void>
   onDeleteChapter?: (id: string) => void
   hoveredChapterId: string | null
   onHoverChange: (id: string | null) => void

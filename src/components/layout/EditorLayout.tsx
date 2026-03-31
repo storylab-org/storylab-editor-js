@@ -128,11 +128,19 @@ export default function EditorLayout() {
     }
   }, [isDirty, content])
 
-  const handleSelectChapter = (id: string) => {
+  const handleSelectChapter = async (id: string) => {
     console.log(`[SWITCH] Switching to chapter "${id}"`)
     // Cancel any pending autosave for the previous chapter
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
-    setIsDirty(false)
+
+    // Save before switching if dirty
+    if (isDirty) {
+      console.log(`[SWITCH] Saving dirty chapter before switching...`)
+      await handleSave()
+    } else {
+      setIsDirty(false)
+    }
+
     setActiveChapterId(id)
   }
 
