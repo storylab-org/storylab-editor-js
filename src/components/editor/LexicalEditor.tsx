@@ -33,6 +33,7 @@ import TreeViewPlugin from './lexical/plugins/TreeViewPlugin';
 import DragDropBlockPlugin from './lexical/plugins/DragDropBlockPlugin';
 import ImagePlugin from './lexical/plugins/ImagePlugin';
 import ImageResizePlugin from './lexical/plugins/ImageResizePlugin';
+import SlashCommandPlugin from './lexical/plugins/SlashCommandPlugin';
 import FormattingToolbar from './FormattingToolbar';
 
 import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
@@ -85,7 +86,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
 
 
   function Placeholder() {
-    return <div className="editor-placeholder">Empty document ...</div>;
+    return <div className="editor-placeholder">Start writing, or type / to insert a block...</div>;
   }
 
   function onError(error: any) {
@@ -150,6 +151,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <DragDropBlockPlugin showDragMenu={showDragMenu} />
         <ImageResizePlugin />
         <ImagePlugin />
+        <SlashCommandPlugin />
       </div>
       <WordCountPlugin />
     </LexicalComposer>
