@@ -68,8 +68,9 @@ function getCardEdgePoint(card: BoardCard, targetX: number, targetY: number) {
     }
   } else {
     // Use top or bottom edge
-    const edgeY = dy > 0 ? center.y + halfHeight : center.y - halfHeight
-    const edgeX = center.x + edgeY / Math.tan(angle)
+    const offset = dy > 0 ? halfHeight : -halfHeight
+    const edgeY = center.y + offset
+    const edgeX = center.x + offset / Math.tan(angle)
     return {
       x: Math.max(center.x - halfWidth, Math.min(center.x + halfWidth, edgeX)),
       y: edgeY,
@@ -154,11 +155,39 @@ export default function ConnectionLayer({
   }, [rewiringArrow, cards, onEndRewiringArrow])
 
   const cubicBezierPath = (x1: number, y1: number, x2: number, y2: number) => {
-    const offset = 80
-    const cx1 = x1 + offset
-    const cy1 = y1
-    const cx2 = x2 - offset
-    const cy2 = y2
+    const dx = x2 - x1
+    const dy = y2 - y1
+
+    // If nearly aligned (horizontal or vertical), use straight line
+    const absDx = Math.abs(dx)
+    const absDy = Math.abs(dy)
+
+    if (absDx < 20 || absDy < 20) {
+      // Straight line for nearly aligned arrows
+      return `M ${x1} ${y1} L ${x2} ${y2}`
+    }
+
+    // For diagonal arrows, use slight curve
+    const distance = Math.sqrt(dx * dx + dy * dy)
+    const isMoreHorizontal = absDx > absDy
+    const offset = Math.min(40, distance * 0.15)
+
+    let cx1, cy1, cx2, cy2
+
+    if (isMoreHorizontal) {
+      // Push control points perpendicular (vertical)
+      cx1 = x1 + dx * 0.3
+      cy1 = y1 + offset
+      cx2 = x2 - dx * 0.3
+      cy2 = y2 - offset
+    } else {
+      // Push control points perpendicular (horizontal)
+      cx1 = x1 + offset
+      cy1 = y1 + dy * 0.3
+      cx2 = x2 - offset
+      cy2 = y2 - dy * 0.3
+    }
+
     return `M ${x1} ${y1} C ${cx1} ${cy1} ${cx2} ${cy2} ${x2} ${y2}`
   }
 
