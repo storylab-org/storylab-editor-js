@@ -38,6 +38,19 @@ The app opens with:
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture.
 
+## Contributing
+
+We welcome contributions! **Storylab is open source**, and the primary way to extend it is by writing **Lexical plugins** that enhance the writing experience.
+
+Whether you want to add new formatting options, editor tools, or content structure features—[read CONTRIBUTING.md](CONTRIBUTING.md) for:
+
+- How to write Lexical plugins (with examples)
+- Integration patterns with the Fastify backend
+- Testing and documentation guidelines
+- Current plugin roadmap and priorities
+
+**New to Lexical?** Start with [Lexical's official documentation](https://lexical.dev/) and then check [docs/DM_STORYBOOK.md](docs/DM_STORYBOOK.md) for our plugin architecture.
+
 ## Development
 
 ### Common Commands
