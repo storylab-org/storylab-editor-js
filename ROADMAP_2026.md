@@ -18,6 +18,8 @@
   - Real Lucide React icons + consistent UI spacing
   - Image file picker with validation (max 5MB)
   - Viewport-aware positioning
+- **Export Formats** (Phase 6 mostly done) — Markdown, HTML, DOCX, EPUB
+  - Only CID export missing; all other formats implemented
 
 ## What's Next (Ordered by Impact & Effort)
 
@@ -89,12 +91,13 @@
 
 ---
 
-### 📤 Week 9–10: Export Pipeline
+### 📤 Week 9–10: Export Pipeline & Find/Replace
 
-9. **ExportPlugin** (~8h)
-    - Markdown, HTML, DOCX, EPUB formats
-    - Strip dm-aside annotations before export
-    - Fastify handles format conversion
+9. **ExportPlugin** (mostly ✅, CID export remaining)
+    - ✅ Markdown, HTML, DOCX, EPUB formats implemented
+    - ✅ Strip dm-aside annotations before export
+    - ✅ Fastify handles format conversion
+    - ⏳ CID export to finish
 
 10. **FindReplacePlugin** (~4h)
     - Ctrl/Cmd+F search & replace
@@ -164,10 +167,13 @@ Maintain 70%+ code coverage. Run `npm test` before every PR.
 - [ ] Per-chapter word counts working
 - [ ] 90+ tests passing
 
+### Phase 6 (Mostly Done)
+- [x] Export to Markdown, HTML, DOCX, EPUB works cleanly
+- [ ] CID export remaining
+
 ### Future
 - [ ] Entity autocomplete < 200ms
 - [ ] Draft Board renders all chapters as cards
-- [ ] Export to all 4 formats works cleanly
 - [ ] Usable by non-technical DMs within 5 minutes of first load
 
 ---

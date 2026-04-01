@@ -71,9 +71,17 @@ storylab/
 │   ├── SIDECAR.md          # Fastify server guide
 │   ├── BUILDING.md         # Building & deployment
 │   └── EDITOR_TOOLBAR.md   # Editor toolbar features & implementation
+├── ROADMAP_2026.md         # Implementation roadmap with priorities
 ├── CLAUDE.md               # This file
 └── package.json
 ```
+
+## Roadmap
+
+### [ROADMAP_2026.md](ROADMAP_2026.md)
+Implementation roadmap with prioritised phases: Phase 1 (Core Writing ✅), Phase 2 (Chapter Structure), Phase 3 (Entity System), Phase 4 (Annotations), Phase 5 (Draft Board), Phase 6 (Export & Polish).
+
+**Read this to:** Understand what's next, estimate effort, align on priorities.
 
 ## Documentation
 
