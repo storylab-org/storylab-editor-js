@@ -4,6 +4,7 @@ import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, us
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { arrayMove } from '@dnd-kit/sortable'
+import { OVERVIEW_ID } from '@/constants'
 import type { DocumentHead } from '@/api/documents'
 
 interface ChapterListProps {
@@ -161,6 +162,23 @@ export default function ChapterList({
         onDragEnd={handleDragEnd}
       >
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0' }}>
+          {/* Draft Board button - pinned at top */}
+          <button
+            onClick={() => onSelectChapter(OVERVIEW_ID)}
+            style={{
+              width: '100%',
+              padding: '8px 16px',
+              border: 'none',
+              background: activeChapterId === OVERVIEW_ID ? '#0f0f0f' : 'transparent',
+              color: activeChapterId === OVERVIEW_ID ? '#ffffff' : '#0f0f0f',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontSize: '14px'
+            }}
+          >
+            Draft Board
+          </button>
+
           {isLoading && <div style={{ padding: '16px', color: '#999', fontSize: '12px' }}>Loading…</div>}
           {!isLoading && chapters.length === 0 && (
             <div style={{ padding: '16px', color: '#999', fontSize: '12px' }}>No chapters yet</div>

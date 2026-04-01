@@ -25,14 +25,16 @@ export default function EditorToolbar({
         <div className="chapter-info">
           <div className="chapter-title-row">
             <h2 className="chapter-title">{chapterTitle}</h2>
-            <button
-              className="chapter-settings-button"
-              onClick={onSettings}
-              aria-label="Chapter settings"
-              title="Chapter settings"
-            >
-              <Settings size={16} />
-            </button>
+            {onSettings && (
+              <button
+                className="chapter-settings-button"
+                onClick={onSettings}
+                aria-label="Chapter settings"
+                title="Chapter settings"
+              >
+                <Settings size={16} />
+              </button>
+            )}
           </div>
           {chapterId && <span className="chapter-id">Chapter {chapterId}</span>}
         </div>

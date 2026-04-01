@@ -4,8 +4,10 @@ import EditorArea from '@/components/editor/EditorArea'
 import EditorToolbar from '@/components/editor/EditorToolbar'
 import GenericModal from '@/components/shared/GenericModal'
 import ChapterSettingsModal from '@/components/editor/ChapterSettingsModal'
+import DraftBoard from '@/components/overview/DraftBoard'
 import { ToastProvider } from '@/components/shared/ToastContext'
 import ToastContainer from '@/components/shared/ToastContainer'
+import { OVERVIEW_ID } from '@/constants'
 import {
   listDocuments,
   getDocument,
@@ -58,8 +60,8 @@ export default function EditorLayout() {
 
         console.log(`[INIT] ✓ Setting chapters list: ${docs.map(d => d.id).join(', ')}`)
         setChapters(docs)
-        console.log(`[INIT] ✓ Setting active chapter to "${docs[0].id}"`)
-        setActiveChapterId(docs[0].id)
+        console.log(`[INIT] ✓ Setting active chapter to Overview`)
+        setActiveChapterId(OVERVIEW_ID)
       } catch (error) {
         console.error('[INIT] ✗ Failed to load chapters:', error)
       } finally {
@@ -73,6 +75,14 @@ export default function EditorLayout() {
   // Load document content when active chapter changes
   useEffect(() => {
     if (!activeChapterId) return
+
+    // Skip document load for Overview
+    if (activeChapterId === OVERVIEW_ID) {
+      console.log('[LOAD] Loading Overview...')
+      setLoadedChapterId(OVERVIEW_ID)
+      setIsLoading(false)
+      return
+    }
 
     const loadDocument = async () => {
       setIsLoading(true)
@@ -218,6 +228,7 @@ export default function EditorLayout() {
 
   const handleSave = async () => {
     if (!activeChapterId) return
+    if (activeChapterId === OVERVIEW_ID) return
 
     setSaveStatus('saving')
     try {
@@ -295,30 +306,43 @@ export default function EditorLayout() {
         />
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
           <EditorToolbar
-            chapterId={activeChapterId || ''}
-            chapterTitle={activeChapter?.name || 'Untitled'}
+            chapterId={activeChapterId === OVERVIEW_ID ? undefined : activeChapterId || ''}
+            chapterTitle={activeChapterId === OVERVIEW_ID ? 'Overview' : activeChapter?.name || 'Untitled'}
             saveStatus={saveStatus}
             onSave={handleSave}
-            onSettings={() => setIsSettingsOpen(true)}
+            onSettings={activeChapterId === OVERVIEW_ID ? undefined : () => setIsSettingsOpen(true)}
           />
-          {activeChapterId && loadedChapterId === activeChapterId && (
-            <EditorArea
-              key={activeChapterId}
-              chapterId={activeChapterId}
-              content={content}
-              pageBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
-              showDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
-              onChange={(newContent) => {
-                console.log(`[EDITOR] Content changed: ${newContent.length} bytes`)
-                setContent(newContent)
-                setIsDirty(true)
-              }}
-              onWordCountChange={setWordCount}
+          {loadedChapterId === OVERVIEW_ID ? (
+            <DraftBoard
+              chapters={[...chapters].sort((a, b) => a.order - b.order)}
+              onNavigateToChapter={handleSelectChapter}
             />
+          ) : (
+            activeChapterId && loadedChapterId === activeChapterId && (
+              <EditorArea
+                key={activeChapterId}
+                chapterId={activeChapterId}
+                content={content}
+                pageBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
+                showDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
+                onChange={(newContent) => {
+                  console.log(`[EDITOR] Content changed: ${newContent.length} bytes`)
+                  setContent(newContent)
+                  setIsDirty(true)
+                }}
+                onWordCountChange={setWordCount}
+              />
+            )
           )}
-          <div style={{ padding: '8px 16px', fontSize: '12px', color: '#999', borderTop: '1px solid #e5e5e5' }}>
-            {wordCount} words
-          </div>
+          {activeChapterId === OVERVIEW_ID ? (
+            <div style={{ padding: '8px 16px', fontSize: '12px', color: '#999', borderTop: '1px solid #e5e5e5' }}>
+              Overview
+            </div>
+          ) : (
+            <div style={{ padding: '8px 16px', fontSize: '12px', color: '#999', borderTop: '1px solid #e5e5e5' }}>
+              {wordCount} words
+            </div>
+          )}
         </div>
 
         <GenericModal
