@@ -68,6 +68,45 @@ npm run test
 npm run start
 ```
 
+## Path Aliases
+
+To avoid deep relative imports (`../../../`), use TypeScript path aliases configured in `tsconfig.json`:
+
+### Quick Reference
+
+| Alias | Points to | Example |
+|-------|-----------|---------|
+| `@/components/` | `src/components/` | `@/components/editor/LexicalEditor` |
+| `@/api/` | `src/api/` | `@/api/documents` |
+| `@/utils/` | `src/utils/` | `@/utils/logger` |
+| `@/assets/` | `src/assets/` | `@/assets/icons` |
+| `@/editor/` | `src/components/editor/` | `@/editor/LexicalEditor` |
+| `@/editor/hooks/` | `src/components/editor/lexical/hooks/` | `@/editor/hooks/useModal` |
+| `@/editor/nodes/` | `src/components/editor/lexical/nodes/` | `@/editor/nodes/ImageNode` |
+| `@/editor/plugins/` | `src/components/editor/lexical/plugins/` | `@/editor/plugins/SlashCommandPlugin` |
+| `@/editor/ui/` | `src/components/editor/lexical/ui/` | `@/editor/ui/DropDown` |
+| `@/editor/utils/` | `src/components/editor/lexical/utils/` | `@/editor/utils/getSelectedNode` |
+| `@/editor/themes/` | `src/components/editor/lexical/themes/` | `@/editor/themes/editorTheme` |
+| `@/editor/commands/` | `src/components/editor/lexical/plugins/commands/` | `@/editor/commands/formatters` |
+
+### Before (Hard to Read)
+```typescript
+import { useModal } from '../../hooks/useModal'
+import { DropDown } from '../../ui/DropDown'
+import { getSelectedNode } from '../../utils/getSelectedNode'
+import { ImageNode } from '../nodes/ImageNode'
+```
+
+### After (Clear and Maintainable)
+```typescript
+import { useModal } from '@/editor/hooks/useModal'
+import { DropDown } from '@/editor/ui/DropDown'
+import { getSelectedNode } from '@/editor/utils/getSelectedNode'
+import { ImageNode } from '@/editor/nodes/ImageNode'
+```
+
+**Use these aliases in all new code.** They make imports clearer, easier to refactor, and reduce cognitive load.
+
 ## Development Workflow
 
 ### 1. Frontend Changes

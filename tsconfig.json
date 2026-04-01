@@ -20,10 +20,23 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path alias */
+    /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/api/*": ["./src/api/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/assets/*": ["./src/assets/*"],
+      "@/editor/*": ["./src/components/editor/*"],
+      "@/editor/lexical/*": ["./src/components/editor/lexical/*"],
+      "@/editor/hooks/*": ["./src/components/editor/lexical/hooks/*"],
+      "@/editor/nodes/*": ["./src/components/editor/lexical/nodes/*"],
+      "@/editor/plugins/*": ["./src/components/editor/lexical/plugins/*"],
+      "@/editor/ui/*": ["./src/components/editor/lexical/ui/*"],
+      "@/editor/utils/*": ["./src/components/editor/lexical/utils/*"],
+      "@/editor/themes/*": ["./src/components/editor/lexical/themes/*"],
+      "@/editor/commands/*": ["./src/components/editor/lexical/plugins/commands/*"]
     }
   },
   "include": ["src"],
