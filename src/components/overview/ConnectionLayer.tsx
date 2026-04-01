@@ -12,13 +12,26 @@ interface ConnectionLayerProps {
   onConnectTo: (toCardId: string) => Promise<void>
 }
 
-const CARD_WIDTH = 240
-const CARD_HEIGHT = 140 // Estimated; can be more precise with refs
+function getCardDimensions(card: BoardCard) {
+  switch (card.shape) {
+    case 'rectangle':
+      return { width: 200, height: 120 } // approximate with padding
+    case 'circle':
+      return { width: 120, height: 120 }
+    case 'diamond':
+      return { width: 120, height: 120 }
+    case 'triangle':
+      return { width: 120, height: 104 }
+    default:
+      return { width: 200, height: 120 }
+  }
+}
 
 function getCardCenter(card: BoardCard) {
+  const dims = getCardDimensions(card)
   return {
-    x: card.x + CARD_WIDTH / 2,
-    y: card.y + CARD_HEIGHT / 2,
+    x: card.x + dims.width / 2,
+    y: card.y + dims.height / 2,
   }
 }
 
@@ -78,10 +91,11 @@ export default function ConnectionLayer({
       // Check which card is under the cursor
       let targetCardId: string | null = null
       for (const card of cards) {
+        const dims = getCardDimensions(card)
         const left = card.x
         const top = card.y
-        const right = card.x + CARD_WIDTH
-        const bottom = card.y + CARD_HEIGHT
+        const right = card.x + dims.width
+        const bottom = card.y + dims.height
 
         if (clientX >= rect.left + left && clientX <= rect.left + right &&
             clientY >= rect.top + top && clientY <= rect.top + bottom) {
@@ -147,6 +161,15 @@ export default function ConnectionLayer({
 
         return (
           <g key={path.id}>
+            {/* Starting dot */}
+            <circle
+              cx={from.x}
+              cy={from.y}
+              r="4"
+              fill="#0066cc"
+              style={{ pointerEvents: 'none' }}
+            />
+
             <path
               d={cubicBezierPath(from.x, from.y, to.x, to.y)}
               stroke="#0066cc"
