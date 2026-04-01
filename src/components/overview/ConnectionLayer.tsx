@@ -35,6 +35,48 @@ function getCardCenter(card: BoardCard) {
   }
 }
 
+function getCardEdgePoint(card: BoardCard, targetX: number, targetY: number) {
+  const dims = getCardDimensions(card)
+  const center = getCardCenter(card)
+  const dx = targetX - center.x
+  const dy = targetY - center.y
+  const angle = Math.atan2(dy, dx)
+
+  if (card.shape === 'circle') {
+    const radius = dims.width / 2
+    return {
+      x: center.x + Math.cos(angle) * radius,
+      y: center.y + Math.sin(angle) * radius,
+    }
+  }
+
+  // For rectangle, diamond, triangle: use bounding box approach
+  const halfWidth = dims.width / 2
+  const halfHeight = dims.height / 2
+
+  // Find which edge to use based on angle
+  const absAngle = Math.abs(angle)
+  const isMoreHorizontal = absAngle < Math.PI / 4 || absAngle > (3 * Math.PI) / 4
+
+  if (isMoreHorizontal) {
+    // Use left or right edge
+    const edgeX = dx > 0 ? center.x + halfWidth : center.x - halfWidth
+    const edgeY = center.y + Math.tan(angle) * halfWidth
+    return {
+      x: edgeX,
+      y: Math.max(center.y - halfHeight, Math.min(center.y + halfHeight, edgeY)),
+    }
+  } else {
+    // Use top or bottom edge
+    const edgeY = dy > 0 ? center.y + halfHeight : center.y - halfHeight
+    const edgeX = center.x + edgeY / Math.tan(angle)
+    return {
+      x: Math.max(center.x - halfWidth, Math.min(center.x + halfWidth, edgeX)),
+      y: edgeY,
+    }
+  }
+}
+
 
 export default function ConnectionLayer({
   cards,
@@ -156,8 +198,10 @@ export default function ConnectionLayer({
 
         if (!fromCard || !toCard) return null
 
-        const from = getCardCenter(fromCard)
-        const to = getCardCenter(toCard)
+        const fromCenter = getCardCenter(fromCard)
+        const toCenter = getCardCenter(toCard)
+        const from = getCardEdgePoint(fromCard, toCenter.x, toCenter.y)
+        const to = getCardEdgePoint(toCard, fromCenter.x, fromCenter.y)
 
         return (
           <g key={path.id}>
@@ -207,17 +251,15 @@ export default function ConnectionLayer({
                   setSelectedPathId(null)
                 }}
               >
-                <rect
-                  x={(from.x + to.x) / 2 - 12}
-                  y={(from.y + to.y) / 2 + 8}
-                  width="24"
-                  height="24"
-                  rx="4"
+                <circle
+                  cx={(from.x + to.x) / 2}
+                  cy={(from.y + to.y) / 2}
+                  r="12"
                   fill="#ff6600"
                 />
                 <text
                   x={(from.x + to.x) / 2}
-                  y={(from.y + to.y) / 2 + 24}
+                  y={(from.y + to.y) / 2 + 4}
                   textAnchor="middle"
                   fontSize="14"
                   fill="white"
@@ -252,10 +294,17 @@ export default function ConnectionLayer({
             const toCard = cards.find(c => c.id === path.toCardId)
             if (!fromCard || !toCard) return null
 
-            const from = getCardCenter(fromCard)
-            const to = getCardCenter(toCard)
-            const start = rewiringArrow.endpoint === 'from' ? mousePos : from
-            const end = rewiringArrow.endpoint === 'to' ? mousePos : to
+            const fromCenter = getCardCenter(fromCard)
+            const toCenter = getCardCenter(toCard)
+            const fromEdge = getCardEdgePoint(fromCard, toCenter.x, toCenter.y)
+            const toEdge = getCardEdgePoint(toCard, fromCenter.x, fromCenter.y)
+
+            const start = rewiringArrow.endpoint === 'from'
+              ? getCardEdgePoint(fromCard, mousePos.x, mousePos.y)
+              : fromEdge
+            const end = rewiringArrow.endpoint === 'to'
+              ? getCardEdgePoint(toCard, mousePos.x, mousePos.y)
+              : toEdge
 
             return (
               <path
