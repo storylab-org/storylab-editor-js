@@ -99,8 +99,8 @@ export function useBoardState(): UseBoardStateReturn {
     async (shape: CardShape) => {
       try {
         const lastCard = cards.length > 0 ? cards[cards.length - 1] : null
-        const x = lastCard ? lastCard.x + 280 : 40
-        const y = lastCard ? lastCard.y : 40
+        const x = 40
+        const y = lastCard ? lastCard.y + 200 : 40
 
         const newCardData: Omit<BoardCard, 'id'> = {
           shape,
