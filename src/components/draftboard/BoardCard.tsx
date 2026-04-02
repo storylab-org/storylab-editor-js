@@ -5,7 +5,7 @@ import { GripVertical, X, Palette, ArrowRight, Book } from 'lucide-react'
 import type { BoardCard as BoardCardType } from '@/api/draftboard'
 import './BoardCard.css'
 
-const COLOUR_PRESETS = ['#fff9e6', '#f9e6ff', '#e6f9ff', '#e6fff9', '#ffe6e6', '#f0e6ff']
+const COLOUR_PRESETS = ['#ffd699', '#f0ccff', '#cce5ff', '#ccf0e6', '#ffcccc', '#e6ccff']
 
 interface BoardCardProps {
   card: BoardCardType
@@ -14,6 +14,7 @@ interface BoardCardProps {
   connectionModeActive?: boolean
   isSelected?: boolean
   connectingFromCardId: string | null
+  duplicateChapterIds: Set<string>
   onUpdate: (patch: Partial<BoardCardType>) => void
   onDelete: () => void
   onStartConnect: () => void
@@ -187,6 +188,7 @@ export default function BoardCard({
   connectionModeActive,
   isSelected,
   connectingFromCardId,
+  duplicateChapterIds,
   onUpdate,
   onDelete,
   onStartConnect,
@@ -315,11 +317,18 @@ export default function BoardCard({
       </div>
 
       {card.chapterId && (
-        <ChapterBadge
-          chapterName={card.chapterName}
-          onUnlink={handleUnlinkChapter}
-          onClick={handleChapterBadgeClick}
-        />
+        <>
+          <ChapterBadge
+            chapterName={card.chapterName}
+            onUnlink={handleUnlinkChapter}
+            onClick={handleChapterBadgeClick}
+          />
+          {duplicateChapterIds.has(card.chapterId) && (
+            <div className="board-card-duplicate-warning">
+              ⚠ Linked to {[...duplicateChapterIds].filter(id => id === card.chapterId).length > 1 ? 'multiple cards' : 'multiple cards'}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

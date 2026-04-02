@@ -47,6 +47,19 @@
   border-color: #003d7a;
 }
 
+.board-tool-btn.disabled,
+.board-tool-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.board-tool-btn.disabled:hover,
+.board-tool-btn:disabled:hover {
+  background: white;
+  border-color: #d0d0d0;
+}
+
 /* Toolbar separator — matches .separator in FormattingToolbar.css */
 .board-toolbar-separator {
   width: 1px;
