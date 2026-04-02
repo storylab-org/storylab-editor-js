@@ -37,9 +37,21 @@ export default function EditorLayout() {
   const [isDirty, setIsDirty] = useState(false)
   const [chapterSettings, setChapterSettings] = useState<Record<string, ChapterSettings>>({})
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [applyOrderHandler, setApplyOrderHandler] = useState<(() => void) | null>(null)
+  const [canApplyOrder, setCanApplyOrder] = useState(false)
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const activeChapter = chapters.find((c) => c.id === activeChapterId)
+
+  // Refetch chapters from server
+  const refreshChapters = async () => {
+    try {
+      const docs = await listDocuments()
+      setChapters(docs)
+    } catch (error) {
+      console.error('Failed to refresh chapters:', error)
+    }
+  }
 
   // Load documents on mount
   useEffect(() => {
@@ -311,11 +323,18 @@ export default function EditorLayout() {
             saveStatus={saveStatus}
             onSave={handleSave}
             onSettings={activeChapterId === OVERVIEW_ID ? undefined : () => setIsSettingsOpen(true)}
+            onApplyOrder={applyOrderHandler || undefined}
+            canApplyOrder={canApplyOrder}
           />
           {loadedChapterId === OVERVIEW_ID ? (
             <DraftBoard
               chapters={[...chapters].sort((a, b) => a.order - b.order)}
               onNavigateToChapter={handleSelectChapter}
+              onChaptersReordered={refreshChapters}
+              onApplyOrderReady={(handler, canApply) => {
+                setApplyOrderHandler(() => handler)
+                setCanApplyOrder(canApply)
+              }}
             />
           ) : (
             activeChapterId && loadedChapterId === activeChapterId && (

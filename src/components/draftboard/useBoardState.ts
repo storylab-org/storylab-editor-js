@@ -16,7 +16,7 @@ import {
   type CardShape,
 } from '@/api/draftboard'
 
-const COLOUR_PRESETS = ['#fff9e6', '#f9e6ff', '#e6f9ff', '#e6fff9', '#ffe6e6', '#f0e6ff']
+const COLOUR_PRESETS = ['#ffd699', '#f0ccff', '#cce5ff', '#ccf0e6', '#ffcccc', '#e6ccff']
 
 interface UseBoardStateReturn {
   cards: BoardCard[]

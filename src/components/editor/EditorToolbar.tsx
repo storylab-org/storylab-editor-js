@@ -1,4 +1,4 @@
-import { Check, AlertCircle, Save, Settings } from 'lucide-react';
+import { Check, AlertCircle, Save, Settings, ListOrdered } from 'lucide-react';
 import './EditorToolbar.css';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
@@ -8,6 +8,8 @@ interface EditorToolbarProps {
   chapterTitle?: string;
   onSave?: () => void;
   onSettings?: () => void;
+  onApplyOrder?: () => void;
+  canApplyOrder?: boolean;
   saveStatus?: SaveStatus;
 }
 
@@ -16,8 +18,11 @@ export default function EditorToolbar({
   chapterTitle = 'Untitled',
   onSave,
   onSettings,
+  onApplyOrder,
+  canApplyOrder = false,
   saveStatus = 'idle',
 }: EditorToolbarProps) {
+  const isOverview = !chapterId
 
   return (
     <div className="editor-toolbar">
@@ -41,22 +46,35 @@ export default function EditorToolbar({
       </div>
 
       <div className="toolbar-section toolbar-right">
-        <button
-          className="toolbar-button toolbar-button-primary"
-          onClick={onSave}
-          disabled={saveStatus === 'saving'}
-          aria-label="Save chapter"
-        >
-          {saveStatus === 'saving' && <Save size={18} />}
-          {saveStatus === 'saved' && <Check size={18} />}
-          {saveStatus === 'error' && <AlertCircle size={18} />}
-          {saveStatus === 'idle' && <Save size={18} />}
+        {isOverview && onApplyOrder ? (
+          <button
+            className="toolbar-button toolbar-button-primary"
+            onClick={onApplyOrder}
+            disabled={!canApplyOrder}
+            aria-label="Apply chapter order"
+            title="Apply chapter order from card path"
+          >
+            <ListOrdered size={18} />
+            Apply Order
+          </button>
+        ) : (
+          <button
+            className="toolbar-button toolbar-button-primary"
+            onClick={onSave}
+            disabled={saveStatus === 'saving'}
+            aria-label="Save chapter"
+          >
+            {saveStatus === 'saving' && <Save size={18} />}
+            {saveStatus === 'saved' && <Check size={18} />}
+            {saveStatus === 'error' && <AlertCircle size={18} />}
+            {saveStatus === 'idle' && <Save size={18} />}
 
-          {saveStatus === 'saving' && 'Saving…'}
-          {saveStatus === 'saved' && 'Saved'}
-          {saveStatus === 'error' && 'Save failed'}
-          {saveStatus === 'idle' && 'Save'}
-        </button>
+            {saveStatus === 'saving' && 'Saving…'}
+            {saveStatus === 'saved' && 'Saved'}
+            {saveStatus === 'error' && 'Save failed'}
+            {saveStatus === 'idle' && 'Save'}
+          </button>
+        )}
       </div>
     </div>
   );
