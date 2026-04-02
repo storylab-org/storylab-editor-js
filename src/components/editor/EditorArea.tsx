@@ -10,9 +10,10 @@ interface EditorAreaProps {
   onWordCountChange?: (wordCount: number) => void
   pageBackground?: string
   showDragMenu?: boolean
+  enableTreeViewPlugin?: boolean
 }
 
-export default function EditorArea({ chapterId, content, onChange, onWordCountChange, pageBackground, showDragMenu = true }: EditorAreaProps) {
+export default function EditorArea({ chapterId, content, onChange, onWordCountChange, pageBackground, showDragMenu = true, enableTreeViewPlugin = false }: EditorAreaProps) {
   // Initialize word count when content loads
   useEffect(() => {
     if (content && onWordCountChange) {
@@ -45,6 +46,7 @@ export default function EditorArea({ chapterId, content, onChange, onWordCountCh
           initialContent={content}
           onContentChange={handleContentChange}
           showDragMenu={showDragMenu}
+          enableTreeViewPlugin={enableTreeViewPlugin}
         />
       </div>
     </EditorErrorBoundary>

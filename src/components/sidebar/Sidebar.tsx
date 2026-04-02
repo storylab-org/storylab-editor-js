@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { AlignJustify, X, Download, Upload, Key, ChevronDown } from 'lucide-react'
 import ChapterList from '@/components/sidebar/ChapterList'
 import type { DocumentHead } from '@/api/documents'
@@ -144,7 +144,7 @@ function FeaturesPanel({ onExport }: FeaturesPanelProps) {
   )
 }
 
-export default function Sidebar({
+function SidebarComponent({
   activeChapterId,
   onSelectChapter,
   chapters = [],
@@ -194,3 +194,5 @@ export default function Sidebar({
     </aside>
   )
 }
+
+export default memo(SidebarComponent)
