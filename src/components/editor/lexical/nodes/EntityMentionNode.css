@@ -1,0 +1,27 @@
+.entity-mention {
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+}
+
+.entity-mention:hover {
+  opacity: 0.75;
+}
+
+.entity-mention--character {
+  color: #7c3aed;
+  border-bottom: 2px solid #7c3aed;
+  padding-bottom: 1px;
+}
+
+.entity-mention--location {
+  color: #0d9488;
+  border-bottom: 2px solid #0d9488;
+  padding-bottom: 1px;
+}
+
+.entity-mention--item {
+  color: #b45309;
+  border-bottom: 2px solid #b45309;
+  padding-bottom: 1px;
+}

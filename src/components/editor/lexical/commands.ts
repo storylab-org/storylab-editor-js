@@ -24,4 +24,14 @@ export interface InsertNoteCardPayload {
   color?: string
 }
 
-export const INSERT_NOTE_CARD_COMMAND: LexicalCommand<InsertNoteCardPayload> = createCommand('INSERT_NOTE_CARD_COMMAND');
+export const INSERT_NOTE_CARD_COMMAND: LexicalCommand<InsertNoteCardPayload> = createCommand('INSERT_NOTE_CARD_COMMAND')
+
+export const INSERT_SCENE_BREAK_COMMAND: LexicalCommand<void> = createCommand('INSERT_SCENE_BREAK_COMMAND')
+
+export interface InsertEntityMentionPayload {
+  entityId: string
+  entityType: 'character' | 'location' | 'item'
+  entityName: string
+}
+
+export const INSERT_ENTITY_MENTION_COMMAND: LexicalCommand<InsertEntityMentionPayload> = createCommand('INSERT_ENTITY_MENTION_COMMAND');

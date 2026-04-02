@@ -64,6 +64,15 @@
   justify-content: flex-start;
 }
 
+.format-btn-mention {
+  width: auto;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 13px;
+  min-width: 80px;
+  justify-content: flex-start;
+}
+
 .item {
   display: flex;
   align-items: center;
@@ -125,4 +134,11 @@
 .dropdown button.item.active {
   color: #0066cc !important;
   font-weight: 500 !important;
+}
+
+.shortcut {
+  font-size: 11px;
+  color: #999;
+  font-weight: 400;
+  margin-left: 4px;
 }

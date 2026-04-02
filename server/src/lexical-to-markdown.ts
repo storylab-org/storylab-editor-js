@@ -153,6 +153,12 @@ function nodeToMarkdown(node: LexicalNode, ctx: ConversionContext): string {
     case 'horizontalrule':
       return '---\n\n'
 
+    case 'scene-break':
+      return '---\n\n'
+
+    case 'entity-mention':
+      return node.entityName || ''
+
     case 'table':
       {
         // Tables are complex in Markdown; for now, just render contents

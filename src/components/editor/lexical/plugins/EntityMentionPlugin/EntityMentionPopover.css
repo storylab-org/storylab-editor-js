@@ -1,0 +1,75 @@
+.entity-mention-popover {
+  position: fixed;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 280px;
+  z-index: 1051;
+  padding: 12px;
+  animation: entity-mention-popover-fade-in 0.2s ease-out;
+}
+
+@keyframes entity-mention-popover-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.entity-mention-popover__header {
+  margin-bottom: 8px;
+}
+
+.entity-mention-popover__badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid;
+  white-space: nowrap;
+  background: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.entity-mention-popover__badge--character {
+  border-color: #7c3aed;
+  background-color: rgba(124, 58, 237, 0.05);
+  color: #7c3aed;
+}
+
+.entity-mention-popover__badge--location {
+  border-color: #0d9488;
+  background-color: rgba(13, 148, 136, 0.05);
+  color: #0d9488;
+}
+
+.entity-mention-popover__badge--item {
+  border-color: #b45309;
+  background-color: rgba(180, 83, 9, 0.05);
+  color: #b45309;
+}
+
+.entity-mention-popover__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f0f0f;
+  margin-bottom: 8px;
+}
+
+.entity-mention-popover__description {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}

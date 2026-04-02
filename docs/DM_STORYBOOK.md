@@ -18,21 +18,32 @@
 - **File storage** — content-addressed blockstore + REST API (35+ tests)
 - **Platform support** — Tauri desktop app + Fastify backend
 - **Word count** — Real-time word count in status bar (via `registerTextContentListener`)
-- **SlashCommandPlugin** ⭐ — `/h1`, `/h2`, `/h3`, `/quote`, `/code`, `/table`, `/hr`, `/image`
+- **SlashCommandPlugin** ⭐ — `/h1`, `/h2`, `/h3`, `/quote`, `/code`, `/table`, `/hr`, `/image`, `/character`, `/location`, `/item`
   - Cursor-anchored command palette with filtered search
   - Full keyboard navigation (↑↓ arrows, Enter, Escape)
-  - Real Lucide React icons (Heading1, Quote, Code, Table2, Minus, Image)
+  - Real Lucide React icons (Heading1, Quote, Code, Table2, Minus, Image, User, MapPin, Package)
   - Professional styling with consistent padding and spacing
   - Image file picker with size validation (max 5MB)
   - Viewport-aware positioning (clamps to screen bounds)
   - Fade-in animation
+- **Entity Mentions** ⭐ — `@character`, `#location`, `!item` with three insertion methods
+  - **Trigger characters** — Type `@`, `#`, or `!` to open entity autocomplete palette
+  - **Slash commands** — Type `/character`, `/location`, `/item` in the slash palette
+  - **Toolbar dropdown** — "Mention" button with icon and keyboard shortcut hints
+  - Colour-coded mentions (purple, teal, amber) with matching Lucide icons
+  - **Clickable popovers** — Click any mention to view entity details
+  - Popover **sticks to mention** when scrolling (not fixed)
+  - Full entity details: name, type badge, description
+  - Server-backed entity lookup via REST API
 
 ### ⏳ Next Phase (Recommended Priority Order)
-1. **Chapter structure** — ChapterNode + collapsible chapters
-2. **Entity mentions** — `@character`, `#location`, `!item` with autocomplete ← highest impact
+1. **Draft board entity cards** — Entity nodes on the board, create/edit from draft board
+2. **Scene breaks** — SceneBreakNode for visual chapter structure
 3. **Floating toolbar** — Selection-triggered formatting + margin comments
-4. **Draft Board** — Separate editor for planning + visual storyline
-5. **Export formats** — Markdown, HTML, DOCX, EPUB
+4. **Find/Replace** — Ctrl+F search and replace across document
+5. **Export pipeline** — Complete CID export, polish other formats
+
+**Note on ChapterNode:** Skipped for now. Sidebar already manages chapter selection cleanly. ChapterNode would mostly duplicate that. Revisit later if we need inline chapter metadata or outline mode.
 
 ---
 
@@ -123,11 +134,20 @@ npm install @lexical/react
 
 Custom nodes are classes that extend Lexical's base node types. They define how content is stored (JSON), how it renders in the DOM, and how it serialises on export.
 
-### `ChapterNode` (extends `ElementNode`)
-The root block for each chapter. Stores: `title`, `chapterId`, `status` (draft/revision/final), `synopsis`. Renders a styled header bar with chapter number, title, and an inline status badge. The `chapterId` is how the Draft Board links back to this chapter.
+### `SceneBreakNode` (extends `DecoratorNode`) — Next Priority ⭐
+An ornamental separator between scenes within a chapter. Renders as `* * *` (or a custom SVG motif). Inserted via slash command (`/scene-break`). Serialises to `---` on Markdown export, `<hr>` on HTML export.
 
+**Why now?** Immediate editorial value. DMs need scene breaks in almost every chapter. No sidebar redundancy.
+
+See **[docs/SCENE_BREAK_NODE.md](SCENE_BREAK_NODE.md)** for full implementation guide.
+
+### `ChapterNode` (extends `ElementNode`) — Deferred
+The root block for each chapter. Would store: `title`, `chapterId`, `status` (draft/revision/final), `synopsis`. Would render a styled header bar with chapter number, title, and status badge.
+
+**Status:** Deferred. Sidebar already manages chapter selection cleanly. ChapterNode would mostly duplicate that functionality. Revisit later if we need inline chapter metadata visibility or outline mode.
+
+Example skeleton for reference:
 ```typescript
-// Skeleton
 class ChapterNode extends ElementNode {
   __title: string;
   __chapterId: string;
@@ -139,9 +159,6 @@ class ChapterNode extends ElementNode {
   exportJSON() { return { ...super.exportJSON(), title: this.__title, chapterId: this.__chapterId, status: this.__status }; }
 }
 ```
-
-### `SceneBreakNode` (extends `DecoratorNode`)
-An ornamental separator between scenes within a chapter. Renders as `* * *` (or a custom SVG motif — a sword, a quill). Inserted via a slash command (`/scene-break`) or a toolbar button. Serialises to a neutral token so it survives export cleanly.
 
 ### `EntityMentionNode` (extends `TextNode`)
 When the writer types `@Elara` or `#Thornwood`, the EntityMentionPlugin transforms the matched text into an `EntityMentionNode`. This node:

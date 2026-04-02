@@ -26,6 +26,9 @@ import {
   Code,
   Image,
   Table2,
+  User,
+  MapPin,
+  Package,
 } from 'lucide-react'
 import DropDown, { DropDownItem } from './lexical/ui/DropDown'
 import { INSERT_IMAGE_COMMAND } from './lexical/commands'
@@ -155,6 +158,15 @@ export default function FormattingToolbar() {
       }
     }
     input.click()
+  }, [editor])
+
+  const insertMentionTrigger = useCallback((trigger: string, type: string) => {
+    editor.update(() => {
+      const selection = $getSelection()
+      if ($isRangeSelection(selection)) {
+        selection.insertText(trigger)
+      }
+    })
   }, [editor])
 
   const blockTypeLabels: Record<BlockType, string> = {
@@ -354,6 +366,25 @@ export default function FormattingToolbar() {
       >
         <Image size={16} />
       </button>
+
+      <div className="separator" />
+
+      <DropDown
+        buttonLabel="Mention"
+        buttonIcon={<User size={16} />}
+        buttonClassName="format-btn format-btn-mention"
+        buttonAriaLabel="Insert entity mention"
+      >
+        <DropDownItem className="item" onClick={() => insertMentionTrigger('@', 'character')}>
+          <User size={16} /><span className="text">Character <span className="shortcut">(Type @)</span></span>
+        </DropDownItem>
+        <DropDownItem className="item" onClick={() => insertMentionTrigger('#', 'location')}>
+          <MapPin size={16} /><span className="text">Location <span className="shortcut">(Type #)</span></span>
+        </DropDownItem>
+        <DropDownItem className="item" onClick={() => insertMentionTrigger('!', 'item')}>
+          <Package size={16} /><span className="text">Item <span className="shortcut">(Type !)</span></span>
+        </DropDownItem>
+      </DropDown>
 
       {showTableDialog && <InsertTableDialog onClose={() => setShowTableDialog(false)} />}
     </div>
