@@ -7,9 +7,9 @@ import {
   deletePath,
   type OverviewData,
   type StoryPath
-} from '../../../src/api/overview'
+} from '../../../src/api/draftboard'
 
-describe('overview API', () => {
+describe('draftboard API', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

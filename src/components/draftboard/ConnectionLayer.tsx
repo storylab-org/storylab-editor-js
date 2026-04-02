@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react'
-import type { BoardCard, StoryPath } from '@/api/overview'
+import type { BoardCard, StoryPath } from '@/api/draftboard'
 
 interface ConnectionLayerProps {
   cards: BoardCard[]
@@ -10,18 +10,20 @@ interface ConnectionLayerProps {
   onEndRewiringArrow: (toCardId: string | null) => Promise<void>
   onDeletePath: (id: string) => Promise<void>
   onConnectTo: (toCardId: string) => Promise<void>
+  selectedPathId: string | null
+  onPathSelected: (pathId: string | null) => void
 }
 
 function getCardDimensions(card: BoardCard) {
   switch (card.shape) {
     case 'rectangle':
-      return { width: 200, height: 120 } // approximate with padding
+      return { width: 200, height: 120 }
     case 'circle':
-      return { width: 120, height: 120 }
+      return { width: 160, height: 160 }
     case 'diamond':
-      return { width: 120, height: 120 }
+      return { width: 160, height: 160 }
     case 'triangle':
-      return { width: 120, height: 104 }
+      return { width: 160, height: 140 }
     default:
       return { width: 200, height: 120 }
   }
@@ -87,13 +89,14 @@ export default function ConnectionLayer({
   onStartRewiringArrow,
   onEndRewiringArrow,
   onDeletePath,
+  selectedPathId,
+  onPathSelected,
 }: ConnectionLayerProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null)
-  const [selectedPathId, setSelectedPathId] = useState<string | null>(null)
 
   const handlePointerMove = useCallback((e: React.PointerEvent<SVGSVGElement>) => {
-    if (rewiringArrow) {
+    if (rewiringArrow || connectingFromCardId) {
       const rect = svgRef.current?.getBoundingClientRect()
       if (rect) {
         setMousePos({
@@ -102,16 +105,46 @@ export default function ConnectionLayer({
         })
       }
     }
-  }, [rewiringArrow])
+  }, [rewiringArrow, connectingFromCardId])
 
   const handlePointerLeave = useCallback(() => {
-    setMousePos(null)
-  }, [])
+    if (!connectingFromCardId) {
+      setMousePos(null)
+    }
+  }, [connectingFromCardId])
+
+  // Global mouse tracking for connection preview
+  useEffect(() => {
+    if (!connectingFromCardId || !svgRef.current) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = svgRef.current?.getBoundingClientRect()
+      if (rect) {
+        setMousePos({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        })
+      }
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    return () => document.removeEventListener('mousemove', handleMouseMove)
+  }, [connectingFromCardId])
+
+  // Deselect paths when clicking on canvas background
+  useEffect(() => {
+    const handleCanvasClick = () => {
+      onPathSelected(null)
+    }
+
+    document.addEventListener('canvasBackgroundClick', handleCanvasClick)
+    return () => document.removeEventListener('canvasBackgroundClick', handleCanvasClick)
+  }, [onPathSelected])
 
   const handlePathClick = useCallback((pathId: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    setSelectedPathId(selectedPathId === pathId ? null : pathId)
-  }, [selectedPathId])
+    onPathSelected(selectedPathId === pathId ? null : pathId)
+  }, [selectedPathId, onPathSelected])
 
   const handleCirclePointerDown = useCallback(
     (pathId: string, endpoint: 'from' | 'to') => {
@@ -133,17 +166,19 @@ export default function ConnectionLayer({
 
       // Check which card is under the cursor
       let targetCardId: string | null = null
-      for (const card of cards) {
-        const dims = getCardDimensions(card)
-        const left = card.x
-        const top = card.y
-        const right = card.x + dims.width
-        const bottom = card.y + dims.height
+      if (cards) {
+        for (const card of cards) {
+          const dims = getCardDimensions(card)
+          const left = card.x
+          const top = card.y
+          const right = card.x + dims.width
+          const bottom = card.y + dims.height
 
-        if (clientX >= rect.left + left && clientX <= rect.left + right &&
-            clientY >= rect.top + top && clientY <= rect.top + bottom) {
-          targetCardId = card.id
-          break
+          if (clientX >= rect.left + left && clientX <= rect.left + right &&
+              clientY >= rect.top + top && clientY <= rect.top + bottom) {
+            targetCardId = card.id
+            break
+          }
         }
       }
 
@@ -154,41 +189,8 @@ export default function ConnectionLayer({
     return () => window.removeEventListener('pointerup', handlePointerUp)
   }, [rewiringArrow, cards, onEndRewiringArrow])
 
-  const cubicBezierPath = (x1: number, y1: number, x2: number, y2: number) => {
-    const dx = x2 - x1
-    const dy = y2 - y1
-
-    // If nearly aligned (horizontal or vertical), use straight line
-    const absDx = Math.abs(dx)
-    const absDy = Math.abs(dy)
-
-    if (absDx < 20 || absDy < 20) {
-      // Straight line for nearly aligned arrows
-      return `M ${x1} ${y1} L ${x2} ${y2}`
-    }
-
-    // For diagonal arrows, use slight curve
-    const distance = Math.sqrt(dx * dx + dy * dy)
-    const isMoreHorizontal = absDx > absDy
-    const offset = Math.min(40, distance * 0.15)
-
-    let cx1, cy1, cx2, cy2
-
-    if (isMoreHorizontal) {
-      // Push control points perpendicular (vertical)
-      cx1 = x1 + dx * 0.3
-      cy1 = y1 + offset
-      cx2 = x2 - dx * 0.3
-      cy2 = y2 - offset
-    } else {
-      // Push control points perpendicular (horizontal)
-      cx1 = x1 + offset
-      cy1 = y1 + dy * 0.3
-      cx2 = x2 - offset
-      cy2 = y2 - dy * 0.3
-    }
-
-    return `M ${x1} ${y1} C ${cx1} ${cy1} ${cx2} ${cy2} ${x2} ${y2}`
+  const straightPath = (x1: number, y1: number, x2: number, y2: number) => {
+    return `M ${x1} ${y1} L ${x2} ${y2}`
   }
 
   return (
@@ -205,7 +207,6 @@ export default function ConnectionLayer({
         }}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
-        onClick={() => setSelectedPathId(null)}
       >
         <defs>
           <marker
@@ -221,7 +222,7 @@ export default function ConnectionLayer({
         </defs>
 
       {/* Existing paths */}
-      {paths.map(path => {
+      {cards && paths && paths.map(path => {
         const fromCard = cards.find(c => c.id === path.fromCardId)
         const toCard = cards.find(c => c.id === path.toCardId)
 
@@ -244,7 +245,7 @@ export default function ConnectionLayer({
             />
 
             <path
-              d={cubicBezierPath(from.x, from.y, to.x, to.y)}
+              d={straightPath(from.x, from.y, to.x, to.y)}
               stroke="#0066cc"
               strokeWidth="2"
               fill="none"
@@ -270,50 +271,77 @@ export default function ConnectionLayer({
               </text>
             )}
 
+            {/* Larger invisible clickable area for path selection — rendered before delete button so delete is on top */}
+            <path
+              d={straightPath(from.x, from.y, to.x, to.y)}
+              stroke="transparent"
+              strokeWidth="24"
+              fill="none"
+              style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+              onClick={e => handlePathClick(path.id, e as unknown as React.MouseEvent)}
+            />
+
             {/* Delete button (when path is selected) */}
             {selectedPathId === path.id && (
-              <g
-                style={{ pointerEvents: 'auto', cursor: 'pointer' }}
-                onClick={e => {
-                  e.stopPropagation()
-                  onDeletePath(path.id)
-                  setSelectedPathId(null)
-                }}
-              >
+              <g key={`delete-${path.id}`}>
+                {/* Large transparent hit area to cover entire button and X */}
                 <circle
                   cx={(from.x + to.x) / 2}
                   cy={(from.y + to.y) / 2}
-                  r="12"
+                  r="16"
                   fill="#ff6600"
+                  style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                  onClick={e => {
+                    e.stopPropagation()
+                    onDeletePath(path.id)
+                  }}
                 />
                 <text
                   x={(from.x + to.x) / 2}
-                  y={(from.y + to.y) / 2 + 4}
+                  y={(from.y + to.y) / 2 + 5}
                   textAnchor="middle"
-                  fontSize="14"
+                  fontSize="20"
                   fill="white"
+                  fontWeight="bold"
+                  style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                  onClick={e => {
+                    e.stopPropagation()
+                    onDeletePath(path.id)
+                  }}
                 >
                   ✕
                 </text>
               </g>
             )}
-
-            {/* Click handler for path selection */}
-            <path
-              d={cubicBezierPath(from.x, from.y, to.x, to.y)}
-              stroke="transparent"
-              strokeWidth="12"
-              fill="none"
-              style={{ pointerEvents: 'auto' }}
-              onClick={e => handlePathClick(path.id, e as unknown as React.MouseEvent)}
-            />
           </g>
         )
       })}
 
 
+      {/* Connection preview line — shows while dragging to connect */}
+      {connectingFromCardId && mousePos && cards && (
+        (() => {
+          const fromCard = cards.find(c => c.id === connectingFromCardId)
+          if (!fromCard) return null
+
+          const fromCenter = getCardCenter(fromCard)
+          const start = getCardEdgePoint(fromCard, mousePos.x, mousePos.y)
+
+          return (
+            <path
+              d={straightPath(start.x, start.y, mousePos.x, mousePos.y)}
+              stroke="#0066cc"
+              strokeWidth="2"
+              fill="none"
+              strokeDasharray="5,5"
+              style={{ pointerEvents: 'none' }}
+            />
+          )
+        })()
+      )}
+
       {/* Rewiring preview line */}
-      {rewiringArrow && mousePos && (
+      {rewiringArrow && mousePos && cards && paths && (
         <>
           {(() => {
             const path = paths.find(p => p.id === rewiringArrow.pathId)
@@ -337,7 +365,7 @@ export default function ConnectionLayer({
 
             return (
               <path
-                d={cubicBezierPath(start.x, start.y, end.x, end.y)}
+                d={straightPath(start.x, start.y, end.x, end.y)}
                 stroke="#ff9900"
                 strokeWidth="2"
                 fill="none"

@@ -113,14 +113,16 @@ export function createOverviewStore(dataDir: string): OverviewStore {
       id: randomUUID()
     }
 
-    board.cards.push(newCard)
-    await putBoard(board.cards)
+    const cards = Array.isArray(board.cards) ? board.cards : []
+    cards.push(newCard)
+    await putBoard(cards)
     return newCard
   }
 
   const updateCard = async (id: string, patch: Partial<BoardCard>): Promise<BoardCard> => {
     const board = await getBoard()
-    const index = board.cards.findIndex(c => c.id === id)
+    const cards = Array.isArray(board.cards) ? board.cards : []
+    const index = cards.findIndex(c => c.id === id)
 
     if (index === -1) {
       const error = new Error(`Card not found: ${id}`)
@@ -128,14 +130,15 @@ export function createOverviewStore(dataDir: string): OverviewStore {
       throw error
     }
 
-    board.cards[index] = { ...board.cards[index], ...patch, id }
-    await putBoard(board.cards)
-    return board.cards[index]
+    cards[index] = { ...cards[index], ...patch, id }
+    await putBoard(cards)
+    return cards[index]
   }
 
   const deleteCard = async (id: string): Promise<void> => {
     const board = await getBoard()
-    const index = board.cards.findIndex(c => c.id === id)
+    const cards = Array.isArray(board.cards) ? board.cards : []
+    const index = cards.findIndex(c => c.id === id)
 
     if (index === -1) {
       const error = new Error(`Card not found: ${id}`)
@@ -143,8 +146,8 @@ export function createOverviewStore(dataDir: string): OverviewStore {
       throw error
     }
 
-    board.cards.splice(index, 1)
-    await putBoard(board.cards)
+    cards.splice(index, 1)
+    await putBoard(cards)
   }
 
   const listPaths = async (): Promise<StoryPath[]> => {

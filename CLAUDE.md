@@ -70,7 +70,9 @@ storylab/
 │   ├── LOGGING.md          # Logging setup
 │   ├── SIDECAR.md          # Fastify server guide
 │   ├── BUILDING.md         # Building & deployment
-│   └── EDITOR_TOOLBAR.md   # Editor toolbar features & implementation
+│   ├── EDITOR_TOOLBAR.md   # Editor toolbar features & implementation
+│   ├── DRAFT_BOARD.md      # Draft board planning canvas
+│   └── SIDEBAR_MENU.md     # Sidebar menu & export functionality
 ├── ROADMAP_2026.md         # Implementation roadmap with priorities
 ├── CLAUDE.md               # This file
 └── package.json
@@ -119,6 +121,11 @@ Building for production, bundling, distribution, code signing, CI/CD, troublesho
 Complete guide to the Lexical editor formatting toolbar — current features, implementation details, how to add new features.
 
 **Read this to:** Understand the editor toolbar, add formatting options (bold, italic, headings, quotes, code blocks), extend the editor UI.
+
+### [docs/DRAFT_BOARD.md](docs/DRAFT_BOARD.md)
+Complete guide to the draft board canvas — creating cards, managing connections, chapter linking, keyboard shortcuts, and troubleshooting.
+
+**Read this to:** Understand the draft board, add new shapes or features, manage story structure planning, or fix connection/arrow issues.
 
 ### [docs/SIDEBAR_MENU.md](docs/SIDEBAR_MENU.md)
 Complete guide to the sidebar menu system — export functionality, mocked features (import, key generation), platform-aware export (web vs Tauri).

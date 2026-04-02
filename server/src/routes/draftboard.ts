@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify'
 
-const overviewRoute: FastifyPluginAsync = async (fastify) => {
+const draftboardRoute: FastifyPluginAsync = async (fastify) => {
   fastify.get('/overview', async (request, reply) => {
     const data = await fastify.overviewStore.getOverview()
     reply.code(200).send(data)
@@ -142,4 +142,4 @@ const overviewRoute: FastifyPluginAsync = async (fastify) => {
   })
 }
 
-export default overviewRoute
+export default draftboardRoute

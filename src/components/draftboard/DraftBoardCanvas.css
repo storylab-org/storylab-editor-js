@@ -35,9 +35,14 @@
   position: relative;
   background: #fafafa;
   border-top: 1px solid #e5e5e5;
+  padding-top: 40px; /* top boundary clearance for hover bars */
 }
 
-/* .draft-board-inner dimensions now set inline in DraftBoardCanvas.tsx */
+.draft-board-inner {
+  width: 100%;
+  height: 6000px;
+  position: relative;
+}
 
 .board-empty-hint {
   position: absolute;

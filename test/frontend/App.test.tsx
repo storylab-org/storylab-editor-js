@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as documentsAPI from '../../src/api/documents'
-import * as overviewAPI from '../../src/api/overview'
+import * as overviewAPI from '../../src/api/draftboard'
 import App from '../../src/App'
 
 vi.mock('../../src/api/documents')
-vi.mock('../../src/api/overview')
+vi.mock('../../src/api/draftboard')
 
 describe('App — Book Editor Landing Page', () => {
   beforeEach(() => {

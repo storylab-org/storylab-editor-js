@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { DragEndEvent } from '@dnd-kit/core'
 import {
   getBoard,
+  putBoard,
   addCard,
   updateCard,
   updateCardPosition,
@@ -13,7 +14,7 @@ import {
   type BoardData,
   type StoryPath,
   type CardShape,
-} from '@/api/overview'
+} from '@/api/draftboard'
 
 const COLOUR_PRESETS = ['#fff9e6', '#f9e6ff', '#e6f9ff', '#e6fff9', '#ffe6e6', '#f0e6ff']
 
@@ -24,17 +25,26 @@ interface UseBoardStateReturn {
   error: string | null
   connectingFromCardId: string | null
   rewiringArrow: { pathId: string; endpoint: 'from' | 'to' } | null
+  previewShape: CardShape | null
+  previewPosition: { x: number; y: number } | null
+  connectionModeActive: boolean
+  selectedCardId: string | null
 
   handleDragEnd: (event: DragEndEvent) => Promise<void>
-  handleAddCard: (shape: CardShape) => Promise<void>
+  handleAddCard: (shape: CardShape) => void
+  handlePlaceCard: (x: number, y: number) => Promise<void>
+  handleCancelAddCard: () => void
   handleDeleteCard: (id: string) => Promise<void>
   handleUpdateCard: (id: string, patch: Partial<BoardCard>) => void
   handleDeletePath: (id: string) => Promise<void>
   handleStartConnect: (fromCardId: string) => void
   handleConnectTo: (toCardId: string) => Promise<void>
+  handleToggleConnectionMode: () => void
   handleCancelConnect: () => void
   handleStartRewiringArrow: (pathId: string, endpoint: 'from' | 'to') => void
   handleEndRewiringArrow: (toCardId: string | null) => Promise<void>
+  handleResetBoard: () => Promise<void>
+  handleSelectCard: (cardId: string | null) => void
 }
 
 export function useBoardState(): UseBoardStateReturn {
@@ -44,6 +54,10 @@ export function useBoardState(): UseBoardStateReturn {
   const [error, setError] = useState<string | null>(null)
   const [connectingFromCardId, setConnectingFromCardId] = useState<string | null>(null)
   const [rewiringArrow, setRewiringArrow] = useState<{ pathId: string; endpoint: 'from' | 'to' } | null>(null)
+  const [previewShape, setPreviewShape] = useState<CardShape | null>(null)
+  const [previewPosition, setPreviewPosition] = useState<{ x: number; y: number } | null>(null)
+  const [connectionModeActive, setConnectionModeActive] = useState(false)
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
 
   const updateDebounceRef = useRef<Map<string, NodeJS.Timeout>>(new Map())
 
@@ -72,8 +86,11 @@ export function useBoardState(): UseBoardStateReturn {
 
       if (!card) return
 
-      const newX = card.x + event.delta.x
-      const newY = card.y + event.delta.y
+      // Clamp position to canvas bounds (0, 0, 100%, 6000px)
+      const CANVAS_WIDTH = 9999 // Allow wide canvas
+      const CANVAS_HEIGHT = 6000
+      const newX = Math.max(0, Math.min(CANVAS_WIDTH, card.x + event.delta.x))
+      const newY = Math.max(0, Math.min(CANVAS_HEIGHT, card.y + event.delta.y))
 
       // Optimistic update
       setCards(prev =>
@@ -83,6 +100,9 @@ export function useBoardState(): UseBoardStateReturn {
             : c
         )
       )
+
+      // Select the card being dragged
+      setSelectedCardId(cardId)
 
       try {
         await updateCardPosition(cardId, newX, newY)
@@ -95,33 +115,37 @@ export function useBoardState(): UseBoardStateReturn {
     [cards]
   )
 
-  const handleAddCard = useCallback(
-    async (shape: CardShape) => {
-      try {
-        const lastCard = cards.length > 0 ? cards[cards.length - 1] : null
-        const x = 40
-        const y = lastCard ? lastCard.y + 200 : 40
+  const handleAddCard = useCallback((shape: CardShape) => {
+    setPreviewShape(shape)
+  }, [])
 
+  const handleCancelAddCard = useCallback(() => {
+    setPreviewShape(null)
+    setPreviewPosition(null)
+  }, [])
+
+  const handlePlaceCard = useCallback(
+    async (x: number, y: number) => {
+      if (!previewShape) return
+
+      try {
         const newCardData: Omit<BoardCard, 'id'> = {
-          shape,
-          x,
-          y,
+          shape: previewShape,
+          x: Math.max(0, x - 100), // Center the card under the cursor
+          y: Math.max(0, y - 80),
           title: '',
           color: COLOUR_PRESETS[0],
         }
 
-        // Only rectangles have body text
-        if (shape === 'rectangle') {
-          newCardData.body = ''
-        }
-
         const newCard = await addCard(newCardData)
         setCards(prev => [...prev, newCard])
+        setPreviewShape(null)
+        setPreviewPosition(null)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to add card')
       }
     },
-    [cards]
+    [previewShape]
   )
 
   const handleDeleteCard = useCallback(async (id: string) => {
@@ -202,8 +226,29 @@ export function useBoardState(): UseBoardStateReturn {
     [connectingFromCardId]
   )
 
+  const handleToggleConnectionMode = useCallback(() => {
+    setConnectionModeActive(prev => !prev)
+    setConnectingFromCardId(null)
+  }, [])
+
   const handleCancelConnect = useCallback(() => {
     setConnectingFromCardId(null)
+  }, [])
+
+  const handleResetBoard = useCallback(async () => {
+    try {
+      await putBoard({ cards: [], updatedAt: new Date().toISOString() })
+      setCards([])
+      setPaths([])
+      setConnectionModeActive(false)
+      setConnectingFromCardId(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reset board')
+    }
+  }, [])
+
+  const handleSelectCard = useCallback((cardId: string | null) => {
+    setSelectedCardId(cardId)
   }, [])
 
   const handleStartRewiringArrow = useCallback((pathId: string, endpoint: 'from' | 'to') => {
@@ -249,15 +294,24 @@ export function useBoardState(): UseBoardStateReturn {
     error,
     connectingFromCardId,
     rewiringArrow,
+    previewShape,
+    previewPosition,
+    connectionModeActive,
+    selectedCardId,
     handleDragEnd,
     handleAddCard,
+    handlePlaceCard,
+    handleCancelAddCard,
     handleDeleteCard,
     handleUpdateCard,
     handleDeletePath,
     handleStartConnect,
     handleConnectTo,
+    handleToggleConnectionMode,
     handleCancelConnect,
     handleStartRewiringArrow,
     handleEndRewiringArrow,
+    handleResetBoard,
+    handleSelectCard,
   }
 }
