@@ -1,7 +1,7 @@
 # Editor Toolbar Guide
 
-**Last Updated:** March 30, 2026
-**Version:** Storylab v0.1.54
+**Last Updated:** April 2, 2026
+**Version:** Storylab v0.2.0
 
 ## Overview
 
@@ -50,7 +50,18 @@ Toggle on/off by clicking the button while in a list.
 - **Align Centre** — Centre-align text
 - **Align Right** — Right-align text
 
-### 6. Image Insert ⭐ (NEW - v0.1.54)
+### 6. Mention Dropdown ⭐ (NEW - v0.2.0)
+
+**Insert entity mentions via the Mention dropdown:**
+- Click the **Mention** button (person icon) in the toolbar
+- Select **Character** `(Type @)`, **Location** `(Type #)`, or **Item** `(Type !)`
+- Palette opens showing matching entities
+- Use arrow keys or mouse to select
+- Press Enter or click to insert
+
+(See Section 7 below for full entity mention details.)
+
+### 7. Image Insert ⭐ (NEW - v0.1.54)
 
 **Insert images into the document:**
 - Click the **Image** button (picture icon) to open file picker
@@ -82,7 +93,71 @@ Toggle on/off by clicking the button while in a list.
 - Server: `server/src/routes/images.ts` — POST /images (upload), GET /images/:cid (serve)
 - Images are inline, participate in block reordering via dnd-kit (the wrapping paragraph is reordered)
 
-### 7. Block Drag-and-Drop ⭐ (v0.1.53)
+### 8. Entity Mentions ⭐ (NEW - v0.2.0)
+
+**Reference characters, locations, and items inline:**
+
+Entity mentions are inline references to entities (characters, locations, items) that appear within your text. They're colour-coded by type and clickable to view details.
+
+**Supported entity types:**
+- **Characters** — People, creatures, NPCs
+- **Locations** — Places, cities, regions
+- **Items** — Objects, weapons, artifacts
+
+**Three ways to insert mentions:**
+
+#### Method 1: Toolbar Dropdown
+1. Position cursor in the text
+2. Click the **Mention** dropdown (in the toolbar)
+3. Select **Character**, **Location**, or **Item**
+4. Type to search for an entity
+5. Press Enter or click to insert
+
+#### Method 2: Keyboard Shortcut
+1. Position cursor in the text
+2. Type the trigger character:
+   - `@` for Character
+   - `#` for Location
+   - `!` for Item
+3. A palette appears showing matching entities
+4. Use arrow keys to navigate, Enter to select
+
+#### Method 3: Slash Command
+1. Position cursor at the start of a line
+2. Type `/` to open the slash command palette
+3. Search for `character`, `location`, or `item`
+4. Select the command
+5. Type to search and select an entity
+
+**Click to view entity details:**
+- Click any entity mention to open a floating popover
+- The popover shows:
+  - Entity type (colour-coded badge)
+  - Entity name
+  - Description (if available)
+- The popover **sticks to the mention** as you scroll
+- Click outside the popover to close it
+
+**Visual styling:**
+- **Character mentions** — Purple (#7c3aed) with `👤` icon
+- **Location mentions** — Teal (#0d9488) with `📍` icon
+- **Item mentions** — Amber (#b45309) with `📦` icon
+- All mentions have a coloured underline and change opacity on hover
+
+**Technical details:**
+- Files:
+  - `src/components/editor/lexical/nodes/EntityMentionNode.ts` — Node type and rendering
+  - `src/components/editor/lexical/plugins/EntityMentionPlugin/` — Trigger detection, palette, and click handler
+  - `src/components/editor/lexical/plugins/EntityMentionPlugin/EntityMentionPopover.tsx` — Detail popover
+  - `src/components/editor/lexical/plugins/SlashCommandPlugin/commands.ts` — Slash command entries
+  - `src/api/entities.ts` — Entity API calls
+- Server:
+  - `server/src/routes/entities.ts` — Entity CRUD endpoints
+  - `server/src/entity-store.ts` — In-process entity storage
+- Mentions are **inline nodes** (atomic, cannot have text inserted into the mention boundary)
+- Clicking a mention fetches the full entity details from the server via `getEntity(id)`
+
+### 9. Block Drag-and-Drop ⭐ (v0.1.53)
 
 **Reorder document blocks by dragging:**
 - Hover over any block in the editor to reveal a **grip handle** (≡) on the left
@@ -169,13 +244,23 @@ src/components/editor/
 └── lexical/
     ├── plugins/
     │   ├── DragDropBlockPlugin.tsx  ← Block reordering with dnd-kit
-    │   └── DragDropBlockPlugin.css  ← Drop indicator line styles
-    ├── ui/
-    │   ├── DropDown.tsx        ← Reusable dropdown component
-    │   └── DropDown.tsx        ← Used by block type selector
-    └── themes/
-        ├── PlaygroundEditorTheme.ts   ← CSS class mappings
-        └── PlaygroundEditorTheme.css  ← Text formatting styles
+    │   ├── DragDropBlockPlugin.css  ← Drop indicator line styles
+    │   ├── EntityMentionPlugin/     ← Entity mention trigger & palette
+    │   │   ├── index.tsx            ← Main plugin (trigger detection, click handler)
+    │   │   ├── EntityMentionPalette.tsx  ← Entity selection palette
+    │   │   ├── EntityMentionPalette.css  ← Palette styles
+    │   │   ├── EntityMentionPopover.tsx  ← Detail popover
+    │   │   └── EntityMentionPopover.css  ← Popover styles
+    │   ├── SlashCommandPlugin/
+    │   │   ├── index.tsx            ← Slash command trigger
+    │   │   └── commands.ts          ← Command definitions (includes entity mentions)
+    │   ├── ui/
+    │   │   └── DropDown.tsx         ← Reusable dropdown component
+    │   ├── nodes/
+    │   │   └── EntityMentionNode.ts ← Entity mention node type
+    │   └── themes/
+    │       ├── PlaygroundEditorTheme.ts   ← CSS class mappings
+    │       └── PlaygroundEditorTheme.css  ← Text formatting styles
 ```
 
 ### Key Components

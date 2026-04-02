@@ -10,7 +10,7 @@ import { $createCodeNode } from '@lexical/code'
 import {
   INSERT_HORIZONTAL_RULE_COMMAND,
 } from '@lexical/react/LexicalHorizontalRuleNode'
-import { INSERT_IMAGE_COMMAND } from '../../commands'
+import { INSERT_IMAGE_COMMAND, INSERT_SCENE_BREAK_COMMAND } from '../../commands'
 import {
   Heading1,
   Heading2,
@@ -20,6 +20,9 @@ import {
   Table2,
   Minus,
   Image,
+  User,
+  MapPin,
+  Package,
 } from 'lucide-react'
 
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024 // 5MB
@@ -71,6 +74,10 @@ export function buildSlashCommands(
     editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)
   }
 
+  const sceneBreakCommand = () => {
+    editor.dispatchCommand(INSERT_SCENE_BREAK_COMMAND, undefined)
+  }
+
   const imageCommand = () => {
     if (options?.onImagePicker) {
       options.onImagePicker((cid, alt, mimeType) => {
@@ -120,6 +127,15 @@ export function buildSlashCommands(
       }
       input.click()
     }
+  }
+
+  const insertTriggerChar = (trigger: string) => () => {
+    editor.update(() => {
+      const selection = $getSelection()
+      if ($isRangeSelection(selection)) {
+        selection.insertText(trigger)
+      }
+    })
   }
 
   return [
@@ -182,12 +198,44 @@ export function buildSlashCommands(
       execute: hrCommand,
     },
     {
+      id: 'scene-break',
+      triggers: ['scene', 'break', 'scene-break', 'asterism'],
+      label: 'Scene Break',
+      description: 'Visual separator between scenes',
+      icon: React.createElement(Minus, { size: 16 }),
+      execute: sceneBreakCommand,
+    },
+    {
       id: 'image',
       triggers: ['image', 'img', 'picture'],
       label: 'Image',
       description: 'Insert an image',
       icon: React.createElement(Image, { size: 16 }),
       execute: imageCommand,
+    },
+    {
+      id: 'mention-character',
+      triggers: ['character', '@'],
+      label: 'Character Mention',
+      description: 'Mention a character',
+      icon: React.createElement(User, { size: 16 }),
+      execute: insertTriggerChar('@'),
+    },
+    {
+      id: 'mention-location',
+      triggers: ['location', '#'],
+      label: 'Location Mention',
+      description: 'Mention a location',
+      icon: React.createElement(MapPin, { size: 16 }),
+      execute: insertTriggerChar('#'),
+    },
+    {
+      id: 'mention-item',
+      triggers: ['item', '!'],
+      label: 'Item Mention',
+      description: 'Mention an item',
+      icon: React.createElement(Package, { size: 16 }),
+      execute: insertTriggerChar('!'),
     },
   ]
 }

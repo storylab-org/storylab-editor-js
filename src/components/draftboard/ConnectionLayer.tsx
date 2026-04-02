@@ -80,6 +80,17 @@ function getCardEdgePoint(card: BoardCard, targetX: number, targetY: number) {
   }
 }
 
+// Get a point inset from the edge towards the center for smoother arrow starts
+function getCardInsetPoint(card: BoardCard, targetX: number, targetY: number, insetRatio: number = 0.35) {
+  const center = getCardCenter(card)
+  const edge = getCardEdgePoint(card, targetX, targetY)
+
+  return {
+    x: center.x + (edge.x - center.x) * (1 - insetRatio),
+    y: center.y + (edge.y - center.y) * (1 - insetRatio),
+  }
+}
+
 
 export default function ConnectionLayer({
   cards,
@@ -230,7 +241,7 @@ export default function ConnectionLayer({
 
         const fromCenter = getCardCenter(fromCard)
         const toCenter = getCardCenter(toCard)
-        const from = getCardEdgePoint(fromCard, toCenter.x, toCenter.y)
+        const from = getCardInsetPoint(fromCard, toCenter.x, toCenter.y)
         const to = getCardEdgePoint(toCard, fromCenter.x, fromCenter.y)
 
         return (
@@ -325,7 +336,7 @@ export default function ConnectionLayer({
           if (!fromCard) return null
 
           const fromCenter = getCardCenter(fromCard)
-          const start = getCardEdgePoint(fromCard, mousePos.x, mousePos.y)
+          const start = getCardInsetPoint(fromCard, mousePos.x, mousePos.y)
 
           return (
             <path
@@ -353,11 +364,11 @@ export default function ConnectionLayer({
 
             const fromCenter = getCardCenter(fromCard)
             const toCenter = getCardCenter(toCard)
-            const fromEdge = getCardEdgePoint(fromCard, toCenter.x, toCenter.y)
+            const fromEdge = getCardInsetPoint(fromCard, toCenter.x, toCenter.y)
             const toEdge = getCardEdgePoint(toCard, fromCenter.x, fromCenter.y)
 
             const start = rewiringArrow.endpoint === 'from'
-              ? getCardEdgePoint(fromCard, mousePos.x, mousePos.y)
+              ? getCardInsetPoint(fromCard, mousePos.x, mousePos.y)
               : fromEdge
             const end = rewiringArrow.endpoint === 'to'
               ? getCardEdgePoint(toCard, mousePos.x, mousePos.y)

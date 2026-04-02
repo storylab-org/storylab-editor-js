@@ -23,27 +23,20 @@
 
 ## What's Next (Ordered by Impact & Effort)
 
-### 🎯 Next Week: Chapter Structure
+### 🎯 Phase 2A: Scene Breaks (Week 1)
 
 ---
 
-1. **SceneBreakNode** (~3h)
+1. **SceneBreakNode** (~2h)
    - Custom decorator node for visual scene separators
-   - Renders as horizontal line or custom SVG
-   - Serialises cleanly on export
+   - Renders as `* * *` centred, or custom SVG divider
+   - Inserted via slash command (`/scene-break`) or toolbar button
+   - Serialises cleanly on export (converts to neutral token)
+   - No backend changes needed
 
-2. **ChapterNode** (~6h)
-   - Custom container node with title, status, metadata
-   - Renders chapter header bar with status badge
-   - Collapsible plugin for fold/unfold
-   - Stores `chapterId`, `title`, `status`, `synopsis`
+**Why?** Immediate editorial value. DMs need scene breaks in every chapter. Low complexity, high impact.
 
-3. **Backend: Chapter API** (~4h)
-   - `POST /chapters`, `GET /chapters/:id`, `PATCH /chapters/:id`, `DELETE /chapters/:id`
-   - Store chapter metadata separately from document content
-   - Update auto-save logic to sync both
-
-**Why?** Fundamental structure. Unblocks entity system and Draft Board.
+**Note on ChapterNode:** Skipped for now. Current sidebar handles chapter selection cleanly. ChapterNode would mostly duplicate sidebar functionality. Revisit later if we need inline chapter metadata visibility or outline mode.
 
 ---
 
@@ -180,33 +173,33 @@ Maintain 70%+ code coverage. Run `npm test` before every PR.
 
 ## Next Immediate Action
 
-**Start with `ChapterNode` + `CollapsiblePlugin`:**
+**Start with `SceneBreakNode`:**
 
-The slash command plugin is complete and working. Next is chapter structure:
+The slash command plugin is complete and working. Next is scene structure within chapters.
 
-1. Define `ChapterNode` extending `ElementNode`
-   - Properties: `__title`, `__chapterId`, `__status` (draft/revision/final), `__synopsis`
-   - Renders chapter header bar with title + status badge
-   - Stores chapter metadata for persistence
+1. Create `SceneBreakNode` extending `DecoratorNode`
+   - Renders as `* * *` centred with padding, or custom SVG (decorative line)
+   - Serialises to portable token for export (converts to `---` or blank line)
+   - No interactive elements needed (just visual)
+   - Stored in document JSON normally
 
-2. Create `CollapsiblePlugin`
-   - Toggle button on chapter header
-   - CSS hide/show content (doesn't affect JSON)
-   - Remember collapsed state during session
+2. Add slash command
+   - Register `INSERT_SCENE_BREAK_COMMAND` in commands
+   - Add to SlashCommandPlugin as `/scene-break` or `/break`
+   - Icon: `Minus` or `Separator` from lucide-react
+   - Keyboard shortcut: optional (e.g. Ctrl+Shift+S)
 
-3. Add Fastify routes
-   - `POST /chapters` — create new chapter
-   - `GET /chapters/:id` — fetch chapter with metadata
-   - `PATCH /chapters/:id` — update title/status/synopsis
-   - `DELETE /chapters/:id` — soft delete (archive)
+3. Export handling
+   - Update `lexical-to-markdown.ts` to convert SceneBreakNode → `---`
+   - Update `lexical-to-html.ts` to render as `<hr class="scene-break" />`
 
-4. Update auto-save logic
-   - Serialize chapters with metadata when document changes
-   - POST to Fastify alongside document content
+4. Styling
+   - Add CSS for `.scene-break-node` with centred `* * *` or SVG
+   - Keep it elegant but unobtrusive
 
-**Estimated time:** 6–8 hours including tests.
+**Estimated time:** 2–3 hours including tests.
 
-Why next? Fundamental structure that unblocks entity mentions and Draft Board.
+Why next? Immediate editorial value for DMs. Uncluttered approach compared to ChapterNode. Unblocks entity mentions once complete.
 
 ---
 

@@ -124,6 +124,20 @@ function nodeToHtml(node: LexicalNode): string {
     case 'horizontalrule':
       return '<hr/>'
 
+    case 'scene-break':
+      return '<hr style="margin: 32px 0; border: none; border-top: 1px solid #ddd; opacity: 0.6;"/>'
+
+    case 'entity-mention':
+      {
+        const typeColours: Record<string, string> = {
+          character: '#7c3aed',
+          location: '#0d9488',
+          item: '#b45309',
+        }
+        const colour = typeColours[node.entityType] || '#0066cc'
+        return `<span style="color: ${colour}; border-bottom: 2px solid ${colour}; padding-bottom: 1px; font-weight: 500;" data-entity-id="${escapeHtml(node.entityId)}" data-entity-type="${escapeHtml(node.entityType)}">${escapeHtml(node.entityName)}</span>`
+      }
+
     case 'table':
       {
         const inner = nodesToHtml(node.children || [])

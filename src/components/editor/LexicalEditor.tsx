@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './lexical/style.css';
+import './lexical/nodes/SceneBreakNode.css';
+import './lexical/nodes/EntityMentionNode.css';
 
 import type { EditorState } from 'lexical';
 import { $getRoot } from 'lexical';
@@ -17,6 +19,8 @@ import { ListItemNode, ListNode } from '@lexical/list';
 import { CodeHighlightNode, CodeNode } from '@lexical/code';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ImageNode } from './lexical/nodes/ImageNode';
+import { SceneBreakNode } from './lexical/nodes/SceneBreakNode';
+import { EntityMentionNode } from './lexical/nodes/EntityMentionNode';
 
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
@@ -34,6 +38,8 @@ import DragDropBlockPlugin from './lexical/plugins/DragDropBlockPlugin';
 import ImagePlugin from './lexical/plugins/ImagePlugin';
 import ImageResizePlugin from './lexical/plugins/ImageResizePlugin';
 import SlashCommandPlugin from './lexical/plugins/SlashCommandPlugin';
+import SceneBreakPlugin from './lexical/plugins/SceneBreakPlugin';
+import EntityMentionPlugin from './lexical/plugins/EntityMentionPlugin';
 import FormattingToolbar from './FormattingToolbar';
 
 import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
@@ -125,6 +131,8 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
           LinkNode,
           HorizontalRuleNode,
           ImageNode,
+          SceneBreakNode,
+          EntityMentionNode,
         ],
         theme,
         onError,
@@ -151,6 +159,8 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <DragDropBlockPlugin showDragMenu={showDragMenu} />
         <ImageResizePlugin />
         <ImagePlugin />
+        <SceneBreakPlugin />
+        <EntityMentionPlugin />
         <SlashCommandPlugin />
       </div>
       <WordCountPlugin />
