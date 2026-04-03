@@ -17,6 +17,9 @@ interface ChapterSettingsModalProps {
   onNameChange: (name: string) => void
   initialShowDragMenu?: boolean
   onShowDragMenuChange?: (show: boolean) => void
+  initialEnableTreeViewPlugin?: boolean
+  onEnableTreeViewPluginChange?: (enabled: boolean) => void
+  isDevelopment?: boolean
 }
 
 export default function ChapterSettingsModal({
@@ -26,10 +29,14 @@ export default function ChapterSettingsModal({
   onNameChange,
   initialShowDragMenu = true,
   onShowDragMenuChange,
+  initialEnableTreeViewPlugin = false,
+  onEnableTreeViewPluginChange,
+  isDevelopment = false,
 }: ChapterSettingsModalProps) {
   const [background, setBackground] = useState(initialBackground)
   const [name, setName] = useState(chapterName)
   const [showDragMenu, setShowDragMenu] = useState(initialShowDragMenu)
+  const [enableTreeViewPlugin, setEnableTreeViewPlugin] = useState(initialEnableTreeViewPlugin)
 
   useEffect(() => {
     setBackground(initialBackground)
@@ -109,6 +116,20 @@ export default function ChapterSettingsModal({
           />
           <span className="settings-checkbox-text">Show drag menu button</span>
         </label>
+        {isDevelopment && (
+          <label className="settings-checkbox-label">
+            <input
+              type="checkbox"
+              checked={enableTreeViewPlugin}
+              onChange={(e) => {
+                setEnableTreeViewPlugin(e.target.checked)
+                onEnableTreeViewPluginChange?.(e.target.checked)
+              }}
+              className="settings-checkbox"
+            />
+            <span className="settings-checkbox-text">Enable Tree View Plugin (dev only)</span>
+          </label>
+        )}
       </div>
     </div>
   )

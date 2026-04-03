@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Sidebar from '@/components/sidebar/Sidebar'
 import EditorArea from '@/components/editor/EditorArea'
 import EditorToolbar from '@/components/editor/EditorToolbar'
@@ -19,11 +19,14 @@ import {
 } from '@/api/documents'
 import { exportAndSave, type ExportFormat } from '@/api/export'
 
+const isDevelopmentMode = import.meta.env.MODE === 'development'
+
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
 interface ChapterSettings {
   pageBackground: string
   showDragMenu?: boolean
+  enableTreeViewPlugin?: boolean
 }
 
 export default function EditorLayout() {
@@ -31,7 +34,8 @@ export default function EditorLayout() {
   const [activeChapterId, setActiveChapterId] = useState<string | null>(null)
   const [content, setContent] = useState('')
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true) // Only for initial app load
+  const [isLoadingContent, setIsLoadingContent] = useState(false) // For individual chapter loads
   const [loadedChapterId, setLoadedChapterId] = useState<string | null>(null)
   const [wordCount, setWordCount] = useState(0)
   const [isDirty, setIsDirty] = useState(false)
@@ -42,6 +46,11 @@ export default function EditorLayout() {
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const activeChapter = chapters.find((c) => c.id === activeChapterId)
+
+  // Memoize sorted chapters to prevent unnecessary re-renders in sidebar
+  const sortedChapters = useMemo(() => {
+    return [...chapters].sort((a, b) => a.order - b.order)
+  }, [chapters])
 
   // Refetch chapters from server
   const refreshChapters = async () => {
@@ -92,12 +101,12 @@ export default function EditorLayout() {
     if (activeChapterId === OVERVIEW_ID) {
       console.log('[LOAD] Loading Overview...')
       setLoadedChapterId(OVERVIEW_ID)
-      setIsLoading(false)
+      setIsLoadingContent(false)
       return
     }
 
     const loadDocument = async () => {
-      setIsLoading(true)
+      setIsLoadingContent(true)
       try {
         console.log(`[LOAD] Loading chapter "${activeChapterId}"...`)
         const doc = await getDocument(activeChapterId)
@@ -119,7 +128,7 @@ export default function EditorLayout() {
         setContent('')
         setLoadedChapterId(activeChapterId)
       } finally {
-        setIsLoading(false)
+        setIsLoadingContent(false)
       }
     }
 
@@ -277,6 +286,15 @@ export default function EditorLayout() {
     console.log(`[SETTINGS] Updated chapter "${activeChapterId}" showDragMenu to ${show}`)
   }
 
+  const handleEnableTreeViewPluginChange = (enabled: boolean) => {
+    if (!activeChapterId) return
+
+    const updated = { ...(chapterSettings[activeChapterId] ?? { pageBackground: '#f9f9f9' }), enableTreeViewPlugin: enabled }
+    setChapterSettings(prev => ({ ...prev, [activeChapterId]: updated }))
+    localStorage.setItem(`chapter-settings-${activeChapterId}`, JSON.stringify(updated))
+    console.log(`[SETTINGS] Updated chapter "${activeChapterId}" enableTreeViewPlugin to ${enabled}`)
+  }
+
   const handleReorder = async (reorderedChapters: DocumentHead[]) => {
     console.log('[REORDER] Reordering chapters...')
     // Optimistic update with updated order indices
@@ -309,7 +327,7 @@ export default function EditorLayout() {
         <Sidebar
           activeChapterId={activeChapterId || ''}
           onSelectChapter={handleSelectChapter}
-          chapters={[...chapters].sort((a, b) => a.order - b.order)}
+          chapters={sortedChapters}
           isLoading={isLoading}
           onCreateChapter={handleCreateChapter}
           onDeleteChapter={handleDeleteChapter}
@@ -344,6 +362,7 @@ export default function EditorLayout() {
                 content={content}
                 pageBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
                 showDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
+                enableTreeViewPlugin={chapterSettings[activeChapterId]?.enableTreeViewPlugin ?? false}
                 onChange={(newContent) => {
                   console.log(`[EDITOR] Content changed: ${newContent.length} bytes`)
                   setContent(newContent)
@@ -390,6 +409,9 @@ export default function EditorLayout() {
               onChange={(bg) => handleSettingsChange('pageBackground', bg)}
               initialShowDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
               onShowDragMenuChange={handleShowDragMenuChange}
+              isDevelopment={isDevelopmentMode}
+              initialEnableTreeViewPlugin={chapterSettings[activeChapterId]?.enableTreeViewPlugin ?? false}
+              onEnableTreeViewPluginChange={handleEnableTreeViewPluginChange}
             />
           )}
         </GenericModal>

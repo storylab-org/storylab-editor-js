@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, memo, useCallback } from 'react'
 import { Trash2, GripVertical } from 'lucide-react'
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
@@ -26,7 +26,7 @@ interface SortableChapterItemProps {
   onHoverChange: (id: string | null) => void
 }
 
-function SortableChapterItem({
+const SortableChapterItem = memo(function SortableChapterItem({
   chapter,
   activeChapterId,
   onSelectChapter,
@@ -36,8 +36,16 @@ function SortableChapterItem({
 }: SortableChapterItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: chapter.id })
 
+  // Restrict transform to Y-axis only (vertical dragging)
+  const restrictedTransform = transform
+    ? {
+        ...transform,
+        x: 0, // Lock X-axis movement
+      }
+    : null
+
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Transform.toString(restrictedTransform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
@@ -123,9 +131,9 @@ function SortableChapterItem({
       </div>
     </div>
   )
-}
+})
 
-export default function ChapterList({
+function ChapterListComponent({
   chapters,
   activeChapterId,
   isLoading,
@@ -136,8 +144,19 @@ export default function ChapterList({
 }: ChapterListProps) {
   const [hoveredChapterId, setHoveredChapterId] = useState<string | null>(null)
 
+  // Reset hover state when switching chapters to prevent flicker
+  useEffect(() => {
+    setHoveredChapterId(null)
+  }, [activeChapterId])
+
+  const handleHoverChange = useCallback((id: string | null) => {
+    setHoveredChapterId(id)
+  }, [])
+
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      distance: 8,
+    }),
     useSensor(KeyboardSensor)
   )
 
@@ -192,7 +211,7 @@ export default function ChapterList({
                 onSelectChapter={onSelectChapter}
                 onDeleteChapter={onDeleteChapter}
                 hoveredChapterId={hoveredChapterId}
-                onHoverChange={setHoveredChapterId}
+                onHoverChange={handleHoverChange}
               />
             ))}
           </SortableContext>
@@ -218,3 +237,5 @@ export default function ChapterList({
     </div>
   )
 }
+
+export default memo(ChapterListComponent)

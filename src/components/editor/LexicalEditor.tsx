@@ -50,6 +50,7 @@ interface LexicalEditorProps {
   language?: string;
   onContentChange?: (serialisedState: string, wordCount: number) => void;
   showDragMenu?: boolean;
+  enableTreeViewPlugin?: boolean;
 }
 
 const LexicalEditor: React.FC<LexicalEditorProps> = ({
@@ -58,6 +59,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
   language = 'en',
   onContentChange,
   showDragMenu = true,
+  enableTreeViewPlugin = false,
 }) => {
   const [wordCount, setWordCount] = useState<number>(0);
   const theme = PlaygroundEditorTheme;
@@ -155,7 +157,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <HorizontalRulePlugin />
         <TablePlugin hasCellMerge={true} hasCellBackgroundColor={false} />
-        <TreeViewPlugin />
+        {enableTreeViewPlugin && <TreeViewPlugin />}
         <DragDropBlockPlugin showDragMenu={showDragMenu} />
         <ImageResizePlugin />
         <ImagePlugin />
