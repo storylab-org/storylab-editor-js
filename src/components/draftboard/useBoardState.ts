@@ -132,6 +132,11 @@ export function useBoardState(chapters: DocumentHead[] = []): UseBoardStateRetur
             name: card.title || 'Unnamed',
             type: card.entityType!,
           }
+          // Check if entity is already linked to prevent duplicates
+          const existingIds = new Set((targetCard.linkedEntities || []).map(e => e.id))
+          if (existingIds.has(card.entityId)) {
+            return
+          }
           const linkedEntities = [...(targetCard.linkedEntities || []), newEntity]
           const patch = { linkedEntities }
           setCards(prev => prev.map(c => c.id === overId ? { ...c, ...patch } : c))
