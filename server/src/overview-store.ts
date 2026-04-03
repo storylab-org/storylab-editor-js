@@ -21,6 +21,9 @@ export interface BoardCard {
   // Chapter link — optional on any shape
   chapterId?: string | null
   chapterName?: string
+  // Entity link — optional, makes this an entity card
+  entityId?: string | null
+  entityType?: 'character' | 'location' | 'item' | null
 }
 
 export interface BoardData {

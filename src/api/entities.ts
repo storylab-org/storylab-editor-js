@@ -5,6 +5,7 @@ export interface Entity {
   name: string
   type: EntityType
   description?: string
+  tags?: string[]
   createdAt: string
   updatedAt: string
 }
@@ -35,11 +36,11 @@ export async function getEntity(id: string): Promise<Entity> {
   return handleResponse<Entity>(response)
 }
 
-export async function createEntity(name: string, type: EntityType, description?: string): Promise<Entity> {
+export async function createEntity(name: string, type: EntityType, description?: string, tags?: string[]): Promise<Entity> {
   const response = await fetch(`${BASE_URL}/entities`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, type, description }),
+    body: JSON.stringify({ name, type, description, tags }),
   })
   return handleResponse<Entity>(response)
 }

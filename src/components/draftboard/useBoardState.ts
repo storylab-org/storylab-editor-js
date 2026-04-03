@@ -94,12 +94,6 @@ export function useBoardState(chapters: DocumentHead[] = []): UseBoardStateRetur
 
   const updateDebounceRef = useRef<Map<string, NodeJS.Timeout>>(new Map())
   const cardsRef = useRef<BoardCard[]>([])
-  const chaptersRef = useRef<DocumentHead[]>(chapters)
-
-  // Keep chapters ref in sync
-  useEffect(() => {
-    chaptersRef.current = chapters
-  }, [chapters])
 
   // Load initial data
   useEffect(() => {
@@ -123,37 +117,14 @@ export function useBoardState(chapters: DocumentHead[] = []): UseBoardStateRetur
     async (event: DragEndEvent) => {
       const activeId = event.active.id as string
 
-      // Detect chapter-chip dropped onto a shape card → link chapter to shape
-      if (activeId.startsWith('chapter:')) {
-        const chapterId = activeId.replace('chapter:', '')
-        const overId = event.over?.id as string | undefined
+      const cardId = activeId
+      const card = cards.find(c => c.id === cardId)
 
-        if (!overId) return
-
-        const targetCard = cards.find(c => c.id === overId && !c.entityId)
-        if (!targetCard) return
-
-        const chapter = chaptersRef.current.find(ch => ch.id === chapterId)
-        if (!chapter) return
-
-        const patch = { chapterId: chapter.id, chapterName: chapter.name }
-        setCards(prev => prev.map(c => c.id === overId ? { ...c, ...patch } : c))
-
-        try {
-          await updateCard(overId, patch)
-        } catch (err) {
-          setError(err instanceof Error ? err.message : 'Failed to link chapter')
-          setCards(prev => prev.map(c => c.id === overId ? targetCard : c))
-        }
-        return
-      }
-
-      // Detect entity-card dropped onto a shape card → link entity to shape
-      const card = cards.find(c => c.id === activeId)
       if (!card) return
 
+      // Detect entity-card dropped onto a shape card → link entity to shape
       const overId = event.over?.id as string | undefined
-      if (card.entityId && overId && overId !== activeId) {
+      if (card.entityId && overId && overId !== cardId) {
         const targetCard = cards.find(c => c.id === overId && !c.entityId)
         if (targetCard) {
           const newEntity = {
@@ -182,19 +153,19 @@ export function useBoardState(chapters: DocumentHead[] = []): UseBoardStateRetur
 
       setCards(prev =>
         prev.map(c =>
-          c.id === activeId
+          c.id === cardId
             ? { ...c, x: newX, y: newY }
             : c
         )
       )
 
-      setSelectedCardId(activeId)
+      setSelectedCardId(cardId)
 
       try {
-        await updateCardPosition(activeId, newX, newY)
+        await updateCardPosition(cardId, newX, newY)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to update card position')
-        setCards(prev => prev.map(c => (c.id === activeId ? card : c)))
+        setCards(prev => prev.map(c => (c.id === cardId ? card : c)))
       }
     },
     [cards]

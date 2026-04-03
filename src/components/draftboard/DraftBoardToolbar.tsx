@@ -1,11 +1,54 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { ArrowRight, RotateCcw, User, MapPin, Package, Book } from 'lucide-react'
-import { useDraggable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 import { type EntityType } from '@/api/entities'
 import type { DocumentHead } from '@/api/documents'
 import DropDown, { DropDownItem } from '@/components/editor/lexical/ui/DropDown'
 import './DraftBoardToolbar.css'
+
+function ChapterItem({
+  chapter,
+  isSelected,
+  onSelect
+}: {
+  chapter: DocumentHead
+  isSelected?: boolean
+  onSelect?: (chapterId: string) => void
+}) {
+  return (
+    <div
+      onClick={() => onSelect?.(chapter.id)}
+      style={{
+        opacity: isSelected ? 0.6 : 1,
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '6px 12px',
+        fontSize: '14px',
+        color: '#333',
+        borderRadius: '4px',
+        backgroundColor: isSelected ? '#e8e8e8' : 'transparent',
+        border: isSelected ? '1px solid #bbb' : 'none',
+        width: '100%',
+        textAlign: 'left',
+        transition: 'background-color 0.15s',
+      }}
+      onMouseEnter={(e) => {
+        if (!isSelected) {
+          e.currentTarget.style.backgroundColor = '#f0f0f0'
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isSelected) {
+          e.currentTarget.style.backgroundColor = 'transparent'
+        }
+      }}
+    >
+      <Book size={14} />
+      <span>{chapter.name}</span>
+    </div>
+  )
+}
 
 interface DraftBoardToolbarProps {
   onAddRectangle: () => void
@@ -17,36 +60,8 @@ interface DraftBoardToolbarProps {
   onToggleConnect: () => void
   onReset: () => Promise<void>
   chapters: DocumentHead[]
-  assignedChapterIds: Set<string>
-}
-
-function DraggableChapterChip({
-  chapter,
-  isAssigned,
-}: {
-  chapter: DocumentHead
-  isAssigned: boolean
-}): React.ReactElement {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `chapter:${chapter.id}`,
-  })
-
-  return (
-    <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      className={`toolbar-chapter-chip${isAssigned ? ' toolbar-chapter-chip--assigned' : ''}${isDragging ? ' is-dragging' : ''}`}
-      style={{
-        transform: CSS.Translate.toString(transform),
-        transition: isDragging ? 'none' : undefined,
-      }}
-      title={chapter.name}
-    >
-      <Book size={12} />
-      <span>{chapter.name}</span>
-    </div>
-  )
+  selectedChapterId?: string | null
+  onSelectChapter?: (chapterId: string | null) => void
 }
 
 export default function DraftBoardToolbar({
@@ -59,7 +74,8 @@ export default function DraftBoardToolbar({
   onToggleConnect,
   onReset,
   chapters,
-  assignedChapterIds,
+  selectedChapterId,
+  onSelectChapter,
 }: DraftBoardToolbarProps): React.ReactElement {
   return (
     <div className="draft-board-toolbar">
@@ -122,23 +138,29 @@ export default function DraftBoardToolbar({
         </DropDownItem>
       </DropDown>
 
-      <div className="board-toolbar-separator" />
-
       {chapters.length > 0 && (
         <>
-          <div className="toolbar-chapters-strip">
+          <div className="board-toolbar-separator" />
+
+          <DropDown
+            buttonLabel="Chapter"
+            buttonIcon={<Book size={16} />}
+            buttonClassName="board-tool-btn board-tool-btn-chapter"
+            buttonAriaLabel="Select chapter to assign"
+          >
             {chapters.map(chapter => (
-              <DraggableChapterChip
+              <ChapterItem
                 key={chapter.id}
                 chapter={chapter}
-                isAssigned={assignedChapterIds.has(chapter.id)}
+                isSelected={selectedChapterId === chapter.id}
+                onSelect={onSelectChapter}
               />
             ))}
-          </div>
-
-          <div className="board-toolbar-separator" />
+          </DropDown>
         </>
       )}
+
+      <div className="board-toolbar-separator" />
 
       <button
         className={`board-tool-btn${isConnecting ? ' active' : ''}`}

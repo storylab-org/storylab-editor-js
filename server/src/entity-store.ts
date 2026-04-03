@@ -9,6 +9,7 @@ export interface Entity {
   name: string
   type: EntityType
   description?: string
+  tags?: string[]
   createdAt: string
   updatedAt: string
 }
@@ -81,10 +82,10 @@ export class EntityStore {
     return entity
   }
 
-  create(name: string, type: EntityType, description?: string): Entity {
+  create(name: string, type: EntityType, description?: string, tags?: string[]): Entity {
     const id = randomUUID()
     const now = new Date().toISOString()
-    const entity: Entity = { id, name, type, description, createdAt: now, updatedAt: now }
+    const entity: Entity = { id, name, type, description, tags, createdAt: now, updatedAt: now }
     this.entities.set(id, entity)
     this.save()
     return entity

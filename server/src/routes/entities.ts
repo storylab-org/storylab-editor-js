@@ -9,11 +9,13 @@ interface CreateEntityBody {
   name: string
   type: 'character' | 'location' | 'item'
   description?: string
+  tags?: string[]
 }
 
 interface UpdateEntityBody {
   name?: string
   description?: string
+  tags?: string[]
 }
 
 const entitiesRoute: FastifyPluginAsync = async (fastify) => {
@@ -33,8 +35,8 @@ const entitiesRoute: FastifyPluginAsync = async (fastify) => {
   })
 
   fastify.post<{ Body: CreateEntityBody; Reply: Entity }>('/entities', async (request, reply) => {
-    const { name, type, description } = request.body as CreateEntityBody
-    const entity = fastify.entityStore.create(name, type, description)
+    const { name, type, description, tags } = request.body as CreateEntityBody
+    const entity = fastify.entityStore.create(name, type, description, tags)
     reply.code(201)
     return entity
   })
