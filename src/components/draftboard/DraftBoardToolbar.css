@@ -1,3 +1,5 @@
+@import '../shared/ToolbarStyles.css';
+
 /* Toolbar container — matches .formatting-toolbar design */
 .draft-board-toolbar {
   display: flex;
@@ -9,7 +11,7 @@
   flex-wrap: wrap;
 }
 
-/* Toolbar buttons — matches .format-btn style */
+/* Toolbar buttons — uses shared .format-btn style */
 .board-tool-btn {
   display: flex;
   align-items: center;
@@ -60,11 +62,81 @@
   border-color: #d0d0d0;
 }
 
+/* Entity dropdown button — wider to fit text */
+.board-tool-btn-entity {
+  width: auto;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 13px;
+  min-width: 80px;
+  justify-content: flex-start;
+}
+
 /* Toolbar separator — matches .separator in FormattingToolbar.css */
 .board-toolbar-separator {
   width: 1px;
   height: 24px;
   background: #d0d0d0;
   margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* Chapter chips strip */
+.toolbar-chapters-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 220px;
+  overflow-y: auto;
+  max-height: 40px;
+}
+
+/* Individual chapter chip */
+.toolbar-chapter-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #d0d0d0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  cursor: grab;
+  user-select: none;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.toolbar-chapter-chip:hover {
+  background: #f5f5f5;
+  border-color: #999;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar-chapter-chip.is-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+/* Assigned chapter indicator */
+.toolbar-chapter-chip--assigned {
+  background: #f0f6ff;
+  border-color: #99c2ff;
+}
+
+.toolbar-chapter-chip--assigned::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0066cc;
   flex-shrink: 0;
 }

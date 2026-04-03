@@ -20,7 +20,6 @@ interface BoardCardProps {
   onDelete: () => void
   onStartConnect: () => void
   onConnectTo: () => Promise<void>
-  onLinkChapter: () => void
   onSelect: () => void
   onEntityCardClick?: (entityId: string, rect: DOMRect) => void
   onUnlinkEntity?: (cardId: string, entityId?: string) => void
@@ -74,7 +73,6 @@ function HoverBar({
   listeners,
   attributes,
   onStartConnect,
-  onLinkChapter,
   onDelete,
   onToggleColourPicker,
   showColourPicker,
@@ -85,7 +83,6 @@ function HoverBar({
   listeners: any
   attributes: any
   onStartConnect: () => void
-  onLinkChapter: () => void
   onDelete: () => void
   onToggleColourPicker: () => void
   showColourPicker: boolean
@@ -114,14 +111,6 @@ function HoverBar({
         style={{ cursor: 'grab' }}
       >
         <ArrowRight size={14} />
-      </button>
-
-      <button
-        className="board-card-icon-btn"
-        onClick={onLinkChapter}
-        title="Link chapter"
-      >
-        <Book size={14} />
       </button>
 
       <button
@@ -267,7 +256,6 @@ export default function BoardCard({
   onDelete,
   onStartConnect,
   onConnectTo,
-  onLinkChapter,
   onSelect,
   onEntityCardClick,
   onUnlinkEntity,
@@ -436,7 +424,6 @@ export default function BoardCard({
         listeners={listeners}
         attributes={attributes}
         onStartConnect={onStartConnect}
-        onLinkChapter={onLinkChapter}
         onDelete={onDelete}
         onToggleColourPicker={() => setShowColourPicker(!showColourPicker)}
         showColourPicker={showColourPicker}
