@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react'
-import { useDraggable } from '@dnd-kit/core'
+import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, X, Palette, ArrowRight, Book } from 'lucide-react'
+import { GripVertical, X, Palette, ArrowRight, Book, User, MapPin, Package } from 'lucide-react'
 import type { BoardCard as BoardCardType } from '@/api/draftboard'
+import { BADGE_ICONS, ENTITY_LABELS } from './entityConstants'
 import './BoardCard.css'
 
 const COLOUR_PRESETS = ['#ffd699', '#f0ccff', '#cce5ff', '#ccf0e6', '#ffcccc', '#e6ccff']
@@ -21,6 +22,8 @@ interface BoardCardProps {
   onConnectTo: () => Promise<void>
   onLinkChapter: () => void
   onSelect: () => void
+  onEntityCardClick?: (entityId: string, rect: DOMRect) => void
+  onUnlinkEntity?: (cardId: string, entityId?: string) => void
 }
 
 function CardContent({
@@ -154,6 +157,45 @@ function HoverBar({
   )
 }
 
+function EntityHoverBar({
+  isDragging,
+  listeners,
+  attributes,
+  onDelete,
+}: {
+  isDragging: boolean
+  listeners: any
+  attributes: any
+  onDelete: () => void
+}) {
+  return (
+    <div className="board-card-hover-bar board-card-hover-bar--compact">
+      <div
+        className="board-card-handle"
+        title="Drag to move"
+        {...listeners}
+        {...attributes}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      >
+        <GripVertical size={14} />
+      </div>
+
+      <button
+        className="board-card-icon-btn board-card-delete-btn"
+        onClick={onDelete}
+        title="Delete"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  )
+}
+
+function EntityTypeIcon({ type }: { type: 'character' | 'location' | 'item' }) {
+  const Icon = BADGE_ICONS[type]
+  return <Icon size={14} style={{ flexShrink: 0 }} />
+}
+
 function ChapterBadge({
   chapterName,
   onUnlink,
@@ -181,6 +223,38 @@ function ChapterBadge({
   )
 }
 
+function EntityBadge({
+  entityName,
+  entityType,
+  entityId,
+  onUnlink,
+  onClick,
+}: {
+  entityName?: string
+  entityType?: 'character' | 'location' | 'item'
+  entityId?: string
+  onUnlink: () => void
+  onClick: () => void
+}) {
+  const IconComponent = entityType ? BADGE_ICONS[entityType] : null
+  return (
+    <div className="board-card-entity-badge" data-linked-entity-id={entityId} data-entity-type={entityType} onClick={onClick}>
+      {IconComponent && <IconComponent size={14} style={{ flexShrink: 0 }} />}
+      <span className="badge-text">{entityName || 'Unnamed'}</span>
+      <button
+        className="badge-unlink"
+        onClick={e => {
+          e.stopPropagation()
+          onUnlink()
+        }}
+        title="Unlink entity"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  )
+}
+
 export default function BoardCard({
   card,
   isConnecting,
@@ -195,11 +269,23 @@ export default function BoardCard({
   onConnectTo,
   onLinkChapter,
   onSelect,
+  onEntityCardClick,
+  onUnlinkEntity,
 }: BoardCardProps) {
   const [showColourPicker, setShowColourPicker] = useState(false)
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef: setDraggableRef, transform, isDragging } = useDraggable({
     id: card.id,
   })
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: card.id,
+    disabled: !!card.entityId, // Entity cards are not drop targets
+  })
+
+  // Merge both refs
+  const setNodeRef = useCallback((el: HTMLDivElement | null) => {
+    setDraggableRef(el)
+    setDroppableRef(el)
+  }, [setDraggableRef, setDroppableRef])
 
   const handleUnlinkChapter = useCallback(() => {
     onUpdate({ chapterId: null, chapterName: undefined })
@@ -255,9 +341,59 @@ export default function BoardCard({
     isDragging ? 'is-dragging' : '',
     isConnecting ? 'is-connecting-source' : '',
     (isConnectionTarget || connectionModeActive) ? 'is-connection-target' : '',
+    card.entityType ? `entity-${card.entityType}` : '',
   ].filter(Boolean).join(' ')
 
-  // Apply shape-specific styles
+  // Entity cards use a special layout, not geometric shapes
+  if (card.entityId && card.entityType) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={cardStyle}
+        className={`board-card-wrapper board-entity-card-wrapper${isSelected ? ' is-selected' : ''}`}
+        onClick={handleContainerClick}
+      >
+        <EntityHoverBar
+          isDragging={isDragging}
+          listeners={listeners}
+          attributes={attributes}
+          onDelete={onDelete}
+        />
+
+        <div
+          className={`board-entity-chip entity-chip--${card.entityType}`}
+          data-entity-card-id={card.entityId}
+          onClick={e => {
+            e.stopPropagation()
+            onSelect()
+            if (onEntityCardClick && card.entityId) {
+              onEntityCardClick(card.entityId, e.currentTarget.getBoundingClientRect())
+            }
+          }}
+        >
+          <EntityTypeIcon type={card.entityType} />
+          <span className="board-entity-chip__name">{card.title || 'Unnamed'}</span>
+        </div>
+
+        {card.chapterId && (
+          <>
+            <ChapterBadge
+              chapterName={card.chapterName}
+              onUnlink={handleUnlinkChapter}
+              onClick={handleChapterBadgeClick}
+            />
+            {duplicateChapterIds.has(card.chapterId) && (
+              <div className="board-card-duplicate-warning">
+                ⚠ Linked to {[...duplicateChapterIds].filter(id => id === card.chapterId).length > 1 ? 'multiple cards' : 'multiple cards'}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    )
+  }
+
+  // Regular shape cards
   if (card.shape === 'rectangle') {
     shapeStyle.borderRadius = '6px'
     shapeStyle.width = '200px'
@@ -292,7 +428,7 @@ export default function BoardCard({
     <div
       ref={setNodeRef}
       style={cardStyle}
-      className={`board-card-wrapper${isSelected ? ' is-selected' : ''}`}
+      className={`board-card-wrapper${isSelected ? ' is-selected' : ''}${isOver ? ' is-droppable-over' : ''}`}
       onClick={handleContainerClick}
     >
       <HoverBar
@@ -329,6 +465,23 @@ export default function BoardCard({
             </div>
           )}
         </>
+      )}
+
+      {card.linkedEntities && card.linkedEntities.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+          {card.linkedEntities.map(entity => (
+            <EntityBadge
+              key={entity.id}
+              entityId={entity.id}
+              entityName={entity.name}
+              entityType={entity.type}
+              onUnlink={() => onUnlinkEntity?.(card.id, entity.id)}
+              onClick={() => {
+                // Just unlink on click, don't show popover
+              }}
+            />
+          ))}
+        </div>
       )}
     </div>
   )

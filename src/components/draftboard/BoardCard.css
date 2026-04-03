@@ -21,6 +21,10 @@
   opacity: 1;
 }
 
+.board-card-hover-bar--compact {
+  gap: 2px;
+}
+
 .board-card-handle {
   display: flex;
   align-items: center;
@@ -164,6 +168,7 @@
   transform: scale(0.95);
 }
 
+
 .board-card-chapter-badge {
   display: flex;
   align-items: center;
@@ -219,6 +224,59 @@
   box-sizing: border-box;
 }
 
+/* Entity chip cards — small, compact design */
+.board-entity-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  width: 160px;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.board-entity-chip:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.entity-chip--character {
+  border-left-color: #7c3aed;
+}
+
+.entity-chip--character svg {
+  color: #7c3aed;
+}
+
+.entity-chip--location {
+  border-left-color: #0d9488;
+}
+
+.entity-chip--location svg {
+  color: #0d9488;
+}
+
+.entity-chip--item {
+  border-left-color: #b45309;
+}
+
+.entity-chip--item svg {
+  color: #b45309;
+}
+
+.board-entity-chip__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
 /* Dragging state */
 .board-card-shape.is-dragging {
 }
@@ -233,4 +291,70 @@
   border-radius: 3px;
   border-left: 2px solid #ffa726;
   line-height: 1.3;
+}
+
+/* Entity badge on shape cards */
+.board-card-entity-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin-top: 4px;
+  border-radius: 4px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 3px solid #7c3aed;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  font-size: 12px;
+  color: #1a1a1a;
+}
+
+.board-card-entity-badge:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.board-card-entity-badge svg {
+  color: #7c3aed;
+}
+
+/* Entity badge colour variants based on type */
+.board-card-entity-badge[data-entity-type="character"] {
+  border-left-color: #7c3aed;
+}
+
+.board-card-entity-badge[data-entity-type="character"] svg {
+  color: #7c3aed;
+}
+
+.board-card-entity-badge[data-entity-type="location"] {
+  border-left-color: #0d9488;
+}
+
+.board-card-entity-badge[data-entity-type="location"] svg {
+  color: #0d9488;
+}
+
+.board-card-entity-badge[data-entity-type="item"] {
+  border-left-color: #b45309;
+}
+
+.board-card-entity-badge[data-entity-type="item"] svg {
+  color: #b45309;
+}
+
+.badge-unlink {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.badge-unlink:hover {
+  color: #ff6666;
 }
