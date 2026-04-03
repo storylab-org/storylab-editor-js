@@ -38,6 +38,8 @@ const draftboardRoute: FastifyPluginAsync = async (fastify) => {
       color?: string
       chapterId?: string | null
       chapterName?: string
+      entityId?: string | null
+      entityType?: string | null
     }
 
     const card = await fastify.overviewStore.addCard({
@@ -49,6 +51,8 @@ const draftboardRoute: FastifyPluginAsync = async (fastify) => {
       color: body.color,
       chapterId: body.chapterId,
       chapterName: body.chapterName,
+      entityId: body.entityId,
+      entityType: body.entityType as any,
     })
     reply.code(201).send(card)
   })

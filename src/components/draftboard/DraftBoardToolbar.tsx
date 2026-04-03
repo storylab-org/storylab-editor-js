@@ -1,15 +1,67 @@
 import React from 'react'
-import { ArrowRight, RotateCcw } from 'lucide-react'
+import { ArrowRight, RotateCcw, User, MapPin, Package, Book } from 'lucide-react'
+import { type EntityType } from '@/api/entities'
+import type { DocumentHead } from '@/api/documents'
+import DropDown, { DropDownItem } from '@/components/editor/lexical/ui/DropDown'
 import './DraftBoardToolbar.css'
+
+function ChapterItem({
+  chapter,
+  isSelected,
+  onSelect
+}: {
+  chapter: DocumentHead
+  isSelected?: boolean
+  onSelect?: (chapterId: string) => void
+}) {
+  return (
+    <div
+      onClick={() => onSelect?.(chapter.id)}
+      style={{
+        opacity: isSelected ? 0.6 : 1,
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '6px 12px',
+        fontSize: '14px',
+        color: '#333',
+        borderRadius: '4px',
+        backgroundColor: isSelected ? '#e8e8e8' : 'transparent',
+        border: isSelected ? '1px solid #bbb' : 'none',
+        width: '100%',
+        textAlign: 'left',
+        transition: 'background-color 0.15s',
+      }}
+      onMouseEnter={(e) => {
+        if (!isSelected) {
+          e.currentTarget.style.backgroundColor = '#f0f0f0'
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isSelected) {
+          e.currentTarget.style.backgroundColor = 'transparent'
+        }
+      }}
+    >
+      <Book size={14} />
+      <span>{chapter.name}</span>
+    </div>
+  )
+}
 
 interface DraftBoardToolbarProps {
   onAddRectangle: () => void
   onAddCircle: () => void
   onAddDiamond: () => void
   onAddTriangle: () => void
+  onAddEntity: (entityType: EntityType) => void
   isConnecting: boolean
   onToggleConnect: () => void
   onReset: () => Promise<void>
+  chapters: DocumentHead[]
+  selectedChapterId?: string | null
+  onSelectChapter?: (chapterId: string | null) => void
 }
 
 export default function DraftBoardToolbar({
@@ -17,9 +69,13 @@ export default function DraftBoardToolbar({
   onAddCircle,
   onAddDiamond,
   onAddTriangle,
+  onAddEntity,
   isConnecting,
   onToggleConnect,
   onReset,
+  chapters,
+  selectedChapterId,
+  onSelectChapter,
 }: DraftBoardToolbarProps): React.ReactElement {
   return (
     <div className="draft-board-toolbar">
@@ -62,6 +118,47 @@ export default function DraftBoardToolbar({
           <polygon points="8,2 14,13 2,13" fill="none" stroke="currentColor" strokeWidth="1.5" />
         </svg>
       </button>
+
+      <div className="board-toolbar-separator" />
+
+      <DropDown
+        buttonLabel="Entity"
+        buttonIcon={<User size={16} />}
+        buttonClassName="board-tool-btn board-tool-btn-entity"
+        buttonAriaLabel="Add entity card"
+      >
+        <DropDownItem className="item" onClick={() => onAddEntity('character')}>
+          <User size={14} /><span className="text">Person</span>
+        </DropDownItem>
+        <DropDownItem className="item" onClick={() => onAddEntity('location')}>
+          <MapPin size={14} /><span className="text">Location</span>
+        </DropDownItem>
+        <DropDownItem className="item" onClick={() => onAddEntity('item')}>
+          <Package size={14} /><span className="text">Item</span>
+        </DropDownItem>
+      </DropDown>
+
+      {chapters.length > 0 && (
+        <>
+          <div className="board-toolbar-separator" />
+
+          <DropDown
+            buttonLabel="Chapter"
+            buttonIcon={<Book size={16} />}
+            buttonClassName="board-tool-btn board-tool-btn-chapter"
+            buttonAriaLabel="Select chapter to assign"
+          >
+            {chapters.map(chapter => (
+              <ChapterItem
+                key={chapter.id}
+                chapter={chapter}
+                isSelected={selectedChapterId === chapter.id}
+                onSelect={onSelectChapter}
+              />
+            ))}
+          </DropDown>
+        </>
+      )}
 
       <div className="board-toolbar-separator" />
 

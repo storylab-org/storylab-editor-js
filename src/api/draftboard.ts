@@ -17,6 +17,15 @@ export interface BoardCard {
   // Chapter link — optional on any shape
   chapterId?: string | null
   chapterName?: string
+  // Entity link — optional, makes this an entity card
+  entityId?: string | null
+  entityType?: 'character' | 'location' | 'item' | null
+  // Linked entities — multiple entities pinned to a shape card via drag
+  linkedEntities?: Array<{
+    id: string
+    name: string
+    type: 'character' | 'location' | 'item'
+  }>
 }
 
 export interface BoardData {

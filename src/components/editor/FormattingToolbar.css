@@ -1,3 +1,5 @@
+@import '../shared/ToolbarStyles.css';
+
 .formatting-toolbar {
   display: flex;
   gap: 4px;
@@ -9,42 +11,6 @@
   position: sticky;
   top: 0;
   z-index: 100;
-}
-
-.format-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 1px solid #d0d0d0;
-  background: white;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #333;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.format-btn:hover {
-  background: #f0f0f0;
-  border-color: #999;
-}
-
-.format-btn:active {
-  background: #e0e0e0;
-}
-
-.format-btn.active {
-  background: #4a9eff;
-  color: white;
-  border-color: #2b7fcc;
-}
-
-.format-btn.active:hover {
-  background: #3a8ce5;
-  border-color: #1b6fbc;
 }
 
 .format-btn-block {
@@ -73,67 +39,11 @@
   justify-content: flex-start;
 }
 
-.item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 13px;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-.item:hover {
-  background: #f0f0f0;
-}
-
-.item.active {
-  color: #0066cc;
-  font-weight: 500;
-}
-
 .separator {
   width: 1px;
   height: 24px;
   background: #d0d0d0;
   margin: 0 4px;
-}
-
-/* Override lexical dropdown styles for FormattingToolbar dropdowns */
-.dropdown {
-  z-index: 9999 !important;
-  position: fixed !important;
-  min-height: auto !important;
-  padding: 4px 0;
-}
-
-/* Fix button overflow and styling for our dropdown items */
-.dropdown button.item {
-  max-width: none !important;
-  min-width: auto !important;
-  width: auto !important;
-  flex-direction: row !important;
-  justify-content: flex-start !important;
-  padding: 6px 10px !important;
-  margin: 0 4px !important;
-  font-size: 13px !important;
-  border-radius: 4px !important;
-  background-color: transparent !important;
-  border: none !important;
-  color: #333 !important;
-  line-height: 1.4 !important;
-}
-
-.dropdown button.item:hover {
-  background-color: #f0f0f0 !important;
-}
-
-.dropdown button.item.active {
-  color: #0066cc !important;
-  font-weight: 500 !important;
 }
 
 .shortcut {

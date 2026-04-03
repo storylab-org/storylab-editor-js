@@ -1,3 +1,5 @@
+@import '../shared/ToolbarStyles.css';
+
 /* Toolbar container — matches .formatting-toolbar design */
 .draft-board-toolbar {
   display: flex;
@@ -9,7 +11,7 @@
   flex-wrap: wrap;
 }
 
-/* Toolbar buttons — matches .format-btn style */
+/* Toolbar buttons — uses shared .format-btn style */
 .board-tool-btn {
   display: flex;
   align-items: center;
@@ -58,6 +60,26 @@
 .board-tool-btn:disabled:hover {
   background: white;
   border-color: #d0d0d0;
+}
+
+/* Entity dropdown button — wider to fit text */
+.board-tool-btn-entity {
+  width: auto;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 13px;
+  min-width: 80px;
+  justify-content: flex-start;
+}
+
+/* Chapter dropdown button — same width as entity */
+.board-tool-btn-chapter {
+  width: auto;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 13px;
+  min-width: 80px;
+  justify-content: flex-start;
 }
 
 /* Toolbar separator — matches .separator in FormattingToolbar.css */

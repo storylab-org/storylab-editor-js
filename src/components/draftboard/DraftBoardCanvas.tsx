@@ -1,15 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { CSS } from '@dnd-kit/utilities'
 import BoardCard from './BoardCard'
 import ConnectionLayer from './ConnectionLayer'
 import DraftBoardToolbar from './DraftBoardToolbar'
-import ChapterPickerModal from './ChapterPickerModal'
 import ApplyOrderModal from './ApplyOrderModal'
+import EntityCreationModal from './EntityCreationModal'
+import EntityCardPopover from './EntityCardPopover'
 import { useBoardState } from './useBoardState'
 import { traceChapterPath } from './traceChapterPath'
 import { reorderDocuments } from '@/api/documents'
+import { getEntity } from '@/api/entities'
 import type { DocumentHead } from '@/api/documents'
 import type { BoardCard as BoardCardType, CardShape } from '@/api/draftboard'
+import type { Entity } from '@/api/entities'
 import './DraftBoardCanvas.css'
 
 interface DraftBoardCanvasProps {
@@ -20,11 +24,90 @@ interface DraftBoardCanvasProps {
 }
 
 interface PreviewCardProps {
-  shape: CardShape
+  shape: CardShape | null
   mousePos: { x: number; y: number }
+  pendingEntity?: { id: string; type: 'character' | 'location' | 'item'; color: string } | null
+  selectedChapter?: { id: string; name: string } | null
 }
 
-function PreviewCard({ shape, mousePos }: PreviewCardProps) {
+const ENTITY_TYPE_COLORS: Record<'character' | 'location' | 'item', string> = {
+  character: '#7c3aed',
+  location: '#0d9488',
+  item: '#b45309',
+}
+
+function PreviewCard({ shape, mousePos, pendingEntity, selectedChapter }: PreviewCardProps) {
+  // Chapter preview
+  if (selectedChapter) {
+    const offsetX = 60
+    const offsetY = 20
+
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          left: mousePos.x - offsetX,
+          top: mousePos.y - offsetY,
+          padding: '6px 10px',
+          borderRadius: '4px',
+          background: '#e3f2fd',
+          border: '1px solid #90caf9',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+          pointerEvents: 'none',
+          fontSize: '12px',
+          fontWeight: 500,
+          color: '#1565c0',
+          whiteSpace: 'nowrap',
+          zIndex: 10000,
+        }}
+      >
+        📖 {selectedChapter.name}
+      </div>
+    )
+  }
+
+  // Entity preview
+  if (pendingEntity) {
+    const width = '160px'
+    const height = 'auto'
+    const offsetX = 80 // Half of 160px width
+    const offsetY = 20 // Half of approximate chip height
+
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          left: mousePos.x - offsetX,
+          top: mousePos.y - offsetY,
+          width,
+          pointerEvents: 'none',
+          zIndex: 10000,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            borderLeft: `3px solid ${ENTITY_TYPE_COLORS[pendingEntity.type]}`,
+            background: 'white',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+            opacity: 0.95,
+            fontSize: '13px',
+            fontWeight: 500,
+            color: '#1a1a1a',
+          }}
+        >
+          <span style={{ color: ENTITY_TYPE_COLORS[pendingEntity.type], flexShrink: 0 }}>◆</span>
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>Entity</span>
+        </div>
+      </div>
+    )
+  }
+
+  // Shape preview
   const width = shape === 'rectangle' ? '200px' : '160px'
   const height = shape === 'rectangle' ? '120px' : shape === 'triangle' ? '140px' : '160px'
   const borderRadius = shape === 'rectangle' ? '6px' : shape === 'circle' ? '50%' : 'inherit'
@@ -51,13 +134,14 @@ function PreviewCard({ shape, mousePos }: PreviewCardProps) {
         border: '2px solid #ffd699',
         borderRadius,
         clipPath,
-        opacity: 0.6,
+        opacity: 0.7,
         pointerEvents: 'none',
         padding: '12px',
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        zIndex: 10000,
       }}
     >
       <span style={{ fontSize: '12px', color: 'white', fontWeight: 500 }}>Drop here</span>
@@ -82,8 +166,15 @@ export default function DraftBoardCanvas({
     previewPosition,
     connectionModeActive,
     selectedCardId,
+    entityModal,
+    pendingEntity,
     handleDragEnd,
     handleAddCard,
+    handleOpenEntityCreation,
+    handleOpenEntityEdit,
+    handleCloseEntityModal,
+    handleCreateEntityCard,
+    handleSaveEntityEdit,
     handlePlaceCard,
     handleCancelAddCard,
     handleDeleteCard,
@@ -97,16 +188,22 @@ export default function DraftBoardCanvas({
     handleEndRewiringArrow,
     handleResetBoard,
     handleSelectCard,
-  } = useBoardState()
+    handleUnlinkEntity,
+  } = useBoardState(chapters)
 
   const canvasRef = React.useRef<HTMLDivElement>(null)
   const innerRef = React.useRef<HTMLDivElement>(null)
-  const [chapterPickerCardId, setChapterPickerCardId] = useState<string | null>(null)
+  const [activeCardId, setActiveCardId] = useState<string | null>(null)
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null)
   const [selectedPathId, setSelectedPathId] = useState<string | null>(null)
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null)
   const [showApplyOrderModal, setShowApplyOrderModal] = useState(false)
   const [proposedOrder, setProposedOrder] = useState<BoardCardType[]>([])
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [popoverState, setPopoverState] = useState<{
+    entity: Entity
+    anchorRect: DOMRect
+  } | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -114,29 +211,27 @@ export default function DraftBoardCanvas({
     })
   )
 
-  const handleLinkChapter = useCallback((cardId: string) => {
-    setChapterPickerCardId(cardId)
-  }, [])
 
-  const handleChapterSelected = useCallback(
-    (chapter: DocumentHead) => {
-      if (chapterPickerCardId) {
-        handleUpdateCard(chapterPickerCardId, {
-          chapterId: chapter.id,
-          chapterName: chapter.name,
-        })
-        setChapterPickerCardId(null)
-      }
-    },
-    [chapterPickerCardId, handleUpdateCard]
-  )
+  const handleEntityCardClick = useCallback(async (entityId: string, anchorRect: DOMRect) => {
+    try {
+      const entity = await getEntity(entityId)
+      setPopoverState({ entity, anchorRect })
+    } catch (err) {
+      console.error('Failed to load entity:', err)
+    }
+  }, [])
 
   const handleCanvasDragEnd = useCallback(
     (event: DragEndEvent) => {
+      setActiveCardId(null)
       handleDragEnd(event)
     },
     [handleDragEnd]
   )
+
+  const handleCanvasDragStart = useCallback((event: DragStartEvent) => {
+    setActiveCardId(event.active.id as string)
+  }, [])
 
   const calculateMousePos = useCallback((clientX: number, clientY: number) => {
     if (!innerRef.current) return null
@@ -148,11 +243,11 @@ export default function DraftBoardCanvas({
   }, [])
 
   const handleCanvasMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!previewShape || !innerRef.current) return
+    if ((!previewShape && !selectedChapterId) || !innerRef.current) return
 
     const pos = calculateMousePos(e.clientX, e.clientY)
     if (pos) setMousePos(pos)
-  }, [previewShape, calculateMousePos])
+  }, [previewShape, selectedChapterId, calculateMousePos])
 
 
   const handleCanvasMouseLeave = useCallback(() => {
@@ -215,7 +310,9 @@ export default function DraftBoardCanvas({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (previewShape) {
+        if (selectedChapterId) {
+          setSelectedChapterId(null)
+        } else if (previewShape) {
           handleCancelAddCard()
         } else if (connectionModeActive) {
           handleToggleConnectionMode()
@@ -231,7 +328,7 @@ export default function DraftBoardCanvas({
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [handleCancelConnect, handleCancelAddCard, handleToggleConnectionMode, previewShape, connectionModeActive, connectingFromCardId, selectedPathId, handleDeletePath])
+  }, [handleCancelConnect, handleCancelAddCard, handleToggleConnectionMode, previewShape, connectionModeActive, connectingFromCardId, selectedChapterId, selectedPathId, handleDeletePath])
 
   if (isLoading) {
     return (
@@ -249,19 +346,33 @@ export default function DraftBoardCanvas({
     )
   }
 
-  return (
-    <div className="draft-board-container">
-      <DraftBoardToolbar
-        onAddRectangle={() => handleAddCard('rectangle')}
-        onAddCircle={() => handleAddCard('circle')}
-        onAddDiamond={() => handleAddCard('diamond')}
-        onAddTriangle={() => handleAddCard('triangle')}
-        isConnecting={connectionModeActive}
-        onToggleConnect={handleToggleConnectionMode}
-        onReset={() => setShowResetConfirm(true)}
-      />
+  // Compute duplicate chapter IDs
+  const chapterIdMap = new Map<string, number>()
+  cards.forEach(c => {
+    if (c.chapterId) {
+      chapterIdMap.set(c.chapterId, (chapterIdMap.get(c.chapterId) ?? 0) + 1)
+    }
+  })
+  const duplicateChapterIds = new Set(
+    [...chapterIdMap.entries()].filter(([, n]) => n > 1).map(([id]) => id)
+  )
 
-      <DndContext sensors={sensors} onDragEnd={handleCanvasDragEnd}>
+  return (
+    <DndContext sensors={sensors} onDragEnd={handleCanvasDragEnd} onDragStart={handleCanvasDragStart}>
+      <div className="draft-board-container">
+        <DraftBoardToolbar
+          onAddRectangle={() => handleAddCard('rectangle')}
+          onAddCircle={() => handleAddCard('circle')}
+          onAddDiamond={() => handleAddCard('diamond')}
+          onAddTriangle={() => handleAddCard('triangle')}
+          onAddEntity={handleOpenEntityCreation}
+          isConnecting={connectionModeActive}
+          onToggleConnect={handleToggleConnectionMode}
+          onReset={() => setShowResetConfirm(true)}
+          chapters={chapters}
+          selectedChapterId={selectedChapterId}
+          onSelectChapter={setSelectedChapterId}
+        />
         <div ref={canvasRef} className="draft-board-canvas">
           <div
             ref={innerRef}
@@ -271,6 +382,36 @@ export default function DraftBoardCanvas({
             onMouseMove={handleCanvasMouseMove}
             onMouseLeave={handleCanvasMouseLeave}
           >
+            <DragOverlay>
+              {(() => {
+                const activeCard = activeCardId ? cards.find(c => c.id === activeCardId) : null
+                if (activeCard?.entityId && activeCard?.entityType) {
+                  const entityColor = activeCard.entityType === 'character' ? '#7c3aed' : activeCard.entityType === 'location' ? '#0d9488' : '#b45309'
+                  return (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        borderLeft: `3px solid ${entityColor}`,
+                        background: 'white',
+                        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
+                        width: '160px',
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        color: '#1a1a1a',
+                      }}
+                    >
+                      <span style={{ color: entityColor, flexShrink: 0 }}>◆</span>
+                      <span>{activeCard.title || 'Unnamed'}</span>
+                    </div>
+                  )
+                }
+                return null
+              })()}
+            </DragOverlay>
             <ConnectionLayer
               cards={cards}
               paths={paths}
@@ -296,16 +437,7 @@ export default function DraftBoardCanvas({
             ) : null}
 
             {cards && (() => {
-              const chapterIdCounts = new Map<string, number>()
-              cards.forEach(c => {
-                if (c.chapterId) {
-                  chapterIdCounts.set(c.chapterId, (chapterIdCounts.get(c.chapterId) ?? 0) + 1)
-                }
-              })
-              const duplicateChapterIds = new Set(
-                [...chapterIdCounts.entries()].filter(([, n]) => n > 1).map(([id]) => id)
-              )
-
+              const selectedChapterName = selectedChapterId ? chapters.find(ch => ch.id === selectedChapterId)?.name : null
               return cards.map(card => (
                 <BoardCard
                   key={card.id}
@@ -319,32 +451,34 @@ export default function DraftBoardCanvas({
                   isSelected={selectedCardId === card.id}
                   connectingFromCardId={connectingFromCardId}
                   duplicateChapterIds={duplicateChapterIds}
+                  selectedChapterId={selectedChapterId}
+                  chapterNameBySelectedId={selectedChapterName}
                   onUpdate={patch => handleUpdateCard(card.id, patch)}
                   onDelete={() => handleDeleteCard(card.id)}
                   onStartConnect={() => handleStartConnect(card.id)}
                   onConnectTo={async () => {
                     await handleConnectTo(card.id)
                   }}
-                  onLinkChapter={() => handleLinkChapter(card.id)}
                   onSelect={() => handleSelectCard(card.id)}
+                  onChapterAssignment={() => setSelectedChapterId(null)}
+                  onEntityCardClick={handleEntityCardClick}
+                  onUnlinkEntity={handleUnlinkEntity}
                 />
               ))
             })()}
 
             {/* Preview card while placing */}
-            {previewShape && mousePos && <PreviewCard shape={previewShape} mousePos={mousePos} />}
+            {mousePos && (previewShape || selectedChapterId) && (
+              <PreviewCard
+                shape={previewShape}
+                mousePos={mousePos}
+                pendingEntity={pendingEntity}
+                selectedChapter={selectedChapterId ? chapters.find(ch => ch.id === selectedChapterId) || null : null}
+              />
+            )}
           </div>
         </div>
-      </DndContext>
-
-      {/* Chapter picker modal */}
-      {chapterPickerCardId && (
-        <ChapterPickerModal
-          chapters={chapters}
-          onSelect={handleChapterSelected}
-          onClose={() => setChapterPickerCardId(null)}
-        />
-      )}
+      </div>
 
       {/* Apply order modal */}
       {showApplyOrderModal && (
@@ -432,6 +566,32 @@ export default function DraftBoardCanvas({
           />
         </>
       )}
-    </div>
+
+      {/* Entity creation/edit modal */}
+      {entityModal && (
+        <EntityCreationModal
+          type={entityModal.type}
+          initialData={entityModal.initialData}
+          onConfirm={entityModal.editingEntityId
+            ? data => handleSaveEntityEdit({ ...data, type: entityModal.type })
+            : data => handleCreateEntityCard({ ...data, type: entityModal.type })
+          }
+          onClose={handleCloseEntityModal}
+        />
+      )}
+
+      {/* Entity card popover */}
+      {popoverState && (
+        <EntityCardPopover
+          entity={popoverState.entity}
+          anchorRect={popoverState.anchorRect}
+          onClose={() => setPopoverState(null)}
+          onEdit={() => {
+            setPopoverState(null)
+            handleOpenEntityEdit(popoverState.entity.id)
+          }}
+        />
+      )}
+    </DndContext>
   )
 }

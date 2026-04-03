@@ -16,12 +16,14 @@ interface BoardCardProps {
   isSelected?: boolean
   connectingFromCardId: string | null
   duplicateChapterIds: Set<string>
+  selectedChapterId?: string | null
+  chapterNameBySelectedId?: string | null
   onUpdate: (patch: Partial<BoardCardType>) => void
   onDelete: () => void
   onStartConnect: () => void
   onConnectTo: () => Promise<void>
-  onLinkChapter: () => void
   onSelect: () => void
+  onChapterAssignment?: () => void
   onEntityCardClick?: (entityId: string, rect: DOMRect) => void
   onUnlinkEntity?: (cardId: string, entityId?: string) => void
 }
@@ -74,7 +76,6 @@ function HoverBar({
   listeners,
   attributes,
   onStartConnect,
-  onLinkChapter,
   onDelete,
   onToggleColourPicker,
   showColourPicker,
@@ -85,7 +86,6 @@ function HoverBar({
   listeners: any
   attributes: any
   onStartConnect: () => void
-  onLinkChapter: () => void
   onDelete: () => void
   onToggleColourPicker: () => void
   showColourPicker: boolean
@@ -114,14 +114,6 @@ function HoverBar({
         style={{ cursor: 'grab' }}
       >
         <ArrowRight size={14} />
-      </button>
-
-      <button
-        className="board-card-icon-btn"
-        onClick={onLinkChapter}
-        title="Link chapter"
-      >
-        <Book size={14} />
       </button>
 
       <button
@@ -263,12 +255,14 @@ export default function BoardCard({
   isSelected,
   connectingFromCardId,
   duplicateChapterIds,
+  selectedChapterId,
+  chapterNameBySelectedId,
   onUpdate,
   onDelete,
   onStartConnect,
   onConnectTo,
-  onLinkChapter,
   onSelect,
+  onChapterAssignment,
   onEntityCardClick,
   onUnlinkEntity,
 }: BoardCardProps) {
@@ -311,6 +305,13 @@ export default function BoardCard({
     e.stopPropagation()
     onSelect()
 
+    // Handle chapter assignment
+    if (selectedChapterId && chapterNameBySelectedId && !card.entityId) {
+      onUpdate({ chapterId: selectedChapterId, chapterName: chapterNameBySelectedId })
+      onChapterAssignment?.()
+      return
+    }
+
     // If there's already a connection source and this isn't it, complete the connection
     if (connectingFromCardId && connectingFromCardId !== card.id) {
       onConnectTo()
@@ -327,7 +328,7 @@ export default function BoardCard({
     position: 'absolute',
     left: card.x,
     top: card.y,
-    zIndex: isDragging ? 50 : isSelected ? 30 : 1,
+    zIndex: isDragging ? 1000 : isSelected ? 30 : 1,
     transform: CSS.Translate.toString(transform),
     cursor: connectionModeActive ? 'pointer' : isDragging ? 'grabbing' : 'grab',
   }
@@ -436,7 +437,6 @@ export default function BoardCard({
         listeners={listeners}
         attributes={attributes}
         onStartConnect={onStartConnect}
-        onLinkChapter={onLinkChapter}
         onDelete={onDelete}
         onToggleColourPicker={() => setShowColourPicker(!showColourPicker)}
         showColourPicker={showColourPicker}

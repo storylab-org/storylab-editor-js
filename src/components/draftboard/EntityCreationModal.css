@@ -1,0 +1,188 @@
+.entity-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 999;
+  cursor: auto;
+}
+
+.entity-modal-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 320px;
+  max-width: 450px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.entity-modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f0f0f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.entity-modal-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(70vh - 60px);
+  overflow-y: auto;
+}
+
+.entity-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entity-modal-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+}
+
+.entity-modal-input,
+.entity-modal-textarea {
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #0f0f0f;
+  background: white;
+}
+
+.entity-modal-input::placeholder,
+.entity-modal-textarea::placeholder {
+  color: #999;
+}
+
+.entity-modal-input:focus,
+.entity-modal-textarea:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.entity-modal-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.entity-modal-footer {
+  padding: 16px;
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.entity-modal-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.entity-modal-btn-cancel {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #d0d0d0;
+}
+
+.entity-modal-btn-cancel:hover {
+  background: #e8e8e8;
+}
+
+.entity-modal-btn-confirm {
+  background: #0066cc;
+  color: white;
+  border: 1px solid #0052a3;
+}
+
+.entity-modal-btn-confirm:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.entity-modal-btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.entity-modal-tag-input-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.entity-modal-tag-input-wrapper .entity-modal-input {
+  flex: 1;
+}
+
+.entity-modal-tag-add-btn {
+  padding: 8px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: #f5f5f5;
+  color: #333;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.entity-modal-tag-add-btn:hover {
+  background: #e8e8e8;
+}
+
+.entity-modal-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.entity-modal-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e0e7ff;
+  color: #2c3e50;
+  padding: 4px 8px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.entity-modal-tag-remove {
+  background: none;
+  border: none;
+  color: #2c3e50;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.entity-modal-tag-remove:hover {
+  opacity: 1;
+}
