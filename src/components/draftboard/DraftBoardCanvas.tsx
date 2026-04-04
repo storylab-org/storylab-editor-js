@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
+import { Book } from 'lucide-react'
 import BoardCard from './BoardCard'
 import ConnectionLayer from './ConnectionLayer'
 import DraftBoardToolbar from './DraftBoardToolbar'
@@ -39,8 +40,9 @@ const ENTITY_TYPE_COLORS: Record<'character' | 'location' | 'item', string> = {
 function PreviewCard({ shape, mousePos, pendingEntity, selectedChapter }: PreviewCardProps) {
   // Chapter preview
   if (selectedChapter) {
-    const offsetX = 60
-    const offsetY = 20
+    const width = '160px'
+    const offsetX = 80 // Half of 160px width
+    const offsetY = 20 // Half of approximate chip height
 
     return (
       <div
@@ -48,20 +50,33 @@ function PreviewCard({ shape, mousePos, pendingEntity, selectedChapter }: Previe
           position: 'absolute',
           left: mousePos.x - offsetX,
           top: mousePos.y - offsetY,
-          padding: '6px 10px',
-          borderRadius: '4px',
-          background: '#e3f2fd',
-          border: '1px solid #90caf9',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+          width,
           pointerEvents: 'none',
-          fontSize: '12px',
-          fontWeight: 500,
-          color: '#1565c0',
-          whiteSpace: 'nowrap',
-          zIndex: 10000,
+          zIndex: 15,
         }}
       >
-        📖 {selectedChapter.name}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            borderLeft: '3px solid #3b82f6',
+            background: 'white',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+            opacity: 0.95,
+            fontSize: '13px',
+            fontWeight: 500,
+            color: '#1a1a1a',
+            zIndex: 15,
+          }}
+        >
+          <Book size={14} style={{ color: '#3b82f6', flexShrink: 0 }} />
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>
+            {selectedChapter.name}
+          </span>
+        </div>
       </div>
     )
   }
@@ -81,7 +96,7 @@ function PreviewCard({ shape, mousePos, pendingEntity, selectedChapter }: Previe
           top: mousePos.y - offsetY,
           width,
           pointerEvents: 'none',
-          zIndex: 10000,
+          zIndex: 15,
         }}
       >
         <div
@@ -505,7 +520,7 @@ export default function DraftBoardCanvas({
             border: '1px solid #e5e5e5',
             borderRadius: '6px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            zIndex: 1000,
+            zIndex: 30,
             minWidth: '320px',
             padding: '20px',
           }}>
@@ -561,7 +576,7 @@ export default function DraftBoardCanvas({
               left: 0,
               right: 0,
               bottom: 0,
-              zIndex: 999,
+              zIndex: 29,
             }}
           />
         </>

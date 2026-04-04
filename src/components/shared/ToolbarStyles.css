@@ -38,7 +38,7 @@
 
 /* Dropdown styles used across the app */
 .dropdown {
-  z-index: 9999 !important;
+  z-index: 35 !important;
   position: fixed !important;
   min-height: auto !important;
   padding: 4px 0;
