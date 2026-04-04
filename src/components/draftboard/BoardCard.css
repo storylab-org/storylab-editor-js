@@ -172,19 +172,28 @@
 .board-card-chapter-badge {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
+  gap: 8px;
+  padding: 8px 12px;
   margin-top: 8px;
-  background: #f0f0f0;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: box-shadow 0.15s;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+  box-sizing: border-box;
 }
 
 .board-card-chapter-badge:hover {
-  background: #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.board-card-chapter-badge svg {
+  color: #3b82f6;
 }
 
 .badge-text {

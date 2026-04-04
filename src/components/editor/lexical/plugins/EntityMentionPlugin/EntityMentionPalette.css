@@ -7,7 +7,7 @@
   width: 320px;
   max-height: 280px;
   overflow-y: auto;
-  z-index: 1050;
+  z-index: 20;
   padding: 8px 0;
   animation: entity-mention-palette-fade-in 0.2s ease-out;
 }
