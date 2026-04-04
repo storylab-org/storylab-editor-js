@@ -30,6 +30,7 @@ interface TriggerContext {
   position: { top: number; left: number }
   selection: RangeSelection | null
   offset: number
+  anchorRectTop: number
 }
 
 export default function EntityMentionPlugin() {
@@ -93,6 +94,7 @@ export default function EntityMentionPlugin() {
         position: { top, left },
         selection,
         offset: triggerPos,
+        anchorRectTop: rect.top,
       }
     },
     []
@@ -217,6 +219,33 @@ export default function EntityMentionPlugin() {
     })
   }, [editor, handleEntityMentionClick])
 
+  // Adjust position for bottom overflow (runs after paint)
+  useEffect(() => {
+    if (!active || !paletteRef.current || !triggerContext) return
+
+    const adjustPosition = () => {
+      const paletteHeight = paletteRef.current?.offsetHeight || 200
+      const bottomSpace = window.innerHeight - triggerContext.position.top
+
+      if (bottomSpace < paletteHeight + 16) {
+        setTriggerContext((prev) =>
+          prev
+            ? {
+                ...prev,
+                position: {
+                  ...prev.position,
+                  top: Math.max(8, prev.anchorRectTop - paletteHeight - 8),
+                },
+              }
+            : prev
+        )
+      }
+    }
+
+    const id = setTimeout(adjustPosition, 0)
+    return () => clearTimeout(id)
+  }, [active, triggerContext?.position.top])
+
   // Register keyboard commands
   useEffect(() => {
     if (!active) return
@@ -272,6 +301,7 @@ export default function EntityMentionPlugin() {
           onSelect={handleSelectEntity}
           onHover={setSelectedIndex}
           paletteRef={paletteRef}
+          triggerChar={triggerContext.trigger}
         />
       )}
       {popoverEntity && popoverPosition && (

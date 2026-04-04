@@ -81,8 +81,14 @@ export default function EditorLayout() {
 
         console.log(`[INIT] ✓ Setting chapters list: ${docs.map(d => d.id).join(', ')}`)
         setChapters(docs)
-        console.log(`[INIT] ✓ Setting active chapter to Overview`)
-        setActiveChapterId(OVERVIEW_ID)
+
+        // Restore last active chapter from localStorage, or default to Overview
+        const savedChapterId = localStorage.getItem('active-chapter-id')
+        const chapterExists = docs.some(d => d.id === savedChapterId)
+        const initialChapterId = (savedChapterId && chapterExists) ? savedChapterId : OVERVIEW_ID
+
+        console.log(`[INIT] ✓ Setting active chapter to ${initialChapterId === OVERVIEW_ID ? 'Overview (Draft Board)' : initialChapterId}`)
+        setActiveChapterId(initialChapterId)
       } catch (error) {
         console.error('[INIT] ✗ Failed to load chapters:', error)
       } finally {
@@ -158,6 +164,12 @@ export default function EditorLayout() {
       if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
     }
   }, [isDirty, content])
+
+  // Persist active chapter ID to localStorage for restoration on reload
+  useEffect(() => {
+    if (!activeChapterId) return
+    localStorage.setItem('active-chapter-id', activeChapterId)
+  }, [activeChapterId])
 
   const handleSelectChapter = async (id: string) => {
     console.log(`[SWITCH] Switching to chapter "${id}"`)

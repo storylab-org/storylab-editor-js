@@ -6,6 +6,7 @@ vi.mock('../../src/api/documents')
 describe('Autosave Feature', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    localStorage.clear()
   })
 
   describe('Dirty state tracking', () => {

@@ -6,6 +6,7 @@ vi.mock('../../../src/api/documents')
 describe('EditorLayout — API Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    localStorage.clear()
   })
 
   describe('chapter lifecycle', () => {

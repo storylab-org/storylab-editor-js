@@ -123,7 +123,7 @@ export default function DraftBoardToolbar({
 
       <DropDown
         buttonLabel="Entity"
-        buttonIcon={<User size={16} />}
+        buttonIcon={<User size={18} />}
         buttonClassName="board-tool-btn board-tool-btn-entity"
         buttonAriaLabel="Add entity card"
       >
@@ -144,7 +144,7 @@ export default function DraftBoardToolbar({
 
           <DropDown
             buttonLabel="Chapter"
-            buttonIcon={<Book size={16} />}
+            buttonIcon={<Book size={18} />}
             buttonClassName="board-tool-btn board-tool-btn-chapter"
             buttonAriaLabel="Select chapter to assign"
           >
@@ -167,7 +167,7 @@ export default function DraftBoardToolbar({
         onClick={onToggleConnect}
         title="Connect cards"
       >
-        <ArrowRight size={16} />
+        <ArrowRight size={18} />
       </button>
 
       <div className="board-toolbar-separator" />
@@ -177,7 +177,7 @@ export default function DraftBoardToolbar({
         onClick={onReset}
         title="Reset board"
       >
-        <RotateCcw size={16} />
+        <RotateCcw size={18} />
       </button>
     </div>
   )

@@ -57,13 +57,3 @@
   flex-wrap: wrap;
   gap: 6px;
 }
-
-.entity-card-popover__tag {
-  display: inline-block;
-  background: #e0e7ff;
-  color: #2c3e50;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}

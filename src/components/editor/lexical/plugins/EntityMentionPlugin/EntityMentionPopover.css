@@ -72,4 +72,22 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  margin-bottom: 8px;
+}
+
+.entity-mention-popover__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.entity-mention-popover__tag {
+  display: inline-block;
+  background: #e0e7ff;
+  color: #2c3e50;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
 }
