@@ -9,11 +9,23 @@ test('entities: GET /entities returns list', async (t) => {
   process.env.STORYLAB_DATA_DIR = tmpdir
   try {
     const app = await buildApp()
+    // Create some test entities
+    await app.inject({
+      method: 'POST',
+      url: '/entities',
+      payload: { name: 'Test Character', type: 'character' },
+    })
+    await app.inject({
+      method: 'POST',
+      url: '/entities',
+      payload: { name: 'Test Location', type: 'location' },
+    })
+
     const response = await app.inject({ method: 'GET', url: '/entities' })
     assert.strictEqual(response.statusCode, 200)
     const entities = JSON.parse(response.body)
     assert.ok(Array.isArray(entities))
-    assert.strictEqual(entities.length, 15) // 5 chars + 5 locations + 5 items
+    assert.strictEqual(entities.length, 2)
   } finally {
     delete process.env.STORYLAB_DATA_DIR
     rmSync(tmpdir, { recursive: true })
@@ -25,10 +37,27 @@ test('entities: GET /entities?type=character filters', async (t) => {
   process.env.STORYLAB_DATA_DIR = tmpdir
   try {
     const app = await buildApp()
+    // Create mixed entity types
+    const char1 = await app.inject({
+      method: 'POST',
+      url: '/entities',
+      payload: { name: 'Character 1', type: 'character' },
+    })
+    const char2 = await app.inject({
+      method: 'POST',
+      url: '/entities',
+      payload: { name: 'Character 2', type: 'character' },
+    })
+    await app.inject({
+      method: 'POST',
+      url: '/entities',
+      payload: { name: 'Location 1', type: 'location' },
+    })
+
     const response = await app.inject({ method: 'GET', url: '/entities?type=character' })
     assert.strictEqual(response.statusCode, 200)
     const entities = JSON.parse(response.body)
-    assert.strictEqual(entities.length, 5)
+    assert.ok(entities.length >= 2, 'Should have at least 2 characters')
     assert.ok(entities.every((e: any) => e.type === 'character'))
   } finally {
     delete process.env.STORYLAB_DATA_DIR

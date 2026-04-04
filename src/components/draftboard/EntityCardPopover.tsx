@@ -100,7 +100,7 @@ export default function EntityCardPopover({
           <div className="entity-card-popover__tags-divider" />
           <div className="entity-card-popover__tags-list">
             {entity.tags.map((tag, index) => (
-              <span key={index} className="entity-card-popover__tag">
+              <span key={index} className="entity-mention-popover__tag">
                 {tag}
               </span>
             ))}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
-import { User, MapPin, Package } from 'lucide-react'
 import type { Entity } from '@/api/entities'
+import { BADGE_ICONS, ENTITY_LABELS, ENTITY_CHIP_COLORS } from '@/api/entities'
 import './EntityMentionPalette.css'
 
 interface EntityMentionPaletteProps {
@@ -10,12 +10,7 @@ interface EntityMentionPaletteProps {
   onSelect: (entity: Entity) => void
   onHover: (index: number) => void
   paletteRef: React.RefObject<HTMLDivElement>
-}
-
-const BADGE_ICONS = {
-  character: User,
-  location: MapPin,
-  item: Package,
+  triggerChar?: string
 }
 
 export default function EntityMentionPalette({
@@ -25,6 +20,7 @@ export default function EntityMentionPalette({
   onSelect,
   onHover,
   paletteRef,
+  triggerChar = '@',
 }: EntityMentionPaletteProps) {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
@@ -37,12 +33,6 @@ export default function EntityMentionPalette({
 
   if (entities.length === 0) {
     return null
-  }
-
-  const typeColours: Record<string, string> = {
-    character: '#7c3aed',
-    location: '#0d9488',
-    item: '#b45309',
   }
 
   return (
@@ -67,14 +57,10 @@ export default function EntityMentionPalette({
             onMouseEnter={() => onHover(index)}
           >
             <div className="entity-mention-palette-item-header">
-              <span
-                className="entity-mention-palette-type-badge"
-                style={{ borderColor: typeColours[entity.type] }}
-              >
-                <IconComponent size={14} />
-                <span>{entity.type}</span>
-              </span>
+              <IconComponent size={14} color={ENTITY_CHIP_COLORS[entity.type]} />
               <span className="entity-mention-palette-item-name">{entity.name}</span>
+              <span className="entity-mention-palette-item-type">{ENTITY_LABELS[entity.type]}</span>
+              <span className="entity-mention-palette-item-trigger">{triggerChar}</span>
             </div>
             {entity.description && (
               <div className="entity-mention-palette-item-description">{entity.description}</div>

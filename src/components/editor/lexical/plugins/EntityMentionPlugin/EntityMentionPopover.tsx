@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { User, MapPin, Package } from 'lucide-react'
 import type { Entity } from '@/api/entities'
+import { BADGE_ICONS, ENTITY_LABELS } from '@/api/entities'
 import './EntityMentionPopover.css'
-
-const BADGE_ICONS = {
-  character: User,
-  location: MapPin,
-  item: Package,
-}
 
 interface EntityMentionPopoverProps {
   entity: Entity
@@ -78,12 +72,19 @@ export default function EntityMentionPopover({
       <div className="entity-mention-popover__header">
         <span className={`entity-mention-popover__badge entity-mention-popover__badge--${entity.type}`}>
           <IconComponent size={14} />
-          <span>{entity.type}</span>
+          <span>{ENTITY_LABELS[entity.type]}</span>
         </span>
       </div>
       <div className="entity-mention-popover__name">{entity.name}</div>
       {entity.description && (
         <div className="entity-mention-popover__description">{entity.description}</div>
+      )}
+      {entity.tags && entity.tags.length > 0 && (
+        <div className="entity-mention-popover__tags">
+          {entity.tags.map((tag) => (
+            <span key={tag} className="entity-mention-popover__tag">{tag}</span>
+          ))}
+        </div>
       )}
     </div>
   )

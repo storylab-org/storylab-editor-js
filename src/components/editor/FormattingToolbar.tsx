@@ -178,12 +178,12 @@ export default function FormattingToolbar() {
   const FONT_SIZE_OPTIONS = ['10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', '18px', '20px', '24px', '28px', '32px']
 
   const BlockIcon = ({ type }: { type: BlockType }) => {
-    if (type === 'h1') return <Heading1 size={16} />
-    if (type === 'h2') return <Heading2 size={16} />
-    if (type === 'h3') return <Heading3 size={16} />
-    if (type === 'quote') return <Quote size={16} />
-    if (type === 'code') return <Code size={16} />
-    return <Type size={16} />
+    if (type === 'h1') return <Heading1 size={18} />
+    if (type === 'h2') return <Heading2 size={18} />
+    if (type === 'h3') return <Heading3 size={18} />
+    if (type === 'quote') return <Quote size={18} />
+    if (type === 'code') return <Code size={18} />
+    return <Type size={18} />
   }
 
   useEffect(() => {
@@ -226,7 +226,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(UNDO_COMMAND)}
         className="format-btn"
       >
-        <Undo2 size={16} />
+        <Undo2 size={18} />
       </button>
 
       <button
@@ -234,7 +234,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(REDO_COMMAND)}
         className="format-btn"
       >
-        <Redo2 size={16} />
+        <Redo2 size={18} />
       </button>
 
       <DropDown
@@ -244,22 +244,22 @@ export default function FormattingToolbar() {
         buttonAriaLabel="Block format"
       >
         <DropDownItem className={`item ${blockType === 'paragraph' ? 'active' : ''}`} onClick={formatParagraph}>
-          <Type size={16} /><span className="text">Normal</span>
+          <Type size={18} /><span className="text">Normal</span>
         </DropDownItem>
         <DropDownItem className={`item ${blockType === 'h1' ? 'active' : ''}`} onClick={() => formatHeading('h1')}>
-          <Heading1 size={16} /><span className="text">Heading 1</span>
+          <Heading1 size={18} /><span className="text">Heading 1</span>
         </DropDownItem>
         <DropDownItem className={`item ${blockType === 'h2' ? 'active' : ''}`} onClick={() => formatHeading('h2')}>
-          <Heading2 size={16} /><span className="text">Heading 2</span>
+          <Heading2 size={18} /><span className="text">Heading 2</span>
         </DropDownItem>
         <DropDownItem className={`item ${blockType === 'h3' ? 'active' : ''}`} onClick={() => formatHeading('h3')}>
-          <Heading3 size={16} /><span className="text">Heading 3</span>
+          <Heading3 size={18} /><span className="text">Heading 3</span>
         </DropDownItem>
         <DropDownItem className={`item ${blockType === 'quote' ? 'active' : ''}`} onClick={formatQuote}>
-          <Quote size={16} /><span className="text">Quote</span>
+          <Quote size={18} /><span className="text">Quote</span>
         </DropDownItem>
         <DropDownItem className={`item ${blockType === 'code' ? 'active' : ''}`} onClick={formatCode}>
-          <Code size={16} /><span className="text">Code Block</span>
+          <Code size={18} /><span className="text">Code Block</span>
         </DropDownItem>
       </DropDown>
 
@@ -286,7 +286,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(FORMAT_TEXT_COMMAND, 'bold')}
         className={`format-btn ${isBold ? 'active' : ''}`}
       >
-        <Bold size={16} />
+        <Bold size={18} />
       </button>
 
       <button
@@ -294,7 +294,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(FORMAT_TEXT_COMMAND, 'italic')}
         className={`format-btn ${isItalic ? 'active' : ''}`}
       >
-        <Italic size={16} />
+        <Italic size={18} />
       </button>
 
       <button
@@ -302,7 +302,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(FORMAT_TEXT_COMMAND, 'underline')}
         className={`format-btn ${isUnderline ? 'active' : ''}`}
       >
-        <Underline size={16} />
+        <Underline size={18} />
       </button>
 
       <div className="separator" />
@@ -312,7 +312,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(INSERT_UNORDERED_LIST_COMMAND)}
         className="format-btn"
       >
-        <List size={16} />
+        <List size={18} />
       </button>
 
       <button
@@ -320,7 +320,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(INSERT_ORDERED_LIST_COMMAND)}
         className="format-btn"
       >
-        <ListOrdered size={16} />
+        <ListOrdered size={18} />
       </button>
 
       <div className="separator" />
@@ -330,7 +330,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(FORMAT_ELEMENT_COMMAND, 'left')}
         className="format-btn"
       >
-        <AlignLeft size={16} />
+        <AlignLeft size={18} />
       </button>
 
       <button
@@ -338,7 +338,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(FORMAT_ELEMENT_COMMAND, 'center')}
         className="format-btn"
       >
-        <AlignCenter size={16} />
+        <AlignCenter size={18} />
       </button>
 
       <button
@@ -346,7 +346,7 @@ export default function FormattingToolbar() {
         onClick={() => handleFormat(FORMAT_ELEMENT_COMMAND, 'right')}
         className="format-btn"
       >
-        <AlignRight size={16} />
+        <AlignRight size={18} />
       </button>
 
       <div className="separator" />
@@ -356,7 +356,7 @@ export default function FormattingToolbar() {
         onClick={() => setShowTableDialog(true)}
         className="format-btn"
       >
-        <Table2 size={16} />
+        <Table2 size={18} />
       </button>
 
       <button
@@ -364,25 +364,25 @@ export default function FormattingToolbar() {
         onClick={openImageFilePicker}
         className="format-btn"
       >
-        <Image size={16} />
+        <Image size={18} />
       </button>
 
       <div className="separator" />
 
       <DropDown
-        buttonLabel="Mention"
-        buttonIcon={<User size={16} />}
-        buttonClassName="format-btn format-btn-mention"
+        buttonLabel="Entity"
+        buttonIcon={<User size={18} />}
+        buttonClassName="format-btn format-btn-entity"
         buttonAriaLabel="Insert entity mention"
       >
-        <DropDownItem className="item" onClick={() => insertMentionTrigger('@', 'character')}>
-          <User size={16} /><span className="text">Character <span className="shortcut">(Type @)</span></span>
+        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('@', 'character')}>
+          <User size={16} /><span className="text">@ (Person)</span>
         </DropDownItem>
-        <DropDownItem className="item" onClick={() => insertMentionTrigger('#', 'location')}>
-          <MapPin size={16} /><span className="text">Location <span className="shortcut">(Type #)</span></span>
+        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('#', 'location')}>
+          <MapPin size={16} /><span className="text"># (Location)</span>
         </DropDownItem>
-        <DropDownItem className="item" onClick={() => insertMentionTrigger('!', 'item')}>
-          <Package size={16} /><span className="text">Item <span className="shortcut">(Type !)</span></span>
+        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('!', 'item')}>
+          <Package size={16} /><span className="text">! (Item)</span>
         </DropDownItem>
       </DropDown>
 

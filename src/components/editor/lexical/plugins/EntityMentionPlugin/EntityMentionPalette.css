@@ -1,14 +1,14 @@
 .entity-mention-palette {
   position: fixed;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  width: 320px;
+  width: auto;
   max-height: 280px;
   overflow-y: auto;
-  z-index: 20;
-  padding: 8px 0;
+  z-index: 35;
+  padding: 4px 0;
   animation: entity-mention-palette-fade-in 0.2s ease-out;
 }
 
@@ -24,55 +24,60 @@
 }
 
 .entity-mention-palette-item {
-  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
   cursor: pointer;
   transition: background-color 0.1s ease;
-  border-left: 3px solid transparent;
 }
 
 .entity-mention-palette-item:hover {
-  background-color: #f9fafb;
+  background-color: #f0f0f0;
 }
 
 .entity-mention-palette-item.active {
-  background-color: #f3f4f6;
-  border-left-color: #0066cc;
+  background-color: #f0f0f0;
 }
 
 .entity-mention-palette-item-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.entity-mention-palette-type-badge {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid;
-  white-space: nowrap;
-  background: white;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  gap: 8px;
+  padding: 6px 10px;
+  margin: 0;
 }
 
 .entity-mention-palette-item-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0f0f0f;
+  font-size: 13px;
+  color: #333;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.entity-mention-palette-item-type {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.entity-mention-palette-item-trigger {
+  font-size: 11px;
+  font-weight: 500;
+  color: #bbb;
+  margin-left: 8px;
+  padding: 2px 6px;
+  background: #f5f5f5;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
 .entity-mention-palette-item-description {
   font-size: 12px;
   color: #6b7280;
-  margin-top: 4px;
+  margin: 0;
+  padding: 0 10px 6px 10px;
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;

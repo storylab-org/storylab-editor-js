@@ -11,6 +11,7 @@ vi.mock('../../src/api/draftboard')
 describe('App — Book Editor Landing Page', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    localStorage.clear()
 
     // Mock listDocuments to return 3 chapters
     ;(documentsAPI.listDocuments as any).mockResolvedValue([
