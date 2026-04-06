@@ -171,6 +171,27 @@ Maintain 70%+ code coverage. Run `npm test` before every PR.
 
 ---
 
+## Infrastructure Note: File-Based Storage vs Database
+
+As of April 2026, we're using file-based storage (JSON files in `~/.storylab/`) for:
+- Documents (chapters)
+- Entities (characters, locations, items)
+- Annotations (comments/marks)
+- Draft board state
+- Entity cards
+
+**Current status:** Works fine for single-user, small-scale (~100 chapters, ~500 entities). 
+
+**Future consideration:** Estimate when we'll need to migrate to SQLite or PostgreSQL:
+- Multi-user collaboration (>1 concurrent user)
+- Performance hits at scale (>1000 chapters or >5000 entities)
+- Real-time sync requirements
+- Complex queries (e.g., "find all entities mentioned in this chapter")
+
+**Recommendation:** Monitor file I/O patterns during development. Consider SQLite migration around Week 8-10 if performance becomes an issue. For now, file-based approach keeps deployment simple (no database setup) and works well for DMing/writing workflows.
+
+---
+
 ## Next Immediate Action
 
 **Start with `SceneBreakNode`:**

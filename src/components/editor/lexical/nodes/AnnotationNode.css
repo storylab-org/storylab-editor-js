@@ -1,0 +1,5 @@
+.annotation-mark {
+  /* Transparent wrapper — inherits all formatting from children */
+  cursor: pointer;
+  /* No background, border, padding, or colour changes */
+}

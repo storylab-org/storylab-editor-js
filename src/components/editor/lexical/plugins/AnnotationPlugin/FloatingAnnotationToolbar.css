@@ -1,0 +1,49 @@
+.floating-annotation-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: white;
+  border: 1px solid rgb(209, 213, 219);
+  border-radius: 6px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.annotation-toolbar-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.annotation-toolbar-button--draft-note {
+  color: rgb(180, 83, 9);
+}
+
+.annotation-toolbar-button--draft-note:hover {
+  background-color: rgba(250, 204, 21, 0.15);
+}
+
+.annotation-toolbar-button--needs-revision {
+  color: rgb(124, 45, 18);
+}
+
+.annotation-toolbar-button--needs-revision:hover {
+  background-color: rgba(249, 115, 22, 0.15);
+}
+
+.annotation-toolbar-button--author-note {
+  color: rgb(37, 99, 235);
+}
+
+.annotation-toolbar-button--author-note:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
