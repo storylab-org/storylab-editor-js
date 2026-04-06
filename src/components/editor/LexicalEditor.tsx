@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './lexical/style.css';
 import './lexical/nodes/SceneBreakNode.css';
 import './lexical/nodes/EntityMentionNode.css';
+import './lexical/nodes/AnnotationNode.css';
 
 import type { EditorState } from 'lexical';
 import { $getRoot } from 'lexical';
@@ -21,6 +22,7 @@ import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ImageNode } from './lexical/nodes/ImageNode';
 import { SceneBreakNode } from './lexical/nodes/SceneBreakNode';
 import { EntityMentionNode } from './lexical/nodes/EntityMentionNode';
+import { AnnotationNode } from './lexical/nodes/AnnotationNode';
 
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
@@ -40,6 +42,7 @@ import ImageResizePlugin from './lexical/plugins/ImageResizePlugin';
 import SlashCommandPlugin from './lexical/plugins/SlashCommandPlugin';
 import SceneBreakPlugin from './lexical/plugins/SceneBreakPlugin';
 import EntityMentionPlugin from './lexical/plugins/EntityMentionPlugin';
+import { AnnotationPlugin } from './lexical/plugins/AnnotationPlugin';
 import FormattingToolbar from './FormattingToolbar';
 
 import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
@@ -51,6 +54,7 @@ interface LexicalEditorProps {
   onContentChange?: (serialisedState: string, wordCount: number) => void;
   showDragMenu?: boolean;
   enableTreeViewPlugin?: boolean;
+  onAnnotationsChange?: (annotations: any[]) => void;
 }
 
 const LexicalEditor: React.FC<LexicalEditorProps> = ({
@@ -60,6 +64,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
   onContentChange,
   showDragMenu = true,
   enableTreeViewPlugin = false,
+  onAnnotationsChange,
 }) => {
   const [wordCount, setWordCount] = useState<number>(0);
   const theme = PlaygroundEditorTheme;
@@ -135,6 +140,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
           ImageNode,
           SceneBreakNode,
           EntityMentionNode,
+          AnnotationNode,
         ],
         theme,
         onError,
@@ -163,6 +169,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <ImagePlugin />
         <SceneBreakPlugin />
         <EntityMentionPlugin />
+        <AnnotationPlugin documentId={chapterId} onAnnotationsChange={onAnnotationsChange} />
         <SlashCommandPlugin />
       </div>
       <WordCountPlugin />

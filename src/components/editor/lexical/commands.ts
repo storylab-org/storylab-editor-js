@@ -1,4 +1,5 @@
 import {LexicalCommand, createCommand} from "lexical";
+import { AnnotationCategory } from '@/api/annotations'
 
 export const CAN_PUSH_COMMAND: LexicalCommand<boolean> = createCommand();
 export const CAN_DOWNLOAD_COMMAND: LexicalCommand<boolean> = createCommand();
@@ -35,3 +36,21 @@ export interface InsertEntityMentionPayload {
 }
 
 export const INSERT_ENTITY_MENTION_COMMAND: LexicalCommand<InsertEntityMentionPayload> = createCommand('INSERT_ENTITY_MENTION_COMMAND');
+
+export interface AddAnnotationPayload {
+  category: AnnotationCategory
+}
+
+export const ADD_ANNOTATION_COMMAND: LexicalCommand<AddAnnotationPayload> = createCommand('ADD_ANNOTATION_COMMAND')
+
+export interface RemoveAnnotationPayload {
+  markId: string
+}
+
+export const REMOVE_ANNOTATION_COMMAND: LexicalCommand<RemoveAnnotationPayload> = createCommand('REMOVE_ANNOTATION_COMMAND')
+
+export interface ScrollToAnnotationPayload {
+  markId: string
+}
+
+export const SCROLL_TO_ANNOTATION_COMMAND: LexicalCommand<ScrollToAnnotationPayload> = createCommand('SCROLL_TO_ANNOTATION_COMMAND')

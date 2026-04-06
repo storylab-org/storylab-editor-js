@@ -171,6 +171,17 @@ function nodeToHtml(node: LexicalNode): string {
         return `<img src="http://localhost:3000/images/${cid}" alt="${alt}" style="max-width:100%"/>`
       }
 
+    case 'annotation':
+      {
+        const category = node.category || 'draft-note'
+        // Strip author-note annotations entirely; render other categories transparently
+        if (category === 'author-note') {
+          return ''
+        }
+        // For draft-note and needs-revision, render children without wrapper
+        return nodesToHtml(node.children || [])
+      }
+
     default:
       // Unknown node type: try to render children anyway
       return nodesToHtml(node.children || [])

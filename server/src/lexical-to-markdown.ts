@@ -193,6 +193,17 @@ function nodeToMarkdown(node: LexicalNode, ctx: ConversionContext): string {
         return `![${alt}](http://localhost:3000/images/${cid})`
       }
 
+    case 'annotation':
+      {
+        const category = node.category || 'draft-note'
+        // Strip author-note annotations entirely; render other categories transparently
+        if (category === 'author-note') {
+          return ''
+        }
+        // For draft-note and needs-revision, render children without wrapper
+        return nodesToMarkdown(node.children || [], ctx)
+      }
+
     default:
       // Unknown node type: render children
       return nodesToMarkdown(node.children || [], ctx)
