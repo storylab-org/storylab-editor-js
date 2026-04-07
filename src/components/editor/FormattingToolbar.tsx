@@ -29,9 +29,11 @@ import {
   User,
   MapPin,
   Package,
+  Search,
 } from 'lucide-react'
 import DropDown, { DropDownItem } from './lexical/ui/DropDown'
 import { INSERT_IMAGE_COMMAND } from './lexical/commands'
+import { OPEN_FIND_REPLACE_COMMAND } from './lexical/plugins/FindReplacePlugin'
 import { useToast } from '@/components/shared/ToastContext'
 import InsertTableDialog from './InsertTableDialog'
 import './FormattingToolbar.css'
@@ -102,6 +104,10 @@ export default function FormattingToolbar() {
       })
     }
   }, [editor, blockType])
+
+  const openFindReplace = useCallback(() => {
+    editor.dispatchCommand(OPEN_FIND_REPLACE_COMMAND)
+  }, [editor])
 
   const applyFontSize = useCallback((size: string) => {
     editor.update(() => {
@@ -385,6 +391,17 @@ export default function FormattingToolbar() {
           <Package size={16} /><span className="text">! (Item)</span>
         </DropDownItem>
       </DropDown>
+
+      <div className="separator" />
+
+      <button
+        title="Find & Replace (Cmd+F)"
+        onClick={openFindReplace}
+        className="format-btn"
+        aria-label="Find and Replace"
+      >
+        <Search size={18} />
+      </button>
 
       {showTableDialog && <InsertTableDialog onClose={() => setShowTableDialog(false)} />}
     </div>

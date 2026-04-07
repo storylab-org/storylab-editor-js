@@ -43,6 +43,7 @@ import SlashCommandPlugin from './lexical/plugins/SlashCommandPlugin';
 import SceneBreakPlugin from './lexical/plugins/SceneBreakPlugin';
 import EntityMentionPlugin from './lexical/plugins/EntityMentionPlugin';
 import { AnnotationPlugin } from './lexical/plugins/AnnotationPlugin';
+import FindReplacePlugin from './lexical/plugins/FindReplacePlugin';
 import FormattingToolbar from './FormattingToolbar';
 
 import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
@@ -171,6 +172,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <EntityMentionPlugin />
         <AnnotationPlugin documentId={chapterId} onAnnotationsChange={onAnnotationsChange} />
         <SlashCommandPlugin />
+        <FindReplacePlugin />
       </div>
       <WordCountPlugin />
     </LexicalComposer>
