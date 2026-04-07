@@ -29,9 +29,11 @@ import {
   User,
   MapPin,
   Package,
+  Search,
 } from 'lucide-react'
 import DropDown, { DropDownItem } from './lexical/ui/DropDown'
 import { INSERT_IMAGE_COMMAND } from './lexical/commands'
+import { OPEN_FIND_REPLACE_COMMAND } from './lexical/plugins/FindReplacePlugin'
 import { useToast } from '@/components/shared/ToastContext'
 import InsertTableDialog from './InsertTableDialog'
 import './FormattingToolbar.css'
@@ -102,6 +104,10 @@ export default function FormattingToolbar() {
       })
     }
   }, [editor, blockType])
+
+  const openFindReplace = useCallback(() => {
+    editor.dispatchCommand(OPEN_FIND_REPLACE_COMMAND)
+  }, [editor])
 
   const applyFontSize = useCallback((size: string) => {
     editor.update(() => {
@@ -237,6 +243,17 @@ export default function FormattingToolbar() {
         <Redo2 size={18} />
       </button>
 
+      <button
+        title="Find & Replace (Cmd+F)"
+        onClick={openFindReplace}
+        className="format-btn"
+        aria-label="Find and Replace"
+      >
+        <Search size={18} />
+      </button>
+
+      <div className="separator" />
+
       <DropDown
         buttonLabel={blockTypeLabels[blockType]}
         buttonIcon={<BlockIcon type={blockType} />}
@@ -261,22 +278,6 @@ export default function FormattingToolbar() {
         <DropDownItem className={`item ${blockType === 'code' ? 'active' : ''}`} onClick={formatCode}>
           <Code size={18} /><span className="text">Code Block</span>
         </DropDownItem>
-      </DropDown>
-
-      <DropDown
-        buttonLabel={fontSize}
-        buttonClassName="format-btn format-btn-fontsize"
-        buttonAriaLabel="Font size"
-      >
-        {FONT_SIZE_OPTIONS.map((size) => (
-          <DropDownItem
-            key={size}
-            className={`item ${fontSize === size ? 'active' : ''}`}
-            onClick={() => applyFontSize(size)}
-          >
-            <span className="text">{size}</span>
-          </DropDownItem>
-        ))}
       </DropDown>
 
       <div className="separator" />
@@ -304,6 +305,22 @@ export default function FormattingToolbar() {
       >
         <Underline size={18} />
       </button>
+
+      <DropDown
+        buttonLabel={fontSize}
+        buttonClassName="format-btn format-btn-fontsize"
+        buttonAriaLabel="Font size"
+      >
+        {FONT_SIZE_OPTIONS.map((size) => (
+          <DropDownItem
+            key={size}
+            className={`item ${fontSize === size ? 'active' : ''}`}
+            onClick={() => applyFontSize(size)}
+          >
+            <span className="text">{size}</span>
+          </DropDownItem>
+        ))}
+      </DropDown>
 
       <div className="separator" />
 
@@ -366,8 +383,6 @@ export default function FormattingToolbar() {
       >
         <Image size={18} />
       </button>
-
-      <div className="separator" />
 
       <DropDown
         buttonLabel="Entity"

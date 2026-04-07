@@ -44,6 +44,7 @@ export default function EditorLayout() {
   const [applyOrderHandler, setApplyOrderHandler] = useState<(() => void) | null>(null)
   const [canApplyOrder, setCanApplyOrder] = useState(false)
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const contentCacheRef = useRef<Map<string, string>>(new Map())
 
   const activeChapter = chapters.find((c) => c.id === activeChapterId)
 
@@ -111,6 +112,25 @@ export default function EditorLayout() {
       return
     }
 
+    // Check cache for previously loaded chapter content
+    const cached = contentCacheRef.current.get(activeChapterId)
+    if (cached !== undefined) {
+      console.log(`[LOAD] ✓ Loading chapter "${activeChapterId}" from cache`)
+      setContent(cached)
+      setLoadedChapterId(activeChapterId)
+
+      // Load chapter settings from localStorage
+      const savedSettings = localStorage.getItem(`chapter-settings-${activeChapterId}`)
+      if (savedSettings) {
+        try {
+          setChapterSettings(prev => ({ ...prev, [activeChapterId]: JSON.parse(savedSettings) }))
+        } catch (e) {
+          console.warn(`[LOAD] Failed to parse chapter settings: ${e}`)
+        }
+      }
+      return
+    }
+
     const loadDocument = async () => {
       setIsLoadingContent(true)
       try {
@@ -119,6 +139,7 @@ export default function EditorLayout() {
         console.log(`[LOAD] ✓ Loaded chapter "${activeChapterId}" (name: "${doc.name}", ${doc.content.length} bytes)`)
         setContent(doc.content)
         setLoadedChapterId(activeChapterId)
+        contentCacheRef.current.set(activeChapterId, doc.content)
 
         // Load chapter settings from localStorage
         const savedSettings = localStorage.getItem(`chapter-settings-${activeChapterId}`)
@@ -210,6 +231,7 @@ export default function EditorLayout() {
       console.log(`[DELETE] Deleting chapter "${id}"...`)
       await deleteDocument(id)
       console.log(`[DELETE] ✓ Chapter "${id}" deleted`)
+      contentCacheRef.current.delete(id)
 
       // Remove from chapters list
       const updatedChapters = chapters.filter(c => c.id !== id)
@@ -272,6 +294,7 @@ export default function EditorLayout() {
       console.log(`[SAVE] ✓ Chapter "${activeChapterId}" saved successfully`)
       setSaveStatus('saved')
       setIsDirty(false)
+      contentCacheRef.current.set(activeChapterId, content)
       // Reset status after 3 seconds
       setTimeout(() => setSaveStatus('idle'), 3000)
     } catch (error) {
@@ -410,6 +433,7 @@ export default function EditorLayout() {
                     console.log(`[SETTINGS] Updating chapter name to "${name}"`)
                     await updateDocument(activeChapterId, content, name)
                     console.log(`[SETTINGS] ✓ Chapter name updated`)
+                    contentCacheRef.current.set(activeChapterId, content)
                     // Update the chapters list with the new name
                     setChapters(chapters.map(c => c.id === activeChapterId ? { ...c, name } : c))
                   } catch (error) {

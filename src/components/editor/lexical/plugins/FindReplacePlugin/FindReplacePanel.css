@@ -1,0 +1,220 @@
+/* Sticky bar below toolbar — sticks just below the 52px tall toolbar */
+.find-replace-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: #fafafa;
+  border-bottom: 1px solid #e5e5e5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  color: rgb(31, 41, 55);
+  animation: findReplaceFadeIn 120ms ease-out;
+  position: sticky;
+  top: 52px;
+  z-index: 99;
+}
+
+@keyframes findReplaceFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.find-replace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.find-replace-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(31, 41, 55);
+}
+
+.find-replace-close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: rgb(107, 114, 128);
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.find-replace-close-button:hover {
+  background-color: #e5e5e5;
+  color: rgb(55, 65, 81);
+}
+
+.find-replace-close-button:active {
+  background-color: #d0d0d0;
+}
+
+/* Main content — two rows (Find and Replace) */
+.find-replace-section {
+  padding: 6px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.find-replace-input-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.find-replace-input {
+  flex: 1;
+  padding: 5px 6px;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: inherit;
+  color: rgb(31, 41, 55);
+  background: white;
+  transition: all 150ms ease;
+  min-width: 120px;
+}
+
+.find-replace-input:focus {
+  outline: none;
+  border-color: rgb(59, 130, 246);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.find-replace-input::placeholder {
+  color: rgb(156, 163, 175);
+}
+
+.find-replace-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.find-replace-case-button {
+  background: white;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgb(107, 114, 128);
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.find-replace-case-button:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.find-replace-case-button--active {
+  background-color: rgb(59, 130, 246);
+  border-color: rgb(59, 130, 246);
+  color: white;
+}
+
+.find-replace-match-count {
+  color: rgb(107, 114, 128);
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.find-replace-nav-buttons {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.find-replace-button {
+  padding: 4px 6px;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  background: white;
+  color: rgb(31, 41, 55);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.find-replace-button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.find-replace-button:active:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.find-replace-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.find-replace-button--primary {
+  background-color: rgb(59, 130, 246);
+  border-color: rgb(59, 130, 246);
+  color: white;
+}
+
+.find-replace-button--primary:hover:not(:disabled) {
+  background-color: rgb(37, 99, 235);
+  border-color: rgb(37, 99, 235);
+}
+
+.find-replace-button--primary:active:not(:disabled) {
+  background-color: rgb(29, 78, 216);
+}
+
+.find-replace-button--secondary {
+  background: white;
+  color: rgb(31, 41, 55);
+}
+
+.find-replace-replace-buttons {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.find-replace-replace-buttons .find-replace-button {
+  padding: 4px 10px;
+}
+
+.find-replace-divider {
+  height: 1px;
+  background-color: #e5e5e5;
+  margin: 0;
+}
