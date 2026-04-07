@@ -243,6 +243,17 @@ export default function FormattingToolbar() {
         <Redo2 size={18} />
       </button>
 
+      <button
+        title="Find & Replace (Cmd+F)"
+        onClick={openFindReplace}
+        className="format-btn"
+        aria-label="Find and Replace"
+      >
+        <Search size={18} />
+      </button>
+
+      <div className="separator" />
+
       <DropDown
         buttonLabel={blockTypeLabels[blockType]}
         buttonIcon={<BlockIcon type={blockType} />}
@@ -267,22 +278,6 @@ export default function FormattingToolbar() {
         <DropDownItem className={`item ${blockType === 'code' ? 'active' : ''}`} onClick={formatCode}>
           <Code size={18} /><span className="text">Code Block</span>
         </DropDownItem>
-      </DropDown>
-
-      <DropDown
-        buttonLabel={fontSize}
-        buttonClassName="format-btn format-btn-fontsize"
-        buttonAriaLabel="Font size"
-      >
-        {FONT_SIZE_OPTIONS.map((size) => (
-          <DropDownItem
-            key={size}
-            className={`item ${fontSize === size ? 'active' : ''}`}
-            onClick={() => applyFontSize(size)}
-          >
-            <span className="text">{size}</span>
-          </DropDownItem>
-        ))}
       </DropDown>
 
       <div className="separator" />
@@ -310,6 +305,22 @@ export default function FormattingToolbar() {
       >
         <Underline size={18} />
       </button>
+
+      <DropDown
+        buttonLabel={fontSize}
+        buttonClassName="format-btn format-btn-fontsize"
+        buttonAriaLabel="Font size"
+      >
+        {FONT_SIZE_OPTIONS.map((size) => (
+          <DropDownItem
+            key={size}
+            className={`item ${fontSize === size ? 'active' : ''}`}
+            onClick={() => applyFontSize(size)}
+          >
+            <span className="text">{size}</span>
+          </DropDownItem>
+        ))}
+      </DropDown>
 
       <div className="separator" />
 
@@ -373,8 +384,6 @@ export default function FormattingToolbar() {
         <Image size={18} />
       </button>
 
-      <div className="separator" />
-
       <DropDown
         buttonLabel="Entity"
         buttonIcon={<User size={18} />}
@@ -391,17 +400,6 @@ export default function FormattingToolbar() {
           <Package size={16} /><span className="text">! (Item)</span>
         </DropDownItem>
       </DropDown>
-
-      <div className="separator" />
-
-      <button
-        title="Find & Replace (Cmd+F)"
-        onClick={openFindReplace}
-        className="format-btn"
-        aria-label="Find and Replace"
-      >
-        <Search size={18} />
-      </button>
 
       {showTableDialog && <InsertTableDialog onClose={() => setShowTableDialog(false)} />}
     </div>

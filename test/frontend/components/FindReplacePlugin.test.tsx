@@ -23,7 +23,9 @@ import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 
-import FindReplacePlugin from '../../../src/components/editor/lexical/plugins/FindReplacePlugin'
+import FindReplacePlugin, { FindReplaceContext } from '../../../src/components/editor/lexical/plugins/FindReplacePlugin'
+import FindReplaceBar from '../../../src/components/editor/FindReplaceBar'
+import { useFindReplaceState } from '../../../src/components/editor/lexical/plugins/FindReplacePlugin/useFindReplaceState'
 import { ImageNode } from '../../../src/components/editor/lexical/nodes/ImageNode'
 import { SceneBreakNode } from '../../../src/components/editor/lexical/nodes/SceneBreakNode'
 import { EntityMentionNode } from '../../../src/components/editor/lexical/nodes/EntityMentionNode'
@@ -48,6 +50,15 @@ function ContentInjector({ text }: { text: string }) {
   }, [editor, text])
 
   return null
+}
+
+function FindReplaceProvider({ children }: { children: React.ReactNode }) {
+  const contextValue = useFindReplaceState()
+  return (
+    <FindReplaceContext.Provider value={contextValue}>
+      {children}
+    </FindReplaceContext.Provider>
+  )
 }
 
 function renderEditorWithContent(text: string) {
@@ -77,17 +88,24 @@ function renderEditorWithContent(text: string) {
         onError: () => {},
       }}
     >
-      <RichTextPlugin
-        contentEditable={<ContentEditable className="editor-input" />}
-        placeholder={<div>Type...</div>}
-        ErrorBoundary={LexicalErrorBoundary}
-      />
+      <FindReplacePlugin />
       <HistoryPlugin />
       <ListPlugin />
       <LinkPlugin />
       <TablePlugin hasCellMerge={true} hasCellBackgroundColor={false} />
-      <FindReplacePlugin />
       <ContentInjector text={text} />
+      <div style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          <RichTextPlugin
+            contentEditable={<ContentEditable className="editor-input" />}
+            placeholder={<div>Type...</div>}
+            ErrorBoundary={LexicalErrorBoundary}
+          />
+        </div>
+        <FindReplaceProvider>
+          <FindReplaceBar />
+        </FindReplaceProvider>
+      </div>
     </LexicalComposer>
   )
 }

@@ -44,9 +44,25 @@ import SceneBreakPlugin from './lexical/plugins/SceneBreakPlugin';
 import EntityMentionPlugin from './lexical/plugins/EntityMentionPlugin';
 import { AnnotationPlugin } from './lexical/plugins/AnnotationPlugin';
 import FindReplacePlugin from './lexical/plugins/FindReplacePlugin';
+import FindReplaceBar from './FindReplaceBar';
+import { useFindReplaceState } from './lexical/plugins/FindReplacePlugin/useFindReplaceState';
+import { FindReplaceContext } from './lexical/plugins/FindReplacePlugin/FindReplaceContext';
 import FormattingToolbar from './FormattingToolbar';
 
 import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
+
+/**
+ * Wrapper component that provides Find & Replace context to the bar
+ * Must be inside LexicalComposer so useFindReplaceState() can access editor context
+ */
+function FindReplaceProvider({ children }: { children: React.ReactNode }) {
+  const contextValue = useFindReplaceState()
+  return (
+    <FindReplaceContext.Provider value={contextValue}>
+      {children}
+    </FindReplaceContext.Provider>
+  )
+}
 
 interface LexicalEditorProps {
   chapterId: string;
@@ -148,6 +164,9 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
       }}
     >
       <FormattingToolbar />
+      <FindReplaceProvider>
+        <FindReplaceBar />
+      </FindReplaceProvider>
       <div className="editor-container" style={{ position: 'relative' }}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="editor-input" />}
