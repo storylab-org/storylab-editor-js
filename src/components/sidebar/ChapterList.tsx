@@ -1,10 +1,11 @@
 import { useState, useEffect, memo, useCallback } from 'react'
-import { Trash2, GripVertical } from 'lucide-react'
+import { Trash2, GripVertical, AlertTriangle } from 'lucide-react'
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { arrayMove } from '@dnd-kit/sortable'
 import { OVERVIEW_ID } from '@/constants'
+import GenericModal from '@/components/shared/GenericModal'
 import type { DocumentHead } from '@/api/documents'
 
 interface ChapterListProps {
@@ -22,6 +23,7 @@ interface SortableChapterItemProps {
   activeChapterId: string
   onSelectChapter: (id: string) => void | Promise<void>
   onDeleteChapter?: (id: string) => void
+  onRequestDelete?: (chapter: DocumentHead) => void
   hoveredChapterId: string | null
   onHoverChange: (id: string | null) => void
 }
@@ -31,6 +33,7 @@ const SortableChapterItem = memo(function SortableChapterItem({
   activeChapterId,
   onSelectChapter,
   onDeleteChapter,
+  onRequestDelete,
   hoveredChapterId,
   onHoverChange
 }: SortableChapterItemProps) {
@@ -104,11 +107,15 @@ const SortableChapterItem = memo(function SortableChapterItem({
             >
               <GripVertical size={16} />
             </button>
-            {onDeleteChapter && (
+            {(onDeleteChapter || onRequestDelete) && (
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  onDeleteChapter(chapter.id)
+                  if (onRequestDelete) {
+                    onRequestDelete(chapter)
+                  } else {
+                    onDeleteChapter?.(chapter.id)
+                  }
                 }}
                 aria-label={`Delete ${chapter.name}`}
                 style={{
@@ -143,6 +150,8 @@ function ChapterListComponent({
   onReorder
 }: ChapterListProps) {
   const [hoveredChapterId, setHoveredChapterId] = useState<string | null>(null)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [chapterToDelete, setChapterToDelete] = useState<DocumentHead | null>(null)
 
   // Reset hover state when switching chapters to prevent flicker
   useEffect(() => {
@@ -171,6 +180,24 @@ function ChapterListComponent({
 
     const newChapters = arrayMove(chapters, oldIndex, newIndex)
     onReorder?.(newChapters)
+  }
+
+  const handleDeleteClick = (chapter: DocumentHead) => {
+    setChapterToDelete(chapter)
+    setDeleteConfirmOpen(true)
+  }
+
+  const handleConfirmDelete = () => {
+    if (chapterToDelete) {
+      onDeleteChapter?.(chapterToDelete.id)
+      setDeleteConfirmOpen(false)
+      setChapterToDelete(null)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false)
+    setChapterToDelete(null)
   }
 
   return (
@@ -212,6 +239,7 @@ function ChapterListComponent({
                 activeChapterId={activeChapterId}
                 onSelectChapter={onSelectChapter}
                 onDeleteChapter={onDeleteChapter}
+                onRequestDelete={handleDeleteClick}
                 hoveredChapterId={hoveredChapterId}
                 onHoverChange={handleHoverChange}
               />
@@ -236,6 +264,57 @@ function ChapterListComponent({
           + New Chapter
         </button>
       </div>
+
+      {/* Delete confirmation modal */}
+      <GenericModal
+        isOpen={deleteConfirmOpen}
+        onClose={handleCancelDelete}
+        title="Delete Chapter"
+        closeOnClickOutside={false}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+            <AlertTriangle size={20} style={{ color: '#ef4444', marginTop: '2px', flexShrink: 0 }} />
+            <div>
+              <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#0f0f0f' }}>
+                Delete chapter <strong>{chapterToDelete?.name}</strong>?
+              </p>
+              <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+                This action cannot be undone. All content in this chapter will be permanently deleted.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            <button
+              onClick={handleCancelDelete}
+              style={{
+                padding: '8px 16px',
+                border: '1px solid #e5e5e5',
+                background: 'white',
+                cursor: 'pointer',
+                borderRadius: '4px',
+                fontSize: '14px',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              style={{
+                padding: '8px 16px',
+                border: 'none',
+                background: '#ef4444',
+                color: 'white',
+                cursor: 'pointer',
+                borderRadius: '4px',
+                fontSize: '14px',
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </GenericModal>
     </div>
   )
 }
