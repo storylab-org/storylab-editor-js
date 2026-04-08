@@ -66,7 +66,16 @@ export default function FindReplacePanel(props: FindReplacePanelProps): JSX.Elem
     >
       {/* Header */}
       <div className="find-replace-header">
-        <h2 className="find-replace-title">Find & Replace</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 className="find-replace-title">Find & Replace</h2>
+          <div
+            className="find-replace-match-count-header"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {matchCountLabel}
+          </div>
+        </div>
         <button
           className="find-replace-close-button"
           onClick={props.onClose}
@@ -114,13 +123,6 @@ export default function FindReplacePanel(props: FindReplacePanelProps): JSX.Elem
           >
             Aa
           </button>
-          <div
-            className="find-replace-match-count"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {matchCountLabel}
-          </div>
         </div>
 
         <div className="find-replace-nav-buttons">

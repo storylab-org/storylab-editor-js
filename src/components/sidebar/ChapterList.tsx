@@ -182,21 +182,23 @@ function ChapterListComponent({
       >
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0' }}>
           {/* Draft Board button - pinned at top */}
-          <button
-            onClick={() => onSelectChapter(OVERVIEW_ID)}
-            style={{
-              width: '100%',
-              padding: '8px 16px',
-              border: 'none',
-              background: activeChapterId === OVERVIEW_ID ? '#0f0f0f' : 'transparent',
-              color: activeChapterId === OVERVIEW_ID ? '#ffffff' : '#0f0f0f',
-              cursor: 'pointer',
-              textAlign: 'left',
-              fontSize: '14px'
-            }}
-          >
-            Draft Board
-          </button>
+          <div style={{ paddingBottom: '8px', borderBottom: '1px solid #e5e5e5' }}>
+            <button
+              onClick={() => onSelectChapter(OVERVIEW_ID)}
+              style={{
+                width: '100%',
+                padding: '8px 16px',
+                border: 'none',
+                background: activeChapterId === OVERVIEW_ID ? '#0f0f0f' : 'transparent',
+                color: activeChapterId === OVERVIEW_ID ? '#ffffff' : '#0f0f0f',
+                cursor: 'pointer',
+                textAlign: 'left',
+                fontSize: '14px'
+              }}
+            >
+              Draft Board
+            </button>
+          </div>
 
           {isLoading && <div style={{ padding: '16px', color: '#999', fontSize: '12px' }}>Loading…</div>}
           {!isLoading && chapters.length === 0 && (
