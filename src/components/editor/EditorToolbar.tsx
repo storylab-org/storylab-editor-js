@@ -1,4 +1,4 @@
-import { Check, AlertCircle, Save, Settings, ListOrdered } from 'lucide-react';
+import { Check, AlertCircle, Save, Settings, ListOrdered, HelpCircle } from 'lucide-react';
 import './EditorToolbar.css';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
@@ -11,6 +11,7 @@ interface EditorToolbarProps {
   onApplyOrder?: () => void;
   canApplyOrder?: boolean;
   saveStatus?: SaveStatus;
+  onHelp?: () => void;
 }
 
 export default function EditorToolbar({
@@ -21,6 +22,7 @@ export default function EditorToolbar({
   onApplyOrder,
   canApplyOrder = false,
   saveStatus = 'idle',
+  onHelp,
 }: EditorToolbarProps) {
   const isOverview = !chapterId
 
@@ -46,6 +48,16 @@ export default function EditorToolbar({
       </div>
 
       <div className="toolbar-section toolbar-right">
+        {onHelp && (
+          <button
+            className="chapter-settings-button"
+            onClick={onHelp}
+            aria-label="Help"
+            title="Help"
+          >
+            <HelpCircle size={16} />
+          </button>
+        )}
         {isOverview && onApplyOrder ? (
           <button
             className="toolbar-button toolbar-button-primary"

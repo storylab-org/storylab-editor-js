@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
+import { listen } from '@tauri-apps/api/event'
 import Sidebar from '@/components/sidebar/Sidebar'
 import EditorArea from '@/components/editor/EditorArea'
 import EditorToolbar from '@/components/editor/EditorToolbar'
@@ -49,8 +50,12 @@ export default function EditorLayout() {
   const [importPendingData, setImportPendingData] = useState<Uint8Array | null>(null)
   const [isImporting, setIsImporting] = useState(false)
   const [exportModalState, setExportModalState] = useState<{ format: string; filename: string } | null>(null)
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const contentCacheRef = useRef<Map<string, string>>(new Map())
+  const handleExportRef = useRef<(format: ExportFormat) => Promise<void>>(() => Promise.resolve())
+  const handleImportRef = useRef<(format: ImportFormat) => Promise<void>>(() => Promise.resolve())
+  const handleCreateChapterRef = useRef<() => Promise<void>>(async () => {})
 
   const activeChapter = chapters.find((c) => c.id === activeChapterId)
 
@@ -197,6 +202,52 @@ export default function EditorLayout() {
     if (!activeChapterId) return
     localStorage.setItem('active-chapter-id', activeChapterId)
   }, [activeChapterId])
+
+
+  // Listen for menu events from Tauri
+  useEffect(() => {
+    let unlisten: (() => void) | null = null
+    listen<string>('menu-event', (event) => {
+      const action = event.payload
+      if (action.startsWith('export:')) {
+        const format = action.replace('export:', '') as ExportFormat
+        handleExportRef.current(format)
+      } else if (action.startsWith('import:')) {
+        const format = action.replace('import:', '') as ImportFormat
+        handleImportRef.current(format)
+      } else if (action === 'action:new-chapter') {
+        handleCreateChapterRef.current()
+      } else if (action === 'action:undo') {
+        // Lexical handles undo via keyboard shortcut, menu item is informational
+        console.log('[MENU] Undo triggered (use Cmd+Z shortcut for editor undo)')
+      } else if (action === 'action:redo') {
+        // Lexical handles redo via keyboard shortcut, menu item is informational
+        console.log('[MENU] Redo triggered (use Cmd+Shift+Z shortcut for editor redo)')
+      } else if (action === 'action:find-replace') {
+        // Open find and replace with Cmd+F equivalent
+        const findReplaceEvent = new KeyboardEvent('keydown', {
+          key: 'f',
+          code: 'KeyF',
+          ctrlKey: false,
+          metaKey: true,
+          bubbles: true,
+        })
+        document.dispatchEvent(findReplaceEvent)
+      } else if (action === 'action:view-draft-board') {
+        setActiveChapterId(OVERVIEW_ID)
+      } else if (action === 'action:help') {
+        setIsHelpOpen(true)
+      }
+    }).then(fn => {
+      unlisten = fn
+    }).catch(err => {
+      // Silently ignore if we're not in Tauri (running in web)
+      console.debug('Menu event listener not available:', err)
+    })
+    return () => {
+      unlisten?.()
+    }
+  }, [])
 
   const handleSelectChapter = async (id: string) => {
     console.log(`[SWITCH] Switching to chapter "${id}"`)
@@ -467,6 +518,11 @@ export default function EditorLayout() {
     }
   }
 
+  // Keep refs in sync with handlers for menu event listener
+  handleExportRef.current = handleExport
+  handleImportRef.current = handleImport
+  handleCreateChapterRef.current = handleCreateChapter
+
   return (
     <ToastProvider>
       <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#ffffff' }}>
@@ -490,6 +546,7 @@ export default function EditorLayout() {
             onSettings={activeChapterId === OVERVIEW_ID ? undefined : () => setIsSettingsOpen(true)}
             onApplyOrder={applyOrderHandler || undefined}
             canApplyOrder={canApplyOrder}
+            onHelp={() => setIsHelpOpen(true)}
           />
           {loadedChapterId === OVERVIEW_ID ? (
             <DraftBoard
@@ -687,6 +744,92 @@ export default function EditorLayout() {
               </div>
             </div>
           )}
+        </GenericModal>
+
+        {/* Help modal */}
+        <GenericModal
+          isOpen={isHelpOpen}
+          onClose={() => setIsHelpOpen(false)}
+          title="Help"
+          closeOnClickOutside={true}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto' }}>
+            {/* Keyboard Shortcuts */}
+            <div>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '600', color: '#0f0f0f' }}>
+                Keyboard Shortcuts
+              </h3>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+S</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Save chapter</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+F</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Find & Replace</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+B</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Bold</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+I</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Italic</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+U</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Underline</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+/</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Slash commands</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Export Formats */}
+            <div>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '600', color: '#0f0f0f' }}>
+                Export Formats
+              </h3>
+              <ul style={{ margin: '0', paddingLeft: '16px', fontSize: '12px' }}>
+                <li style={{ color: '#0f0f0f', marginBottom: '4px' }}>
+                  <strong>Markdown</strong> — Plain text with formatting, ideal for version control
+                </li>
+                <li style={{ color: '#0f0f0f', marginBottom: '4px' }}>
+                  <strong>HTML</strong> — Web-ready formatted document
+                </li>
+                <li style={{ color: '#0f0f0f', marginBottom: '4px' }}>
+                  <strong>EPUB</strong> — E-book format for digital readers
+                </li>
+                <li style={{ color: '#0f0f0f' }}>
+                  <strong>CAR</strong> — Content-addressed archive for backup & sharing
+                </li>
+              </ul>
+            </div>
+
+            {/* Import */}
+            <div>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '600', color: '#0f0f0f' }}>
+                Import
+              </h3>
+              <p style={{ margin: '0', fontSize: '12px', color: '#666' }}>
+                Import EPUB or CAR files to replace all chapters. This action cannot be undone.
+              </p>
+            </div>
+
+            {/* About */}
+            <div>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '600', color: '#0f0f0f' }}>
+                About
+              </h3>
+              <p style={{ margin: '0', fontSize: '12px', color: '#666' }}>
+                Storylab v0.2.51 — A powerful writing and story planning application for authors
+              </p>
+            </div>
+          </div>
         </GenericModal>
       </div>
       <ToastContainer />
