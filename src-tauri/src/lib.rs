@@ -1,5 +1,6 @@
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Manager, State, Emitter};
+use tauri::menu::{MenuBuilder, SubmenuBuilder, MenuItem, PredefinedMenuItem};
 use log::{info, debug, error};
 
 pub struct ServerState {
@@ -85,17 +86,100 @@ pub fn run() {
             match spawn_server(app.handle()) {
                 Ok(_) => {
                     info!("Server sidecar spawned successfully");
-                    Ok(())
                 }
                 Err(e) => {
                     error!("Failed to spawn server sidecar: {}", e);
-                    Err(format!("Failed to spawn server: {}", e).into())
+                    return Err(format!("Failed to spawn server: {}", e).into());
                 }
             }
+
+            // Build application menu
+            if let Err(e) = build_menu(app.handle()) {
+                error!("Failed to build menu: {}", e);
+                return Err(format!("Failed to build menu: {}", e).into());
+            }
+
+            Ok(())
         })
         .invoke_handler(tauri::generate_handler![read_file_bytes, greet, get_server_status, save_export_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn build_menu(app: &tauri::AppHandle) -> Result<(), String> {
+    debug!("building application menu");
+
+    let menu = MenuBuilder::new(app)
+        .items(&[
+            &SubmenuBuilder::new(app, "File")
+                .items(&[
+                    &MenuItem::with_id(app, "new-chapter", "New Chapter", true, None::<&str>).map_err(|e| e.to_string())?,
+                    &PredefinedMenuItem::separator(app).map_err(|e| e.to_string())?,
+                    &SubmenuBuilder::new(app, "Export As")
+                        .item(&MenuItem::with_id(app, "export-markdown", "Markdown", true, None::<&str>).map_err(|e| e.to_string())?)
+                        .item(&MenuItem::with_id(app, "export-html", "HTML", true, None::<&str>).map_err(|e| e.to_string())?)
+                        .item(&MenuItem::with_id(app, "export-epub", "EPUB", true, None::<&str>).map_err(|e| e.to_string())?)
+                        .item(&MenuItem::with_id(app, "export-car", "CAR Archive", true, None::<&str>).map_err(|e| e.to_string())?)
+                        .build()
+                        .map_err(|e| e.to_string())?,
+                    &SubmenuBuilder::new(app, "Import From")
+                        .item(&MenuItem::with_id(app, "import-epub", "EPUB", true, None::<&str>).map_err(|e| e.to_string())?)
+                        .item(&MenuItem::with_id(app, "import-car", "CAR Archive", true, None::<&str>).map_err(|e| e.to_string())?)
+                        .build()
+                        .map_err(|e| e.to_string())?,
+                    &PredefinedMenuItem::separator(app).map_err(|e| e.to_string())?,
+                    &PredefinedMenuItem::quit(app, None).map_err(|e| e.to_string())?,
+                ])
+                .build()
+                .map_err(|e| e.to_string())?,
+            &SubmenuBuilder::new(app, "Edit")
+                .items(&[
+                    &MenuItem::with_id(app, "edit-undo", "Undo", true, None::<&str>).map_err(|e| e.to_string())?,
+                    &MenuItem::with_id(app, "edit-redo", "Redo", true, None::<&str>).map_err(|e| e.to_string())?,
+                    &PredefinedMenuItem::separator(app).map_err(|e| e.to_string())?,
+                    &MenuItem::with_id(app, "find-replace", "Find & Replace", true, None::<&str>).map_err(|e| e.to_string())?,
+                ])
+                .build()
+                .map_err(|e| e.to_string())?,
+            &SubmenuBuilder::new(app, "View")
+                .items(&[
+                    &MenuItem::with_id(app, "view-draft-board", "Draft Board", true, None::<&str>).map_err(|e| e.to_string())?,
+                ])
+                .build()
+                .map_err(|e| e.to_string())?,
+            &SubmenuBuilder::new(app, "Help")
+                .item(&MenuItem::with_id(app, "show-help", "Show Help", true, None::<&str>).map_err(|e| e.to_string())?)
+                .build()
+                .map_err(|e| e.to_string())?,
+        ])
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    app.set_menu(menu).map_err(|e| e.to_string())?;
+
+    app.on_menu_event(move |app, event| {
+        let payload = match event.id().0.as_str() {
+            "new-chapter"     => "action:new-chapter",
+            "export-markdown" => "export:markdown",
+            "export-html"     => "export:html",
+            "export-epub"     => "export:epub",
+            "export-car"      => "export:car",
+            "import-epub"     => "import:epub",
+            "import-car"      => "import:car",
+            "edit-undo"       => "action:undo",
+            "edit-redo"       => "action:redo",
+            "find-replace"    => "action:find-replace",
+            "view-draft-board" => "action:view-draft-board",
+            "show-help"       => "action:help",
+            _                 => return,
+        };
+        if let Err(e) = app.emit("menu-event", payload) {
+            error!("Failed to emit menu-event: {}", e);
+        }
+    });
+
+    info!("Application menu built successfully");
+    Ok(())
 }
 
 fn spawn_server(app: &AppHandle) -> Result<(), String> {
