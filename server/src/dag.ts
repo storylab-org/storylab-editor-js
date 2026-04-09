@@ -1,27 +1,29 @@
 /**
- * CID/DAG manifest structure for future book export support.
- * Scaffolding only — no behaviour implemented yet.
+ * CAR (Content Addressable aRchive) manifest structure for full-state backup.
+ * Version 2 uses IPFS CIDv1 (base32 multibase) for all block references.
+ *
+ * The manifest itself is stored as the first block in the CAR;
+ * its CIDv1 becomes the root identifier and the export filename.
  */
 
 export interface ChapterRef {
   id: string // document UUID
   name: string
-  cid: string // SHA-256 hash of content block
+  cid: string // CIDv1 base32 string of content block (in CAR)
   order: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Manifest {
-  version: '1'
+  version: '2' // CAR v2 format with CIDv1
   title: string
   chapters: ChapterRef[]
+  entitiesCid: string // CIDv1 base32
+  annotationsCid: string
+  overviewCid: string
+  boardCid: string
+  pathsCid: string
+  images: Array<{ cid: string; mimeType: string }> // cid = CIDv1 base32
   createdAt: string
-}
-
-/**
- * Store a manifest in the blockstore and return its CID.
- * TODO: Implement this function to encode the manifest as JSON,
- * store it in the blockstore, and return the SHA-256 CID.
- */
-export async function storeManifest(manifest: Manifest): Promise<string> {
-  throw new Error('storeManifest not yet implemented')
 }

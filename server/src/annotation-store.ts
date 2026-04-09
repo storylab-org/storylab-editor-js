@@ -15,7 +15,7 @@ export interface Annotation {
   updatedAt: string
 }
 
-const ANNOTATIONS_FILE = path.join(os.homedir(), '.storylab', 'annotations.json')
+const ANNOTATIONS_FILE = path.join(process.env.STORYLAB_DATA_DIR ?? path.join(os.homedir(), '.storylab'), 'annotations.json')
 
 export class AnnotationStore {
   private annotations = new Map<string, Annotation>()

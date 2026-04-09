@@ -2,6 +2,11 @@ import { FastifyPluginAsync } from 'fastify'
 import { lexicalToHtml } from '../lexical-to-html.js'
 import { lexicalToMarkdown } from '../lexical-to-markdown.js'
 import { zip } from 'fflate'
+import { CID } from 'multiformats/cid'
+import * as raw from 'multiformats/codecs/raw'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { CarWriter } from '@ipld/car'
+import type { Manifest } from '../dag.js'
 
 /**
  * Build an EPUB3 book from all chapters
@@ -221,6 +226,46 @@ function escapeXml(str: string): string {
 }
 
 /**
+ * Compute CIDv1 from raw bytes using sha2-256 and raw codec
+ */
+async function computeCid(bytes: Uint8Array): Promise<CID> {
+  const hash = await sha256.digest(bytes)
+  return CID.create(1, raw.code, hash)
+}
+
+/**
+ * Build CAR file bytes from blocks
+ * Handles CarWriter backpressure by draining output concurrently
+ */
+async function buildCar(rootCid: CID, blocks: Array<{ cid: CID; bytes: Uint8Array }>): Promise<Uint8Array> {
+  const { writer, out } = await CarWriter.create([rootCid])
+
+  // Collect output concurrently (must not deadlock by awaiting put() first)
+  const collectPromise = (async () => {
+    const chunks: Uint8Array[] = []
+    for await (const chunk of out) {
+      chunks.push(chunk)
+    }
+    const total = chunks.reduce((n, c) => n + c.length, 0)
+    const result = new Uint8Array(total)
+    let offset = 0
+    for (const c of chunks) {
+      result.set(c, offset)
+      offset += c.length
+    }
+    return result
+  })()
+
+  // Drive the writer
+  for (const block of blocks) {
+    await writer.put(block)
+  }
+  await writer.close()
+
+  return collectPromise
+}
+
+/**
  * Export routes
  */
 const exportRoute: FastifyPluginAsync = async (fastify) => {
@@ -393,6 +438,106 @@ ${chapters.join('\n')}
       const message = error instanceof Error ? error.message : 'Unknown error'
       request.log.error({ error: message }, 'Markdown export failed')
       return reply.status(500).send('Failed to export Markdown')
+    }
+  })
+
+  // GET /export/car - Export all documents as CAR (Content Addressable aRchive)
+  fastify.get<{ Reply: Buffer | string }>('/export/car', async (request, reply) => {
+    request.log.debug('starting CAR export')
+
+    try {
+      // 1. Fetch all documents
+      const documents = await fastify.documentStore.list()
+
+      // 2. Collect all blocks to include in CAR
+      const blocks: Array<{ cid: CID; bytes: Uint8Array }> = []
+
+      // 3. Encode chapter content and compute CIDv1 for each
+      const chapterCids: { id: string; cidV1: string }[] = []
+      for (const doc of documents) {
+        const contentBytes = await fastify.blockstore.get(doc.cid)
+        const cidV1 = await computeCid(contentBytes)
+        blocks.push({ cid: cidV1, bytes: contentBytes })
+        chapterCids.push({ id: doc.id, cidV1: cidV1.toString() })
+      }
+
+      // 4. Encode state files and compute CIDv1 for each
+      const entitiesBytes = new TextEncoder().encode(JSON.stringify(fastify.entityStore.list(), null, 2))
+      const entitiesCid = await computeCid(entitiesBytes)
+      blocks.push({ cid: entitiesCid, bytes: entitiesBytes })
+
+      const annotationsBytes = new TextEncoder().encode(JSON.stringify(fastify.annotationStore.list(), null, 2))
+      const annotationsCid = await computeCid(annotationsBytes)
+      blocks.push({ cid: annotationsCid, bytes: annotationsBytes })
+
+      const overviewBytes = new TextEncoder().encode(JSON.stringify(await fastify.overviewStore.getOverview(), null, 2))
+      const overviewCid = await computeCid(overviewBytes)
+      blocks.push({ cid: overviewCid, bytes: overviewBytes })
+
+      const boardBytes = new TextEncoder().encode(JSON.stringify(await fastify.overviewStore.getBoard(), null, 2))
+      const boardCid = await computeCid(boardBytes)
+      blocks.push({ cid: boardCid, bytes: boardBytes })
+
+      const pathsBytes = new TextEncoder().encode(JSON.stringify(await fastify.overviewStore.listPaths(), null, 2))
+      const pathsCid = await computeCid(pathsBytes)
+      blocks.push({ cid: pathsCid, bytes: pathsBytes })
+
+      // 5. Fetch and encode image data
+      const images = await fastify.imageStore.listAll()
+      const imageBlocks: Array<{ cid: string; mimeType: string }> = []
+      for (const { cid: imageCidHex, mimeType } of images) {
+        const imageBytes = await fastify.blockstore.get(imageCidHex)
+        const imageCidV1 = await computeCid(imageBytes)
+        blocks.push({ cid: imageCidV1, bytes: imageBytes })
+        imageBlocks.push({ cid: imageCidV1.toString(), mimeType })
+      }
+
+      // 6. Build manifest v2 with CIDv1 references
+      const manifest: Manifest = {
+        version: '2',
+        title: documents.length === 1 ? documents[0].name : 'Story',
+        chapters: documents.map((doc, idx) => ({
+          id: doc.id,
+          name: doc.name,
+          cid: chapterCids[idx].cidV1,
+          order: idx,
+          createdAt: doc.createdAt,
+          updatedAt: doc.updatedAt,
+        })),
+        entitiesCid: entitiesCid.toString(),
+        annotationsCid: annotationsCid.toString(),
+        overviewCid: overviewCid.toString(),
+        boardCid: boardCid.toString(),
+        pathsCid: pathsCid.toString(),
+        images: imageBlocks,
+        createdAt: new Date().toISOString(),
+      }
+
+      // 7. Encode manifest and compute its CIDv1
+      const manifestBytes = new TextEncoder().encode(JSON.stringify(manifest, null, 2))
+      const manifestCid = await computeCid(manifestBytes)
+
+      // 8. Prepend manifest block to the block array (CAR standard: root first)
+      blocks.unshift({ cid: manifestCid, bytes: manifestBytes })
+
+      // 9. Build CAR file
+      const carBytes = await buildCar(manifestCid, blocks)
+
+      // 10. Log and respond
+      request.log.info(
+        { documentCount: documents.length, blockCount: blocks.length, imageCount: images.length, manifestCid: manifestCid.toString() },
+        'CAR export completed'
+      )
+
+      const filename = `${manifestCid.toString()}.car`
+      reply.type('application/octet-stream')
+      reply.header('X-Manifest-CID', manifestCid.toString())
+      reply.header('Content-Disposition', `attachment; filename="${filename}"`)
+      return Buffer.from(carBytes)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      request.log.error({ error: message }, 'CAR export failed')
+      return reply.status(500).send('Failed to export CAR')
     }
   })
 }

@@ -24,6 +24,7 @@ export interface DocumentStore {
   update(id: string, content: string, name?: string): Promise<DocumentHead>
   remove(id: string): Promise<void>
   reorderDocuments(orderedIds: string[]): Promise<void>
+  writeHeadDirect(head: DocumentHead): Promise<void>
 }
 
 export function createDocumentStore(blockstore: Blockstore, headsRoot?: string): DocumentStore {
@@ -161,12 +162,23 @@ export function createDocumentStore(blockstore: Blockstore, headsRoot?: string):
     }
   }
 
+  const writeHeadDirect = async (head: DocumentHead): Promise<void> => {
+    // Check if a head with this ID already exists
+    const existing = await getHead(head.id)
+    if (existing) {
+      throw new Error(`Document with ID "${head.id}" already exists`)
+    }
+    // Write the head file directly, preserving UUID, CID, and timestamps
+    await saveHead(head)
+  }
+
   return {
     list,
     get,
     create,
     update,
     remove,
-    reorderDocuments
+    reorderDocuments,
+    writeHeadDirect
   }
 }
