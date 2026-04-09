@@ -12,6 +12,7 @@ describe('export API', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         blob: () => Promise.resolve(mockBlob),
+        headers: new Map([['X-Manifest-CID', 'bafkrei123']]),
       })
 
       const result = await exportBook('markdown')
@@ -19,7 +20,8 @@ describe('export API', () => {
       expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/export/markdown', {
         method: 'GET',
       })
-      expect(result).toBe(mockBlob)
+      expect(result.blob).toBe(mockBlob)
+      expect(result.manifestCid).toBe('bafkrei123')
     })
 
     it('fetches html export', async () => {
@@ -27,6 +29,7 @@ describe('export API', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         blob: () => Promise.resolve(mockBlob),
+        headers: new Map([['X-Manifest-CID', 'bafkrei456']]),
       })
 
       const result = await exportBook('html')
@@ -34,7 +37,8 @@ describe('export API', () => {
       expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/export/html', {
         method: 'GET',
       })
-      expect(result).toBe(mockBlob)
+      expect(result.blob).toBe(mockBlob)
+      expect(result.manifestCid).toBe('bafkrei456')
     })
 
     it('fetches epub export', async () => {
@@ -42,6 +46,7 @@ describe('export API', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         blob: () => Promise.resolve(mockBlob),
+        headers: new Map(),
       })
 
       const result = await exportBook('epub')
@@ -49,7 +54,8 @@ describe('export API', () => {
       expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/export/epub', {
         method: 'GET',
       })
-      expect(result).toBe(mockBlob)
+      expect(result.blob).toBe(mockBlob)
+      expect(result.manifestCid).toBeUndefined()
     })
 
     it('throws on non-OK response', async () => {

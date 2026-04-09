@@ -7,12 +7,12 @@ import { save } from '@tauri-apps/plugin-dialog'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000'
 
-export type ExportFormat = 'markdown' | 'html' | 'epub'
+export type ExportFormat = 'markdown' | 'html' | 'epub' | 'car'
 
 /**
  * Check if running in Tauri desktop app
  */
-async function isRunningInTauri(): Promise<boolean> {
+export async function isRunningInTauri(): Promise<boolean> {
   try {
     await invoke('get_server_status')
     return true
@@ -23,8 +23,9 @@ async function isRunningInTauri(): Promise<boolean> {
 
 /**
  * Fetch exported book in the specified format
+ * Returns both the blob and optional manifest CID (for CID exports)
  */
-export async function exportBook(format: ExportFormat): Promise<Blob> {
+export async function exportBook(format: ExportFormat): Promise<{ blob: Blob; manifestCid?: string }> {
   const response = await fetch(`${API_BASE}/export/${format}`, {
     method: 'GET',
   })
@@ -33,7 +34,10 @@ export async function exportBook(format: ExportFormat): Promise<Blob> {
     throw new Error(`Export failed with status ${response.status}: ${response.statusText}`)
   }
 
-  return response.blob()
+  const blob = await response.blob()
+  const manifestCid = response.headers.get('X-Manifest-CID') ?? undefined
+
+  return { blob, manifestCid }
 }
 
 /**
@@ -58,19 +62,32 @@ async function saveExportFileInTauri(blob: Blob, filename: string): Promise<void
   const data = Array.from(new Uint8Array(buffer))
 
   try {
+    // Determine file extension for the filter
+    const ext = filename.includes('.') ? filename.split('.').pop() : null
+
+    // Build filters: if file has extension, show it as first option
+    const filters = ext
+      ? [
+          {
+            name: `${ext.toUpperCase()} files`,
+            extensions: [ext],
+          },
+          {
+            name: 'All files',
+            extensions: ['*'],
+          },
+        ]
+      : [
+          {
+            name: 'All files',
+            extensions: ['*'],
+          },
+        ]
+
     // Show save dialog
     const selectedPath = await save({
       defaultPath: filename,
-      filters: [
-        {
-          name: `${filename.split('.').pop()?.toUpperCase()} files`,
-          extensions: [filename.split('.').pop() || ''],
-        },
-        {
-          name: 'All files',
-          extensions: ['*'],
-        },
-      ],
+      filters,
     })
 
     // User cancelled the dialog
@@ -92,17 +109,21 @@ async function saveExportFileInTauri(blob: Blob, filename: string): Promise<void
 
 /**
  * Export and save file - handles both web and Tauri platforms
+ * For CAR exports, the filename is the manifest CID from the server
  */
 export async function exportAndSave(format: ExportFormat, filename: string): Promise<void> {
   try {
     const inTauri = await isRunningInTauri()
 
-    const blob = await exportBook(format)
+    const { blob, manifestCid } = await exportBook(format)
+
+    // For CAR format, use the manifest CID as the filename
+    const effectiveFilename = (format === 'car' && manifestCid) ? manifestCid : filename
 
     if (inTauri) {
-      await saveExportFileInTauri(blob, filename)
+      await saveExportFileInTauri(blob, effectiveFilename)
     } else {
-      triggerDownload(blob, filename)
+      triggerDownload(blob, effectiveFilename)
     }
   } catch (error) {
     console.error(`[EXPORT] ✗ Export failed:`, error)

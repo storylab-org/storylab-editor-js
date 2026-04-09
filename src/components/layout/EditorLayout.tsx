@@ -17,7 +17,9 @@ import {
   reorderDocuments,
   type DocumentHead
 } from '@/api/documents'
-import { exportAndSave, type ExportFormat } from '@/api/export'
+import { exportAndSave, isRunningInTauri, type ExportFormat } from '@/api/export'
+import { importAndRefresh, pickImportFile, type ImportFormat } from '@/api/import'
+import { AlertTriangle } from 'lucide-react'
 
 const isDevelopmentMode = import.meta.env.MODE === 'development'
 
@@ -43,6 +45,10 @@ export default function EditorLayout() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [applyOrderHandler, setApplyOrderHandler] = useState<(() => void) | null>(null)
   const [canApplyOrder, setCanApplyOrder] = useState(false)
+  const [importPendingFormat, setImportPendingFormat] = useState<ImportFormat | null>(null)
+  const [importPendingData, setImportPendingData] = useState<Uint8Array | null>(null)
+  const [isImporting, setIsImporting] = useState(false)
+  const [exportModalState, setExportModalState] = useState<{ format: string; filename: string } | null>(null)
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const contentCacheRef = useRef<Map<string, string>>(new Map())
 
@@ -265,20 +271,125 @@ export default function EditorLayout() {
     }
   }
 
-  const handleExport = async (format: 'markdown' | 'html' | 'epub' | 'pdf') => {
+  const defaultExportFilename = (format: string): string => {
+    switch (format) {
+      case 'markdown':
+        return 'book.md'
+      case 'html':
+        return 'book.html'
+      case 'epub':
+        return 'book.epub'
+      case 'car':
+        return '' // CAR filename is determined by the server (manifest CID)
+      default:
+        return `book.${format}`
+    }
+  }
+
+  const handleExport = async (format: 'markdown' | 'html' | 'epub' | 'car' | 'pdf') => {
     if (format === 'pdf') {
       console.log('PDF export not yet implemented')
       return
     }
 
     try {
-      console.log(`[EXPORT] Starting ${format.toUpperCase()} export...`)
-      const filename = `book.${format}`
-      await exportAndSave(format as ExportFormat, filename)
-      console.log(`[EXPORT] ✓ ${format.toUpperCase()} export completed`)
+      const inTauri = await isRunningInTauri()
+
+      if (inTauri) {
+        // Tauri: native save dialog handles filename + path selection
+        console.log(`[EXPORT] Starting ${format.toUpperCase()} export (Tauri)...`)
+        const filename = defaultExportFilename(format)
+        await exportAndSave(format as ExportFormat, filename)
+        console.log(`[EXPORT] ✓ ${format.toUpperCase()} export completed`)
+      } else {
+        // Web: show filename modal before download
+        console.log(`[EXPORT] Opening export dialog for ${format}...`)
+        const filename = defaultExportFilename(format)
+        setExportModalState({ format, filename })
+      }
     } catch (error) {
       console.error(`[EXPORT] ✗ Failed to export ${format}:`, error)
     }
+  }
+
+  const handleExportConfirm = async (filename: string) => {
+    if (!exportModalState) return
+
+    try {
+      console.log(`[EXPORT] Starting ${exportModalState.format.toUpperCase()} export...`)
+      await exportAndSave(exportModalState.format as ExportFormat, filename)
+      console.log(`[EXPORT] ✓ ${exportModalState.format.toUpperCase()} export completed`)
+    } catch (error) {
+      console.error(`[EXPORT] ✗ Failed to export:`, error)
+    } finally {
+      setExportModalState(null)
+    }
+  }
+
+  const handleImport = async (format: ImportFormat) => {
+    try {
+      console.log(`[IMPORT] Opening file picker for ${format.toUpperCase()}...`)
+      const data = await pickImportFile(format)
+      if (!data) {
+        console.log('[IMPORT] Import cancelled by user')
+        return
+      }
+
+      console.log(`[IMPORT] File selected (${data.length} bytes). Showing confirmation modal...`)
+      setImportPendingFormat(format)
+      setImportPendingData(data)
+    } catch (error) {
+      console.error(`[IMPORT] ✗ Failed to pick file:`, error)
+    }
+  }
+
+  const handleImportConfirm = async () => {
+    if (!importPendingFormat || !importPendingData) return
+
+    setIsImporting(true)
+    try {
+      console.log(`[IMPORT] Starting ${importPendingFormat.toUpperCase()} import (replace mode)...`)
+
+      // Custom refresh that also navigates to first chapter
+      const refreshAndNavigate = async () => {
+        try {
+          const docs = await listDocuments()
+          setChapters(docs)
+
+          // Clear content cache and editor state to force fresh load
+          contentCacheRef.current.clear()
+          setContent('')
+          setLoadedChapterId(null)
+
+          // Navigate to first chapter, or fallback to draft board
+          if (docs.length > 0) {
+            console.log(`[IMPORT] ✓ Navigating to first chapter: "${docs[0].name}" (${docs[0].id})`)
+            setActiveChapterId(docs[0].id)
+          } else {
+            console.log('[IMPORT] ✓ No chapters imported, navigating to draft board')
+            setActiveChapterId(OVERVIEW_ID)
+          }
+        } catch (error) {
+          console.error('Failed to refresh chapters after import:', error)
+        }
+      }
+
+      // Pass the already-picked file data to avoid picking again
+      await importAndRefresh(importPendingFormat, refreshAndNavigate, { replace: true }, importPendingData)
+      console.log(`[IMPORT] ✓ ${importPendingFormat.toUpperCase()} import completed`)
+    } catch (error) {
+      console.error(`[IMPORT] ✗ Failed to import ${importPendingFormat}:`, error)
+    } finally {
+      setIsImporting(false)
+      setImportPendingFormat(null)
+      setImportPendingData(null)
+    }
+  }
+
+  const handleImportCancel = () => {
+    console.log('[IMPORT] Import cancelled by user')
+    setImportPendingFormat(null)
+    setImportPendingData(null)
   }
 
   const handleSave = async () => {
@@ -368,6 +479,7 @@ export default function EditorLayout() {
           onDeleteChapter={handleDeleteChapter}
           onReorder={handleReorder}
           onExport={handleExport}
+          onImport={handleImport}
         />
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
           <EditorToolbar
@@ -449,6 +561,131 @@ export default function EditorLayout() {
               initialEnableTreeViewPlugin={chapterSettings[activeChapterId]?.enableTreeViewPlugin ?? false}
               onEnableTreeViewPluginChange={handleEnableTreeViewPluginChange}
             />
+          )}
+        </GenericModal>
+
+        {/* Import confirmation modal */}
+        <GenericModal
+          isOpen={!!importPendingFormat}
+          onClose={handleImportCancel}
+          title={`Import ${importPendingFormat === 'epub' ? 'EPUB' : 'CAR'}`}
+          closeOnClickOutside={false}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <AlertTriangle size={20} style={{ color: '#ef4444', marginTop: '2px', flexShrink: 0 }} />
+              <div>
+                <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#0f0f0f' }}>
+                  All current chapters will be replaced by the imported file.
+                </p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+                  This action cannot be undone. Continue?
+                </p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleImportCancel}
+                style={{
+                  padding: '8px 16px',
+                  border: '1px solid #e5e5e5',
+                  background: 'white',
+                  cursor: 'pointer',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleImportConfirm}
+                disabled={isImporting}
+                style={{
+                  padding: '8px 16px',
+                  border: 'none',
+                  background: isImporting ? '#d1d5db' : '#ef4444',
+                  color: 'white',
+                  cursor: isImporting ? 'not-allowed' : 'pointer',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  opacity: isImporting ? 0.7 : 1,
+                }}
+              >
+                {isImporting ? 'Importing...' : 'Replace & Import'}
+              </button>
+            </div>
+          </div>
+        </GenericModal>
+
+        {/* Export filename modal (web only) */}
+        <GenericModal
+          isOpen={!!exportModalState}
+          onClose={() => setExportModalState(null)}
+          title={`Export ${
+            exportModalState?.format === 'markdown'
+              ? 'Markdown'
+              : exportModalState?.format === 'html'
+                ? 'HTML'
+                : exportModalState?.format === 'epub'
+                  ? 'EPUB'
+                  : 'CID'
+          }`}
+          closeOnClickOutside={true}
+        >
+          {exportModalState && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '14px', fontWeight: '500', color: '#0f0f0f' }}>
+                  Filename
+                </label>
+                <input
+                  type="text"
+                  value={exportModalState.filename}
+                  onChange={(e) =>
+                    setExportModalState({ ...exportModalState, filename: e.target.value })
+                  }
+                  style={{
+                    padding: '8px 12px',
+                    border: '1px solid #e5e5e5',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    fontFamily: 'monospace',
+                  }}
+                />
+              </div>
+              <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+                File will be downloaded to your browser's default downloads folder.
+              </p>
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => setExportModalState(null)}
+                  style={{
+                    padding: '8px 16px',
+                    border: '1px solid #e5e5e5',
+                    background: 'white',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleExportConfirm(exportModalState.filename)}
+                  style={{
+                    padding: '8px 16px',
+                    border: 'none',
+                    background: '#0f0f0f',
+                    color: 'white',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                  }}
+                >
+                  Download
+                </button>
+              </div>
+            </div>
           )}
         </GenericModal>
       </div>
