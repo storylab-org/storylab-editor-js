@@ -7,7 +7,6 @@ import {
   $setSelection,
   $isTextNode,
   LexicalNode,
-  TextNode,
   ElementNode,
   COMMAND_PRIORITY_NORMAL,
 } from 'lexical'
@@ -206,7 +205,7 @@ export function useFindReplaceState() {
       const shortcuts = detectCommonShortcuts(e)
       if (shortcuts.isFind) {
         e.preventDefault()
-        editor.dispatchCommand(OPEN_FIND_REPLACE_COMMAND)
+        editor.dispatchCommand(OPEN_FIND_REPLACE_COMMAND, undefined)
       }
     }
     window.addEventListener('keydown', handleOpenShortcut)

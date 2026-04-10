@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
   $getSelection,
   $isRangeSelection,
-  COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_HIGH,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
@@ -13,7 +12,6 @@ import {
   RangeSelection,
   TextNode,
 } from 'lexical'
-import { INSERT_ENTITY_MENTION_COMMAND } from '../../commands'
 import { $createEntityMentionNode } from '../../nodes/EntityMentionNode'
 import type { Entity } from '@/api/entities'
 import { listEntities, getEntity } from '@/api/entities'
@@ -158,7 +156,6 @@ export default function EntityMentionPlugin() {
         if (!(anchorNode instanceof TextNode)) return
 
         // Calculate positions for deletion and insertion
-        const textContent = anchorNode.getTextContent()
         const startOffset = triggerContext.offset
         const endOffset = selection.anchor.offset
 
@@ -253,7 +250,7 @@ export default function EntityMentionPlugin() {
     return mergeRegister(
       editor.registerCommand(
         KEY_ARROW_DOWN_COMMAND,
-        (payload) => {
+        () => {
           if (!active) return false
           setSelectedIndex((i) => (i + 1) % entities.length)
           return true
@@ -262,7 +259,7 @@ export default function EntityMentionPlugin() {
       ),
       editor.registerCommand(
         KEY_ARROW_UP_COMMAND,
-        (payload) => {
+        () => {
           if (!active) return false
           setSelectedIndex((i) => (i === 0 ? entities.length - 1 : i - 1))
           return true
@@ -271,7 +268,7 @@ export default function EntityMentionPlugin() {
       ),
       editor.registerCommand(
         KEY_ENTER_COMMAND,
-        (payload) => {
+        () => {
           if (!active || entities.length === 0) return false
           handleSelectEntity(entities[selectedIndex])
           return true
@@ -280,7 +277,7 @@ export default function EntityMentionPlugin() {
       ),
       editor.registerCommand(
         KEY_ESCAPE_COMMAND,
-        (payload) => {
+        () => {
           if (!active) return false
           setActive(false)
           setTriggerContext(null)

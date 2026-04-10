@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Pencil } from 'lucide-react'
 import type { Entity } from '@/api/entities'
 import { BADGE_ICONS, ENTITY_LABELS } from './entityConstants'

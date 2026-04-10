@@ -6,6 +6,7 @@ import FindReplacePanel from '@/components/editor/lexical/plugins/FindReplacePlu
  * Must be rendered inside the Lexical editor context (inside LexicalComposer).
  */
 export default function FindReplaceBar() {
+  const context = useFindReplace() as any
   const {
     isOpen,
     searchQuery,
@@ -22,7 +23,7 @@ export default function FindReplaceBar() {
     onReplace,
     onReplaceAll,
     onClose,
-  } = useFindReplace()
+  } = context
 
   if (!isOpen) return null
 

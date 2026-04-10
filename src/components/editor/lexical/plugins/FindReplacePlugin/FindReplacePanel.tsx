@@ -19,7 +19,7 @@ export interface FindReplacePanelProps {
   onClose: () => void
 }
 
-export default function FindReplacePanel(props: FindReplacePanelProps): JSX.Element {
+export default function FindReplacePanel(props: FindReplacePanelProps): React.ReactElement {
   const replaceInputRef = useRef<HTMLInputElement>(null)
 
   // Autofocus search input when panel is mounted/visible

@@ -13,7 +13,7 @@ export interface FindReplaceContextType {
   caseSensitive: boolean
   matches: Match[]
   currentMatchIndex: number
-  searchInputRef: React.RefObject<HTMLInputElement>
+  searchInputRef: React.RefObject<HTMLInputElement | null>
   onOpen: () => void
   onClose: () => void
   onSearchChange: (val: string) => void

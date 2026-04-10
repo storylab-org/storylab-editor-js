@@ -8,8 +8,7 @@
 
 import './ColorPicker.css';
 
-import {useEffect, useMemo, useRef, useState} from 'react';
-import * as React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import TextInput from './TextInput';
 
@@ -42,7 +41,7 @@ const HEIGHT = 150;
 export default function ColorPicker({
   color,
   onChange,
-}: Readonly<ColorPickerProps>): JSX.Element {
+}: Readonly<ColorPickerProps>): React.ReactElement {
   const [selfColor, setSelfColor] = useState(transformColor('hex', color));
   const [inputColor, setInputColor] = useState(color);
   const innerDivRef = useRef(null);
@@ -162,7 +161,7 @@ interface MoveWrapperProps {
   className?: string;
   style?: React.CSSProperties;
   onChange: (position: Position) => void;
-  children: JSX.Element;
+  children: React.ReactElement;
 }
 
 function MoveWrapper({className, style, onChange, children}: MoveWrapperProps) {
@@ -261,7 +260,7 @@ function hex2rgb(hex: string): RGB {
     hex
       .replace(
         /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-        (m, r, g, b) => '#' + r + r + g + g + b + b,
+        (_m, r, g, b) => '#' + r + r + g + g + b + b,
       )
       .substring(1)
       .match(/.{2}/g) || []

@@ -11,12 +11,10 @@ import {
   createPath,
   deletePath,
   type BoardCard,
-  type BoardData,
   type StoryPath,
   type CardShape,
 } from '@/api/draftboard'
 import { createEntity, updateEntity, deleteEntity, type EntityType } from '@/api/entities'
-import type { DocumentHead } from '@/api/documents'
 
 const COLOUR_PRESETS = ['#ffd699', '#f0ccff', '#cce5ff', '#ccf0e6', '#ffcccc', '#e6ccff']
 
@@ -78,7 +76,7 @@ interface UseBoardStateReturn {
   handleUnlinkEntity: (cardId: string) => void
 }
 
-export function useBoardState(chapters: DocumentHead[] = []): UseBoardStateReturn {
+export function useBoardState(): UseBoardStateReturn {
   const [cards, setCards] = useState<BoardCard[]>([])
   const [paths, setPaths] = useState<StoryPath[]>([])
   const [isLoading, setIsLoading] = useState(true)

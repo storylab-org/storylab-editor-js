@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { COMMAND_PRIORITY_NORMAL } from 'lexical'
+import { COMMAND_PRIORITY_NORMAL, createCommand } from 'lexical'
 import { getStateInstance } from './findReplaceStore'
 
 // Custom command to open Find & Replace
-export const OPEN_FIND_REPLACE_COMMAND = 'OPEN_FIND_REPLACE_COMMAND'
+export const OPEN_FIND_REPLACE_COMMAND = createCommand<void>()
 
 export { FindReplaceContext, useFindReplace } from './FindReplaceContext'
 export { useFindReplaceState } from './useFindReplaceState'

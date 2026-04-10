@@ -54,8 +54,12 @@ export default function FormattingToolbar() {
   const [fontSize, setFontSize] = useState('15px')
   const [showTableDialog, setShowTableDialog] = useState(false)
 
-  const handleFormat = useCallback((command: string, arg?: string) => {
-    editor.dispatchCommand(command as any, arg as any)
+  const dispatchCommandWithPayload = useCallback((command: any, payload?: any) => {
+    if (payload !== undefined) {
+      editor.dispatchCommand(command, payload)
+    } else {
+      editor.dispatchCommand(command, undefined)
+    }
   }, [editor])
 
   const formatParagraph = useCallback(() => {
@@ -106,7 +110,7 @@ export default function FormattingToolbar() {
   }, [editor, blockType])
 
   const openFindReplace = useCallback(() => {
-    editor.dispatchCommand(OPEN_FIND_REPLACE_COMMAND)
+    editor.dispatchCommand(OPEN_FIND_REPLACE_COMMAND as any, undefined)
   }, [editor])
 
   const applyFontSize = useCallback((size: string) => {
@@ -166,7 +170,7 @@ export default function FormattingToolbar() {
     input.click()
   }, [editor])
 
-  const insertMentionTrigger = useCallback((trigger: string, type: string) => {
+  const insertMentionTrigger = useCallback((trigger: string) => {
     editor.update(() => {
       const selection = $getSelection()
       if ($isRangeSelection(selection)) {
@@ -246,7 +250,7 @@ export default function FormattingToolbar() {
     <div className="formatting-toolbar">
       <button
         title="Undo (Ctrl+Z)"
-        onClick={() => handleFormat(UNDO_COMMAND)}
+        onClick={() => dispatchCommandWithPayload(UNDO_COMMAND)}
         className="format-btn"
       >
         <Undo2 size={18} />
@@ -254,7 +258,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Redo (Ctrl+Y)"
-        onClick={() => handleFormat(REDO_COMMAND)}
+        onClick={() => dispatchCommandWithPayload(REDO_COMMAND)}
         className="format-btn"
       >
         <Redo2 size={18} />
@@ -301,7 +305,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Bold (Ctrl+B)"
-        onClick={() => handleFormat(FORMAT_TEXT_COMMAND, 'bold')}
+        onClick={() => dispatchCommandWithPayload(FORMAT_TEXT_COMMAND, 'bold')}
         className={`format-btn ${isBold ? 'active' : ''}`}
       >
         <Bold size={18} />
@@ -309,7 +313,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Italic (Ctrl+I)"
-        onClick={() => handleFormat(FORMAT_TEXT_COMMAND, 'italic')}
+        onClick={() => dispatchCommandWithPayload(FORMAT_TEXT_COMMAND, 'italic')}
         className={`format-btn ${isItalic ? 'active' : ''}`}
       >
         <Italic size={18} />
@@ -317,7 +321,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Underline (Ctrl+U)"
-        onClick={() => handleFormat(FORMAT_TEXT_COMMAND, 'underline')}
+        onClick={() => dispatchCommandWithPayload(FORMAT_TEXT_COMMAND, 'underline')}
         className={`format-btn ${isUnderline ? 'active' : ''}`}
       >
         <Underline size={18} />
@@ -343,7 +347,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Bullet List"
-        onClick={() => handleFormat(INSERT_UNORDERED_LIST_COMMAND)}
+        onClick={() => dispatchCommandWithPayload(INSERT_UNORDERED_LIST_COMMAND)}
         className="format-btn"
       >
         <List size={18} />
@@ -351,7 +355,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Numbered List"
-        onClick={() => handleFormat(INSERT_ORDERED_LIST_COMMAND)}
+        onClick={() => dispatchCommandWithPayload(INSERT_ORDERED_LIST_COMMAND)}
         className="format-btn"
       >
         <ListOrdered size={18} />
@@ -361,7 +365,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Align Left"
-        onClick={() => handleFormat(FORMAT_ELEMENT_COMMAND, 'left')}
+        onClick={() => dispatchCommandWithPayload(FORMAT_ELEMENT_COMMAND, 'left')}
         className="format-btn"
       >
         <AlignLeft size={18} />
@@ -369,7 +373,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Align Center"
-        onClick={() => handleFormat(FORMAT_ELEMENT_COMMAND, 'center')}
+        onClick={() => dispatchCommandWithPayload(FORMAT_ELEMENT_COMMAND, 'center')}
         className="format-btn"
       >
         <AlignCenter size={18} />
@@ -377,7 +381,7 @@ export default function FormattingToolbar() {
 
       <button
         title="Align Right"
-        onClick={() => handleFormat(FORMAT_ELEMENT_COMMAND, 'right')}
+        onClick={() => dispatchCommandWithPayload(FORMAT_ELEMENT_COMMAND, 'right')}
         className="format-btn"
       >
         <AlignRight size={18} />
@@ -407,13 +411,13 @@ export default function FormattingToolbar() {
         buttonClassName="format-btn format-btn-entity"
         buttonAriaLabel="Insert entity mention"
       >
-        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('@', 'character')}>
+        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('@')}>
           <User size={16} /><span className="text">@ (Person)</span>
         </DropDownItem>
-        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('#', 'location')}>
+        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('#')}>
           <MapPin size={16} /><span className="text"># (Location)</span>
         </DropDownItem>
-        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('!', 'item')}>
+        <DropDownItem className="item entity-dropdown-item" onClick={() => insertMentionTrigger('!')}>
           <Package size={16} /><span className="text">! (Item)</span>
         </DropDownItem>
       </DropDown>

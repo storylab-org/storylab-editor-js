@@ -21,7 +21,7 @@ interface FeaturesPanelProps {
 }
 
 function FeaturesPanel({ onExport, onImport }: FeaturesPanelProps) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [hoveredIndex, setHoveredIndex] = useState<string | null>(null)
   const [expandedAccordion, setExpandedAccordion] = useState<string | null>('export')
   const [isImporting, setIsImporting] = useState(false)
 
@@ -119,7 +119,7 @@ function FeaturesPanel({ onExport, onImport }: FeaturesPanelProps) {
                   transition: 'background-color 0.15s ease',
                   paddingLeft: '32px'
                 }}
-                onMouseEnter={() => item.enabled && setHoveredIndex(item.format as unknown as number)}
+                onMouseEnter={() => item.enabled && setHoveredIndex(item.format)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 <span>{item.label}</span>
@@ -186,7 +186,7 @@ function FeaturesPanel({ onExport, onImport }: FeaturesPanelProps) {
                   gap: '10px',
                   fontSize: '13px',
                   border: 'none',
-                  background: hoveredIndex === 200 + (item.format === 'epub' ? 0 : 1) ? '#f0f0f0' : 'transparent',
+                  background: hoveredIndex === item.format ? '#f0f0f0' : 'transparent',
                   cursor: isImporting ? 'not-allowed' : 'pointer',
                   width: '100%',
                   textAlign: 'left',
@@ -194,7 +194,7 @@ function FeaturesPanel({ onExport, onImport }: FeaturesPanelProps) {
                   transition: 'background-color 0.15s ease',
                   paddingLeft: '32px'
                 }}
-                onMouseEnter={() => !isImporting && setHoveredIndex(200 + (item.format === 'epub' ? 0 : 1))}
+                onMouseEnter={() => !isImporting && setHoveredIndex(item.format)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 <span>{item.label}</span>
@@ -205,7 +205,7 @@ function FeaturesPanel({ onExport, onImport }: FeaturesPanelProps) {
       </div>
 
       {/* Other Features */}
-      {otherFeatures.map((feature, index) => {
+      {otherFeatures.map((feature) => {
         const IconComponent = feature.icon
         return (
           <button
@@ -217,14 +217,14 @@ function FeaturesPanel({ onExport, onImport }: FeaturesPanelProps) {
               gap: '10px',
               fontSize: '14px',
               border: 'none',
-              background: hoveredIndex === 100 + index ? '#f5f5f5' : 'transparent',
+              background: hoveredIndex === feature.id ? '#f5f5f5' : 'transparent',
               cursor: 'pointer',
               width: '100%',
               textAlign: 'left',
               color: '#0f0f0f',
               transition: 'background-color 0.15s ease'
             }}
-            onMouseEnter={() => setHoveredIndex(100 + index)}
+            onMouseEnter={() => setHoveredIndex(feature.id)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <IconComponent size={16} style={{ color: '#999', flexShrink: 0 }} />

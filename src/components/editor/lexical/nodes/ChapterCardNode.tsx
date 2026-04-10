@@ -111,16 +111,8 @@ interface ChapterCardComponentProps {
   editor: any
 }
 
-function ChapterCardComponent({ node, editor }: ChapterCardComponentProps): React.ReactElement {
-  const [style, setStyle] = React.useState<ChapterCardStyle>(node.getStyle())
-  const [isHovered, setIsHovered] = React.useState(false)
-
-  const handleStyleChange = (newStyle: ChapterCardStyle) => {
-    editor.update(() => {
-      node.getWritable().setStyle(newStyle)
-      setStyle(newStyle)
-    })
-  }
+function ChapterCardComponent({ node }: ChapterCardComponentProps): React.ReactElement {
+  const [style] = React.useState<ChapterCardStyle>(node.getStyle())
 
   const handleConnectDragStart = (e: React.DragEvent<HTMLButtonElement>) => {
     e.dataTransfer.effectAllowed = 'copy'
@@ -166,10 +158,6 @@ function ChapterCardComponent({ node, editor }: ChapterCardComponentProps): Reac
       className="chapter-card-component"
       data-lexical-decorator="true"
       onClick={handleCardClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false)
-      }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       style={{

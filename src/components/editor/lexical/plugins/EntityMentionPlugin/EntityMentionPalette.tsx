@@ -9,7 +9,7 @@ interface EntityMentionPaletteProps {
   position: { top: number; left: number }
   onSelect: (entity: Entity) => void
   onHover: (index: number) => void
-  paletteRef: React.RefObject<HTMLDivElement>
+  paletteRef: React.RefObject<HTMLDivElement | null>
   triggerChar?: string
 }
 

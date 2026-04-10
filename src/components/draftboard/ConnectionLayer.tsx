@@ -6,7 +6,6 @@ interface ConnectionLayerProps {
   paths: StoryPath[]
   connectingFromCardId: string | null
   rewiringArrow: { pathId: string; endpoint: 'from' | 'to' } | null
-  onStartRewiringArrow: (pathId: string, endpoint: 'from' | 'to') => void
   onEndRewiringArrow: (toCardId: string | null) => Promise<void>
   onDeletePath: (id: string) => Promise<void>
   onConnectTo: (toCardId: string) => Promise<void>
@@ -97,7 +96,6 @@ export default function ConnectionLayer({
   paths,
   connectingFromCardId,
   rewiringArrow,
-  onStartRewiringArrow,
   onEndRewiringArrow,
   onDeletePath,
   selectedPathId,
