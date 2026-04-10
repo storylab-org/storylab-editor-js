@@ -134,100 +134,23 @@ Complete guide to the sidebar menu system — export functionality, mocked featu
 
 ## Logging
 
-Three-layer logging system:
-
-- **Frontend** (Browser console) → `logger.info()`, `logger.error()`, etc.
-- **Server** (Terminal) → Pino structured logging with pretty-printing
-- **Rust** (Terminal) → env_logger with `RUST_LOG=debug`
-
-Start with all debug logs:
-```bash
-RUST_LOG=debug npm run tauri dev
-```
-
-Full logging guide: **[docs/LOGGING.md](docs/LOGGING.md)**
+See **[docs/LOGGING.md](docs/LOGGING.md)** for comprehensive logging setup across all three layers (frontend, server, Rust).
 
 ## Frontend (React + Lexical Editor)
 
-The React frontend uses **Lexical** (Facebook's text editor framework) with modern icon support.
+The React frontend uses **Lexical** (Facebook's text editor framework) with **lucide-react** icons.
 
-### Key Dependencies
-
-- **Lexical v0.41.0** → Rich text editor framework
-  - `@lexical/react`, `@lexical/list`, `@lexical/table`, `@lexical/link`, `@lexical/code`, etc.
-- **lucide-react** → SVG icon library for toolbar
-  - 1000+ icons, tree-shakeable, consistent styling
-
-### Toolbar Features
-
-The editor toolbar provides essential formatting for book writing:
-
-- **Block type dropdown** — Switch between Normal, Heading 1–3, Quote, Code Block
-- **Text formatting** — Bold, Italic, Underline (all with active state indicators)
-- **Lists** — Bullet and numbered lists
-- **Alignment** — Left, centre, right alignment
-
-See **[docs/EDITOR_TOOLBAR.md](docs/EDITOR_TOOLBAR.md)** for complete toolbar documentation, how to add new features, and implementation details.
-
-### Editor Component
-
-Main component: `src/components/editor/LexicalEditor.tsx`
-- Configures Lexical nodes and plugins
-- Handles content serialisation/deserialisation
-- Integrates with Fastify backend for saving
-
-Main toolbar component: `src/components/editor/FormattingToolbar.tsx`
-- Implements block type detection and conversion
-- Manages active state for bold/italic/underline
-- Uses DropDown UI component for block type selector
+See **[docs/EDITOR_TOOLBAR.md](docs/EDITOR_TOOLBAR.md)** for toolbar features, implementation details, and how to extend the editor.
 
 ## Server (Fastify Sidecar)
 
-The Fastify server (`./server`) is a Node.js process spawned by Tauri on app startup. It provides HTTP APIs on port 3000.
+The Fastify server (`./server`) is a Node.js process spawned by Tauri on app startup.
 
-### Adding a Route
-
-Create `server/src/routes/my-route.ts`:
-
-```typescript
-import { FastifyPluginAsync } from 'fastify'
-
-const myRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/my-route', async (request, reply) => {
-    return { message: 'Hello from my route' }
-  })
-}
-
-export default myRoute
-```
-
-The route is auto-loaded and available immediately at `GET /my-route`.
-
-Full server guide: **[docs/SIDECAR.md](docs/SIDECAR.md)**
-
-## Building for Release
-
-```bash
-npm run build
-```
-
-Creates distributables:
-- **macOS** → `src-tauri/target/release/bundle/dmg/storylab_0.1.0_x64.dmg`
-- **Windows** → `src-tauri/target/release/bundle/msi/storylab_0.1.0_x64_en-US.msi`
-
-Full build guide: **[docs/BUILDING.md](docs/BUILDING.md)**
+See **[docs/SIDECAR.md](docs/SIDECAR.md)** for adding routes, middleware, lifecycle, and architecture details.
 
 ## Troubleshooting
 
-| Issue | Fix |
-|-------|-----|
-| "cargo not found" | Install Rust: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| Port 1420 already in use | `lsof -ti:1420 \| xargs kill -9` |
-| Server not responding | Check logs for "listening at", verify port 3000 available |
-| TypeScript errors | Run `npm run build` to see all errors |
-| Module not found | `rm -rf node_modules src-tauri/target && npm install` |
-
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#troubleshooting) for more troubleshooting.
+See **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#troubleshooting)** for troubleshooting common issues.
 
 ## Project Conventions
 
@@ -237,60 +160,13 @@ See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#troubleshooting) for more troubles
 - No unused locals or parameters
 - Imports must be explicit (no namespace imports)
 
-### Testing
+### Testing, Logging & API Routes
 
-- **Frontend**: Vitest + React Testing Library
-  - Location: `test/frontend/**/*.test.{ts,tsx}`
-  - Query by accessibility (role/text), not ID/class
-  - Use `userEvent` for realistic interactions
-  - Mock `fetch` for API calls
-  - Run: `npm run test:frontend`
-
-- **Server**: node:test + Fastify `inject()`
-  - Location: `test/server/**/*.test.ts`
-  - Test all HTTP methods and error cases
-  - Use `buildApp()` helper from `test/server/helper.ts`
-  - Validate response shape and status
-  - Run: `npm run test:server`
-
-- **Rust**: Inline `#[cfg(test)]` modules
-  - Location: Same file as code being tested
-  - Test edge cases and boundary conditions
-  - Run: `npm run test:rust`
-
-- **All tests**: `npm test` (frontend + server)
-- See **[docs/TESTING.md](docs/TESTING.md)** for detailed guide
-
-### Logging
-
-- Use `logger.info()` for important events
-- Use `logger.debug()` for detailed tracing
-- Never log passwords, tokens, or secrets
-- Include context in logs: `logger.info({ userId, action }, 'message')`
-
-### API Routes
-
-- Auto-loaded from `server/src/routes/`
-- Use TypeScript for type safety
-- Validate all input
-- Return consistent JSON responses
-- Write tests in `test/server/routes/<route-name>.test.ts`
-
-### Rust
-
-- Use `log::info!()`, `log::debug!()` for logging
-- Handle errors gracefully
-- Document complex logic
-- Write tests in `#[cfg(test)]` module at end of file
+See **[docs/TESTING.md](docs/TESTING.md)**, **[docs/LOGGING.md](docs/LOGGING.md)**, and **[docs/SIDECAR.md](docs/SIDECAR.md)** for detailed conventions.
 
 ## Key Decisions
 
-✅ **HTTP-based communication** → Simple, universal, webview-compatible
-✅ **Fastify sidecar** → Rich Node.js ecosystem, fast to develop
-✅ **Tauri v2** → Modern, lightweight, cross-platform
-✅ **TypeScript everywhere** → Type safety across frontend and server
-✅ **Structured logging** → Observability from day one
-✅ **Unified test suite** → Vitest (frontend) + node:test (server) + Cargo (Rust) with 27+ tests
+See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for key architectural decisions and rationale.
 
 ## Getting Help
 
