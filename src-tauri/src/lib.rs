@@ -83,21 +83,29 @@ pub fn run() {
         })
         .setup(|app| {
             info!("Tauri setup started");
-            match spawn_server(app.handle()) {
-                Ok(_) => {
-                    info!("Server sidecar spawned successfully");
-                }
-                Err(e) => {
-                    error!("Failed to spawn server sidecar: {}", e);
-                    return Err(format!("Failed to spawn server: {}", e).into());
-                }
-            }
 
-            // Build application menu
+            // Build application menu first (synchronously)
             if let Err(e) = build_menu(app.handle()) {
                 error!("Failed to build menu: {}", e);
                 return Err(format!("Failed to build menu: {}", e).into());
             }
+
+            // Spawn server on a background thread to avoid blocking app initialization
+            let app_handle = app.handle().clone();
+            std::thread::spawn(move || {
+                // Small delay to ensure window is created before server spawns
+                std::thread::sleep(std::time::Duration::from_millis(100));
+                match spawn_server(&app_handle) {
+                    Ok(_) => {
+                        info!("Server sidecar spawned successfully on background thread");
+                    }
+                    Err(e) => {
+                        error!("Failed to spawn server sidecar: {}", e);
+                        // Log error but don't crash the app - user can still interact with UI
+                        // even if server isn't running
+                    }
+                }
+            });
 
             Ok(())
         })
