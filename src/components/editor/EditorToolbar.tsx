@@ -12,6 +12,7 @@ interface EditorToolbarProps {
   canApplyOrder?: boolean;
   saveStatus?: SaveStatus;
   onHelp?: () => void;
+  typewriterMode?: boolean;
 }
 
 export default function EditorToolbar({
@@ -23,6 +24,7 @@ export default function EditorToolbar({
   canApplyOrder = false,
   saveStatus = 'idle',
   onHelp,
+  typewriterMode = false,
 }: EditorToolbarProps) {
   const isOverview = !chapterId
 
@@ -48,6 +50,23 @@ export default function EditorToolbar({
       </div>
 
       <div className="toolbar-section toolbar-right">
+        {typewriterMode && (
+          <div
+            style={{
+              display: 'inline-block',
+              padding: '4px 8px',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: '500',
+              color: '#666',
+              marginRight: '8px',
+            }}
+            title="Typewriter mode is active (Cmd+T to toggle)"
+          >
+            Typewriter
+          </div>
+        )}
         {onHelp && (
           <button
             className="chapter-settings-button"

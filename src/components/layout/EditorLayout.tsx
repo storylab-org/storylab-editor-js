@@ -20,6 +20,7 @@ import {
 } from '@/api/documents'
 import { exportAndSave, isRunningInTauri, type ExportFormat } from '@/api/export'
 import { importAndRefresh, pickImportFile, type ImportFormat } from '@/api/import'
+import { detectCommonShortcuts } from '@/utils/keyboardUtils'
 import { AlertTriangle } from 'lucide-react'
 
 const isDevelopmentMode = import.meta.env.MODE === 'development'
@@ -51,6 +52,7 @@ export default function EditorLayout() {
   const [isImporting, setIsImporting] = useState(false)
   const [exportModalState, setExportModalState] = useState<{ format: string; filename: string } | null>(null)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
+  const [typewriterMode, setTypewriterMode] = useState(false)
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const contentCacheRef = useRef<Map<string, string>>(new Map())
   const handleExportRef = useRef<(format: ExportFormat) => Promise<void>>(() => Promise.resolve())
@@ -248,6 +250,7 @@ export default function EditorLayout() {
       unlisten?.()
     }
   }, [])
+
 
   const handleSelectChapter = async (id: string) => {
     console.log(`[SWITCH] Switching to chapter "${id}"`)
@@ -465,6 +468,25 @@ export default function EditorLayout() {
     }
   }
 
+  // Keyboard shortcuts handler (keyboard-agnostic)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const shortcuts = detectCommonShortcuts(e)
+
+      if (shortcuts.isTypewriterMode) {
+        e.preventDefault()
+        setTypewriterMode(prev => !prev)
+      } else if (shortcuts.isSave) {
+        e.preventDefault()
+        handleSave()
+      }
+      // Note: Cmd+F is handled by the FindReplacePlugin
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleSave])
+
   const handleSettingsChange = (key: string, value: string) => {
     if (!activeChapterId) return
 
@@ -547,6 +569,7 @@ export default function EditorLayout() {
             onApplyOrder={applyOrderHandler || undefined}
             canApplyOrder={canApplyOrder}
             onHelp={() => setIsHelpOpen(true)}
+            typewriterMode={typewriterMode}
           />
           {loadedChapterId === OVERVIEW_ID ? (
             <DraftBoard
@@ -567,6 +590,7 @@ export default function EditorLayout() {
                 pageBackground={chapterSettings[activeChapterId]?.pageBackground ?? '#f9f9f9'}
                 showDragMenu={chapterSettings[activeChapterId]?.showDragMenu ?? true}
                 enableTreeViewPlugin={chapterSettings[activeChapterId]?.enableTreeViewPlugin ?? false}
+                typewriterMode={typewriterMode}
                 onChange={(newContent) => {
                   console.log(`[EDITOR] Content changed: ${newContent.length} bytes`)
                   setContent(newContent)
@@ -750,7 +774,7 @@ export default function EditorLayout() {
         <GenericModal
           isOpen={isHelpOpen}
           onClose={() => setIsHelpOpen(false)}
-          title="Help"
+          title="Keyboard Shortcuts & Help"
           closeOnClickOutside={true}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto' }}>
@@ -761,29 +785,51 @@ export default function EditorLayout() {
               </h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                 <tbody>
+                  {/* Writing */}
                   <tr>
-                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+S</td>
-                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Save chapter</td>
+                    <td colSpan={2} style={{ padding: '6px 0 4px 0', fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase' }}>Writing</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+F</td>
-                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Find & Replace</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+B</td>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+b</td>
                     <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Bold</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+I</td>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+i</td>
                     <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Italic</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+U</td>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+u</td>
                     <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Underline</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+/</td>
-                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Slash commands</td>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+z</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Undo</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0 6px 0', color: '#666' }}>Cmd+Shift+z</td>
+                    <td style={{ padding: '4px 0 6px 8px', color: '#0f0f0f' }}>Redo</td>
+                  </tr>
+
+                  {/* Navigation */}
+                  <tr>
+                    <td colSpan={2} style={{ padding: '6px 0 4px 0', fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase' }}>Navigation & Commands</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+f</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Find & Replace</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0 6px 0', color: '#666' }}>Cmd+t</td>
+                    <td style={{ padding: '4px 0 6px 8px', color: '#0f0f0f' }}>Toggle Typewriter Mode</td>
+                  </tr>
+
+                  {/* File */}
+                  <tr>
+                    <td colSpan={2} style={{ padding: '6px 0 4px 0', fontSize: '11px', fontWeight: '600', color: '#999', textTransform: 'uppercase' }}>File</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '4px 0', color: '#666' }}>Cmd+s</td>
+                    <td style={{ padding: '4px 0 4px 8px', color: '#0f0f0f' }}>Save chapter</td>
                   </tr>
                 </tbody>
               </table>

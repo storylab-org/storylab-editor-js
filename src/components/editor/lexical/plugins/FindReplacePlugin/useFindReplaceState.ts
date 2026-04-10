@@ -14,6 +14,7 @@ import {
 import { $isEntityMentionNode } from '../../nodes/EntityMentionNode'
 import { OPEN_FIND_REPLACE_COMMAND } from './index'
 import { setStateInstance } from './findReplaceStore'
+import { detectCommonShortcuts } from '@/utils/keyboardUtils'
 
 interface Match {
   nodeKey: string
@@ -199,10 +200,11 @@ export function useFindReplaceState() {
     )
   }, [editor])
 
-  // Global Cmd/Ctrl+F listener
+  // Global Cmd/Ctrl+F listener (keyboard-agnostic)
   useEffect(() => {
     const handleOpenShortcut = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+      const shortcuts = detectCommonShortcuts(e)
+      if (shortcuts.isFind) {
         e.preventDefault()
         editor.dispatchCommand(OPEN_FIND_REPLACE_COMMAND)
       }
