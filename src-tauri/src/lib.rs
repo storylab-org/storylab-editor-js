@@ -182,6 +182,41 @@ fn build_menu(app: &tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+fn find_node_executable() -> Result<String, String> {
+    // Try to find node executable in multiple ways
+
+    // First, try to use 'which' command (Unix-like systems)
+    let which_output = std::process::Command::new("which")
+        .arg("node")
+        .output();
+
+    if let Ok(output) = which_output {
+        if output.status.success() {
+            if let Ok(path) = String::from_utf8(output.stdout) {
+                return Ok(path.trim().to_string());
+            }
+        }
+    }
+
+    // Try common installation locations
+    let common_paths = vec![
+        "/usr/local/bin/node",
+        "/usr/bin/node",
+        "/opt/homebrew/bin/node",  // M1/M2 Macs
+        "/opt/local/bin/node",      // MacPorts
+    ];
+
+    for path in common_paths {
+        if std::path::Path::new(path).exists() {
+            debug!("Found node at: {}", path);
+            return Ok(path.to_string());
+        }
+    }
+
+    // Fallback: just try "node" and let the error message be helpful
+    Err("Node.js executable not found. Please ensure Node.js is installed and in PATH.".to_string())
+}
+
 fn spawn_server(app: &AppHandle) -> Result<(), String> {
     debug!("spawn_server called");
 
@@ -197,14 +232,20 @@ fn spawn_server(app: &AppHandle) -> Result<(), String> {
 
     info!("Spawning Node.js server at path: {}", server_path);
 
-    let child = std::process::Command::new("node")
+    // Find the node executable with robust search
+    let node_path = find_node_executable().unwrap_or_else(|e| {
+        error!("{}", e);
+        "node".to_string() // Fallback, may still fail but with clearer error
+    });
+
+    let child = std::process::Command::new(&node_path)
         .arg(server_path)
         .env("PORT", "3000")
         .env("HOST", "0.0.0.0")
         .spawn()
         .map_err(|e| {
-            error!("Failed to spawn Node.js server: {}", e);
-            format!("Failed to spawn Node.js server: {}", e)
+            error!("Failed to spawn Node.js server with '{}': {}", node_path, e);
+            format!("Failed to spawn Node.js server: {}. Node executable: {}", e, node_path)
         })?;
 
     debug!("Node.js process spawned successfully");
