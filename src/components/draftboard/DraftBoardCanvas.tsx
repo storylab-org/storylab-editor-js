@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 import { Book } from 'lucide-react'
 import BoardCard from './BoardCard'
 import ConnectionLayer from './ConnectionLayer'
@@ -84,7 +83,6 @@ function PreviewCard({ shape, mousePos, pendingEntity, selectedChapter }: Previe
   // Entity preview
   if (pendingEntity) {
     const width = '160px'
-    const height = 'auto'
     const offsetX = 80 // Half of 160px width
     const offsetY = 20 // Half of approximate chip height
 
@@ -166,7 +164,6 @@ function PreviewCard({ shape, mousePos, pendingEntity, selectedChapter }: Previe
 
 export default function DraftBoardCanvas({
   chapters,
-  onNavigateToChapter,
   onChaptersReordered,
   onApplyOrderReady,
 }: DraftBoardCanvasProps) {

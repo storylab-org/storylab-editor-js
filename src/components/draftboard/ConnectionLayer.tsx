@@ -157,13 +157,6 @@ export default function ConnectionLayer({
     onPathSelected(selectedPathId === pathId ? null : pathId)
   }, [selectedPathId, onPathSelected])
 
-  const handleCirclePointerDown = useCallback(
-    (pathId: string, endpoint: 'from' | 'to') => {
-      onStartRewiringArrow(pathId, endpoint)
-    },
-    [onStartRewiringArrow]
-  )
-
   useEffect(() => {
     if (!rewiringArrow || !mousePos) return
 
@@ -335,7 +328,6 @@ export default function ConnectionLayer({
           const fromCard = cards.find(c => c.id === connectingFromCardId)
           if (!fromCard) return null
 
-          const fromCenter = getCardCenter(fromCard)
           const start = getCardInsetPoint(fromCard, mousePos.x, mousePos.y)
 
           return (

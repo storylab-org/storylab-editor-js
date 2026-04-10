@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react'
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, X, Palette, ArrowRight, Book, User, MapPin, Package } from 'lucide-react'
+import { GripVertical, X, Palette, ArrowRight, Book } from 'lucide-react'
 import type { BoardCard as BoardCardType } from '@/api/draftboard'
-import { BADGE_ICONS, ENTITY_LABELS } from './entityConstants'
+import { BADGE_ICONS } from './entityConstants'
 import './BoardCard.css'
 
 const COLOUR_PRESETS = ['#ffd699', '#f0ccff', '#cce5ff', '#ccf0e6', '#ffcccc', '#e6ccff']

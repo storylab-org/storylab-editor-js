@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import type { BoardCard, DocumentHead } from '@/api/draftboard'
+import type { BoardCard } from '@/api/draftboard'
+import type { DocumentHead } from '@/api/documents'
 import './ApplyOrderModal.css'
 
 interface ApplyOrderModalProps {
