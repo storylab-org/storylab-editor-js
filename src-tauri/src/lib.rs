@@ -223,11 +223,28 @@ fn spawn_server(app: &AppHandle) -> Result<(), String> {
     let server_path = if cfg!(debug_assertions) {
         // In development, use the server from the source directory
         debug!("Using development server path");
-        "../server/dist/server.js"
+        "../server/dist/server.js".to_string()
     } else {
         // In production, the server will be bundled in the app resources
         debug!("Using production server path");
-        "./server/dist/server.js"
+        // Use Tauri's path resolution for bundled resources
+        let resource_dir = app
+            .path()
+            .resource_dir()
+            .map_err(|e| format!("Failed to resolve resource directory: {}", e))?;
+
+        let server_file = resource_dir.join("server").join("dist").join("server.js");
+        debug!("Resolved server path to: {}", server_file.display());
+
+        if !server_file.exists() {
+            error!("Server file not found at: {}", server_file.display());
+            return Err(format!(
+                "Server executable not found at {}. Check that server files are bundled in resources.",
+                server_file.display()
+            ));
+        }
+
+        server_file.to_string_lossy().to_string()
     };
 
     info!("Spawning Node.js server at path: {}", server_path);
@@ -239,13 +256,13 @@ fn spawn_server(app: &AppHandle) -> Result<(), String> {
     });
 
     let child = std::process::Command::new(&node_path)
-        .arg(server_path)
+        .arg(&server_path)
         .env("PORT", "3000")
         .env("HOST", "0.0.0.0")
         .spawn()
         .map_err(|e| {
-            error!("Failed to spawn Node.js server with '{}': {}", node_path, e);
-            format!("Failed to spawn Node.js server: {}. Node executable: {}", e, node_path)
+            error!("Failed to spawn Node.js server '{}' with node '{}': {}", server_path, node_path, e);
+            format!("Failed to spawn Node.js server: {}. Node: {}, Server: {}", e, node_path, server_path)
         })?;
 
     debug!("Node.js process spawned successfully");
