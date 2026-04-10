@@ -83,7 +83,7 @@ main() {
   log "Finding built binaries..."
 
   # Get the app-v release (from tauri-action)
-  APP_TAG=$(gh api repos/$REPO/releases --jq '.[] | select(.prerelease==true and .tag_name | startswith("app-v")) | .tag_name' | head -1)
+  APP_TAG=$(gh api repos/$REPO/releases --jq '.[] | select(.prerelease==true) | select(.tag_name | startswith("app-v")) | .tag_name' | head -1)
 
   if [[ -z "$APP_TAG" ]]; then
     error "No pre-release with binaries found. Check that CI/CD build completed."
