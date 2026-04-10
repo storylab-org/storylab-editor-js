@@ -19,6 +19,8 @@ The app opens with:
 - Fastify server on port 3000
 - Tauri window managing everything
 
+<img width="1113" height="816" alt="Screenshot 2026-04-10 at 10 55 33" src="https://github.com/user-attachments/assets/d4f6d62a-895d-4b62-8949-58e99200c71e" />
+
 ## Features
 
 - **Book Editor Landing Page** — Clean, minimalist interface for writing
