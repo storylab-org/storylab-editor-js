@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useEffect } from 'react'
-import { $getSelection, $isRangeSelection, $isParagraphNode, COMMAND_PRIORITY_LOW } from 'lexical'
+import { $getSelection, $isRangeSelection, $isParagraphNode } from 'lexical'
 
 export default function ParagraphPlaceholderPlugin() {
   const [editor] = useLexicalComposerContext()

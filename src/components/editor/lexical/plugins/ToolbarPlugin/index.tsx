@@ -158,14 +158,12 @@ function dropDownActiveClass(active: boolean) {
 function BlockFormatDropDown({
   editor,
   blockType,
-  rootType,
   disabled = false,
 }: {
   blockType: keyof typeof blockTypeToBlockName;
-  rootType: keyof typeof rootTypeToRootName;
   editor: LexicalEditor;
   disabled?: boolean;
-}): JSX.Element {
+}): React.ReactElement {
   const formatParagraph = () => {
     editor.update(() => {
       const selection = $getSelection();
@@ -333,7 +331,7 @@ function BlockFormatDropDown({
   );
 }
 
-function Divider(): JSX.Element {
+function Divider(): React.ReactElement {
   return <div className="divider" />;
 }
 
@@ -347,7 +345,7 @@ function FontDropDown({
   value: string;
   style: string;
   disabled?: boolean;
-}): JSX.Element {
+}): React.ReactElement {
   const handleClick = useCallback(
     (option: string) => {
       editor.update(() => {
@@ -392,7 +390,7 @@ function FontDropDown({
   );
 }
 
-export default function ToolbarPlugin(): JSX.Element {
+export default function ToolbarPlugin(): React.ReactElement {
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [blockType, setBlockType] =
@@ -416,7 +414,7 @@ export default function ToolbarPlugin(): JSX.Element {
   const [isCode, setIsCode] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  const [modal, showModal] = useModal();
+  const [modal] = useModal();
   const [isRTL, setIsRTL] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState<string>('');
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
@@ -591,14 +589,20 @@ export default function ToolbarPlugin(): JSX.Element {
               node = node.splitText(anchor.offset)[1] || node;
             }
             if (idx === nodes.length - 1) {
-              node = node.splitText(focus.offset)[0] || node;
+              if ($isTextNode(node)) {
+                node = node.splitText(focus.offset)[0] || node;
+              }
             }
 
-            if (node.__style !== '') {
-              node.setStyle('');
+            if ($isTextNode(node)) {
+              if ((node as any).__style !== '') {
+                node.setStyle('');
+              }
+              if ((node as any).__format !== 0) {
+                node.setFormat(0);
+              }
             }
-            if (node.__format !== 0) {
-              node.setFormat(0);
+            if ($isTextNode(node)) {
               $getNearestBlockElementAncestorOrThrow(node).setFormat('');
             }
           } else if ($isHeadingNode(node) || $isQuoteNode(node)) {
@@ -677,7 +681,6 @@ export default function ToolbarPlugin(): JSX.Element {
           <BlockFormatDropDown
             disabled={!isEditable}
             blockType={blockType}
-            rootType={rootType}
             editor={editor}
           />
           <Divider />

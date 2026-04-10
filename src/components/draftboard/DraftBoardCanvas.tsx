@@ -175,7 +175,6 @@ export default function DraftBoardCanvas({
     connectingFromCardId,
     rewiringArrow,
     previewShape,
-    previewPosition,
     connectionModeActive,
     selectedCardId,
     entityModal,
@@ -196,12 +195,11 @@ export default function DraftBoardCanvas({
     handleConnectTo,
     handleToggleConnectionMode,
     handleCancelConnect,
-    handleStartRewiringArrow,
     handleEndRewiringArrow,
     handleResetBoard,
     handleSelectCard,
     handleUnlinkEntity,
-  } = useBoardState(chapters)
+  } = useBoardState()
 
   const canvasRef = React.useRef<HTMLDivElement>(null)
   const innerRef = React.useRef<HTMLDivElement>(null)
@@ -380,7 +378,9 @@ export default function DraftBoardCanvas({
           onAddEntity={handleOpenEntityCreation}
           isConnecting={connectionModeActive}
           onToggleConnect={handleToggleConnectionMode}
-          onReset={() => setShowResetConfirm(true)}
+          onReset={async () => {
+            setShowResetConfirm(true)
+          }}
           chapters={chapters}
           selectedChapterId={selectedChapterId}
           onSelectChapter={setSelectedChapterId}
@@ -429,7 +429,6 @@ export default function DraftBoardCanvas({
               paths={paths}
               connectingFromCardId={connectingFromCardId}
               rewiringArrow={rewiringArrow}
-              onStartRewiringArrow={handleStartRewiringArrow}
               onEndRewiringArrow={handleEndRewiringArrow}
               onDeletePath={handleDeletePath}
               onConnectTo={async (toCardId) => {

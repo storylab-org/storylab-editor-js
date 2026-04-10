@@ -6,7 +6,6 @@
  *
  */
 
-import React from 'react';
 import {
   AutoLinkPlugin,
   createLinkMatcherWithRegExp,
@@ -27,6 +26,8 @@ const MATCHERS = [
   }),
 ];
 
-export default function LexicalAutoLinkPlugin(): JSX.Element {
+import React from 'react';
+
+export default function LexicalAutoLinkPlugin(): React.ReactElement {
   return <AutoLinkPlugin matchers={MATCHERS} />;
 }

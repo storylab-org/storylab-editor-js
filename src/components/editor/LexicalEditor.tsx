@@ -5,7 +5,6 @@ import './lexical/nodes/EntityMentionNode.css';
 import './lexical/nodes/AnnotationNode.css';
 
 import type { EditorState } from 'lexical';
-import { $getRoot } from 'lexical';
 import { countWordsFromLexical } from '@/utils/wordCount';
 
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
@@ -60,7 +59,7 @@ import PlaygroundEditorTheme from './lexical/themes/PlaygroundEditorTheme';
 function FindReplaceProvider({ children }: { children: React.ReactNode }) {
   const contextValue = useFindReplaceState()
   return (
-    <FindReplaceContext.Provider value={contextValue}>
+    <FindReplaceContext.Provider value={contextValue as any}>
       {children}
     </FindReplaceContext.Provider>
   )
@@ -75,7 +74,7 @@ interface LexicalEditorProps {
   enableTreeViewPlugin?: boolean;
   onAnnotationsChange?: (annotations: any[]) => void;
   typewriterMode?: boolean;
-  scrollerRef?: React.RefObject<HTMLDivElement>;
+  scrollerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const LexicalEditor: React.FC<LexicalEditorProps> = ({
@@ -89,7 +88,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
   typewriterMode = false,
   scrollerRef,
 }) => {
-  const [wordCount, setWordCount] = useState<number>(0);
+  const [, setWordCount] = useState<number>(0);
   const theme = PlaygroundEditorTheme;
 
   function handleChange(editorState: EditorState) {
@@ -187,7 +186,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         {/* LinkClickPlugin disabled - causes "Unable to find active editor" errors during save */}
         {/* <LinkClickPlugin /> */}
         <ParagraphPlaceholderPlugin />
-        <TypewriterPlugin typewriterMode={typewriterMode} scrollerRef={scrollerRef} />
+        <TypewriterPlugin typewriterMode={typewriterMode} scrollerRef={scrollerRef as any} />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <HorizontalRulePlugin />
         <TablePlugin hasCellMerge={true} hasCellBackgroundColor={false} />

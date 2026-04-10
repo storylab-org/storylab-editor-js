@@ -6,23 +6,24 @@
  *
  */
 
-import {
+import React, {
   ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  createContext,
+  useContext,
 } from 'react';
-import * as React from 'react';
 import {createPortal} from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 
 type DropDownContextType = {
-  registerItem: (ref: React.RefObject<HTMLButtonElement>) => void;
+  registerItem: (ref: React.RefObject<HTMLButtonElement | null>) => void;
 };
 
-const DropDownContext = React.createContext<DropDownContextType | null>(null);
+const DropDownContext = createContext<DropDownContextType | null>(null);
 
 export function DropDownItem({
   children,
@@ -37,7 +38,7 @@ export function DropDownItem({
 }) {
   const ref = useRef<HTMLButtonElement>(null);
 
-  const dropDownContext = React.useContext(DropDownContext);
+  const dropDownContext = useContext(DropDownContext);
 
   if (dropDownContext === null) {
     throw new Error('DropDownItem must be used within a DropDown');
@@ -72,12 +73,12 @@ function DropDownItems({
   dropDownRef: React.Ref<HTMLDivElement>;
   onClose: () => void;
 }) {
-  const [items, setItems] = useState<React.RefObject<HTMLButtonElement>[]>();
+  const [items, setItems] = useState<React.RefObject<HTMLButtonElement | null>[]>();
   const [highlightedItem, setHighlightedItem] =
-    useState<React.RefObject<HTMLButtonElement>>();
+    useState<React.RefObject<HTMLButtonElement | null>>();
 
   const registerItem = useCallback(
-    (itemRef: React.RefObject<HTMLButtonElement>) => {
+    (itemRef: React.RefObject<HTMLButtonElement | null>) => {
       setItems((prev) => (prev ? [...prev, itemRef] : [itemRef]));
     },
     [setItems],
@@ -152,7 +153,7 @@ export default function DropDown({
   buttonLabel?: string;
   children: ReactNode;
   stopCloseOnClickSelf?: boolean;
-}): JSX.Element {
+}): React.ReactElement {
   const dropDownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [showDropDown, setShowDropDown] = useState(false);

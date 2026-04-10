@@ -50,7 +50,7 @@ export class SceneBreakNode extends DecoratorNode<React.ReactElement> {
     }
   }
 
-  static importJSON(serialisedNode: SerializedSceneBreakNode): SceneBreakNode {
+  static importJSON(_serialisedNode: SerializedSceneBreakNode): SceneBreakNode {
     return $createSceneBreakNode()
   }
 

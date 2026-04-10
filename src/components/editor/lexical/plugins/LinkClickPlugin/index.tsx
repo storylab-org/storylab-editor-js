@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import GenericModal from '@/components/shared/GenericModal';
 import ModalActions from '@/components/shared/ModalActions';
 
-export default function LinkClickPlugin(): JSX.Element | null {
+export default function LinkClickPlugin(): React.ReactElement | null {
   const [editor] = useLexicalComposerContext();
   const [linkModal, setLinkModal] = useState<{ isOpen: boolean; href: string }>({
     isOpen: false,

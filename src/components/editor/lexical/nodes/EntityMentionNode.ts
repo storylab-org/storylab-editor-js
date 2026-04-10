@@ -30,7 +30,7 @@ export class EntityMentionNode extends TextNode {
     return new EntityMentionNode(node.__entityId, node.__entityType, node.__entityName, node.__key)
   }
 
-  isInline(): boolean {
+  isInline(): true {
     return true
   }
 

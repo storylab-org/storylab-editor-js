@@ -28,7 +28,7 @@ export class BranchNode extends TextNode {
     dom: HTMLElement,
     config: EditorConfig,
   ): boolean {
-    const isUpdated = super.updateDOM(prevNode, dom, config);
+    const isUpdated = super.updateDOM(prevNode as unknown as this, dom, config);
     if (prevNode.__color !== this.__color) {
       dom.style.color = this.__color;
     }
