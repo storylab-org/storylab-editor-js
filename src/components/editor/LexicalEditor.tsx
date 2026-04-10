@@ -35,6 +35,8 @@ import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 
 import AutoLinkPlugin from './lexical/plugins/AutoLinkPlugin';
+import ParagraphPlaceholderPlugin from './lexical/plugins/ParagraphPlaceholderPlugin';
+import TypewriterPlugin from './lexical/plugins/TypewriterPlugin';
 import TreeViewPlugin from './lexical/plugins/TreeViewPlugin';
 import DragDropBlockPlugin from './lexical/plugins/DragDropBlockPlugin';
 import ImagePlugin from './lexical/plugins/ImagePlugin';
@@ -72,6 +74,8 @@ interface LexicalEditorProps {
   showDragMenu?: boolean;
   enableTreeViewPlugin?: boolean;
   onAnnotationsChange?: (annotations: any[]) => void;
+  typewriterMode?: boolean;
+  scrollerRef?: React.RefObject<HTMLDivElement>;
 }
 
 const LexicalEditor: React.FC<LexicalEditorProps> = ({
@@ -82,6 +86,8 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
   showDragMenu = true,
   enableTreeViewPlugin = false,
   onAnnotationsChange,
+  typewriterMode = false,
+  scrollerRef,
 }) => {
   const [wordCount, setWordCount] = useState<number>(0);
   const theme = PlaygroundEditorTheme;
@@ -116,7 +122,7 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
 
 
   function Placeholder() {
-    return <div className="editor-placeholder">Start writing, or type / to insert a block...</div>;
+    return <div className="editor-placeholder">Start writing…</div>;
   }
 
   function onError(error: any) {
@@ -180,6 +186,8 @@ const LexicalEditor: React.FC<LexicalEditorProps> = ({
         <AutoLinkPlugin />
         {/* LinkClickPlugin disabled - causes "Unable to find active editor" errors during save */}
         {/* <LinkClickPlugin /> */}
+        <ParagraphPlaceholderPlugin />
+        <TypewriterPlugin typewriterMode={typewriterMode} scrollerRef={scrollerRef} />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <HorizontalRulePlugin />
         <TablePlugin hasCellMerge={true} hasCellBackgroundColor={false} />

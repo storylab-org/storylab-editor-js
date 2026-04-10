@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import LexicalEditor from '@/components/editor/LexicalEditor'
 import EditorErrorBoundary from '@/components/editor/EditorErrorBoundary'
 import { countWordsFromLexical } from '@/utils/wordCount'
@@ -11,9 +11,11 @@ interface EditorAreaProps {
   pageBackground?: string
   showDragMenu?: boolean
   enableTreeViewPlugin?: boolean
+  typewriterMode?: boolean
 }
 
-export default function EditorArea({ chapterId, content, onChange, onWordCountChange, pageBackground, showDragMenu = true, enableTreeViewPlugin = false }: EditorAreaProps) {
+export default function EditorArea({ chapterId, content, onChange, onWordCountChange, pageBackground, showDragMenu = true, enableTreeViewPlugin = false, typewriterMode = false }: EditorAreaProps) {
+  const scrollerRef = useRef<HTMLDivElement>(null)
   // Initialize word count when content loads
   useEffect(() => {
     if (content && onWordCountChange) {
@@ -40,13 +42,15 @@ export default function EditorArea({ chapterId, content, onChange, onWordCountCh
 
   return (
     <EditorErrorBoundary>
-      <div style={{ flex: 1, overflowY: 'auto', background: pageBackground ?? '#f9f9f9' }}>
+      <div ref={scrollerRef} style={{ flex: 1, overflowY: 'auto', background: pageBackground ?? '#f9f9f9' }}>
         <LexicalEditor
           chapterId={chapterId}
           initialContent={content}
           onContentChange={handleContentChange}
           showDragMenu={showDragMenu}
           enableTreeViewPlugin={enableTreeViewPlugin}
+          typewriterMode={typewriterMode}
+          scrollerRef={scrollerRef}
         />
       </div>
     </EditorErrorBoundary>

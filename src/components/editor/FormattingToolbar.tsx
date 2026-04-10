@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND, UNDO_COMMAND, REDO_COMMAND, $getSelection, $isRangeSelection, $createParagraphNode, $isRootOrShadowRoot } from 'lexical'
+import { FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND, UNDO_COMMAND, REDO_COMMAND, $getSelection, $isRangeSelection, $createParagraphNode, $isRootOrShadowRoot, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_CRITICAL } from 'lexical'
 import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, $isListNode, ListNode } from '@lexical/list'
 import { $createCodeNode } from '@lexical/code'
 import { $createHeadingNode, $isHeadingNode, $createQuoteNode, HeadingTagType } from '@lexical/rich-text'
@@ -192,38 +192,55 @@ export default function FormattingToolbar() {
     return <Type size={18} />
   }
 
+  // Update toolbar state based on selection
+  const updateToolbar = useCallback(() => {
+    const selection = $getSelection()
+    if ($isRangeSelection(selection)) {
+      // Update format buttons based on selection (works for both range and collapsed selections)
+      setIsBold(selection.hasFormat('bold'))
+      setIsItalic(selection.hasFormat('italic'))
+      setIsUnderline(selection.hasFormat('underline'))
+
+      // Detect block type
+      const anchorNode = selection.anchor.getNode()
+      let element = anchorNode.getKey() === 'root'
+        ? anchorNode
+        : $findMatchingParent(anchorNode, (e) => {
+            const parent = e.getParent()
+            return parent !== null && $isRootOrShadowRoot(parent)
+          })
+      if (element === null) element = anchorNode.getTopLevelElementOrThrow()
+
+      if ($isListNode(element)) {
+        const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode)
+        setBlockType((parentList ? parentList.getListType() : element.getListType()) as BlockType)
+      } else {
+        const type = $isHeadingNode(element) ? element.getTag() : element.getType()
+        setBlockType(type as BlockType)
+      }
+
+      setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', '15px'))
+    }
+  }, [])
+
+  // Register update listener
   useEffect(() => {
     return editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        const selection = $getSelection()
-        if ($isRangeSelection(selection)) {
-          setIsBold(selection.hasFormat('bold'))
-          setIsItalic(selection.hasFormat('italic'))
-          setIsUnderline(selection.hasFormat('underline'))
-
-          // Detect block type
-          const anchorNode = selection.anchor.getNode()
-          let element = anchorNode.getKey() === 'root'
-            ? anchorNode
-            : $findMatchingParent(anchorNode, (e) => {
-                const parent = e.getParent()
-                return parent !== null && $isRootOrShadowRoot(parent)
-              })
-          if (element === null) element = anchorNode.getTopLevelElementOrThrow()
-
-          if ($isListNode(element)) {
-            const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode)
-            setBlockType((parentList ? parentList.getListType() : element.getListType()) as BlockType)
-          } else {
-            const type = $isHeadingNode(element) ? element.getTag() : element.getType()
-            setBlockType(type as BlockType)
-          }
-
-          setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', '15px'))
-        }
-      })
+      editorState.read(updateToolbar)
     })
-  }, [editor])
+  }, [editor, updateToolbar])
+
+  // Register selection change command
+  useEffect(() => {
+    return editor.registerCommand(
+      SELECTION_CHANGE_COMMAND,
+      () => {
+        editor.getEditorState().read(updateToolbar)
+        return false
+      },
+      COMMAND_PRIORITY_CRITICAL
+    )
+  }, [editor, updateToolbar])
 
   return (
     <div className="formatting-toolbar">
