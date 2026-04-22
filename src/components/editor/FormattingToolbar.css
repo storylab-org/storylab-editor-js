@@ -30,6 +30,26 @@
   justify-content: flex-start;
 }
 
+.format-btn-color {
+  width: auto;
+  min-width: 56px;
+  padding: 0 8px;
+  gap: 6px;
+}
+
+.color-button-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.color-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid #c7c7c7;
+}
+
 /* Entity select — wider than font size */
 .format-btn-entity {
   width: auto;
