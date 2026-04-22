@@ -32,6 +32,7 @@ import {
   Search,
 } from 'lucide-react'
 import DropDown, { DropDownItem } from './lexical/ui/DropDown'
+import DropdownColorPicker from './lexical/ui/DropdownColorPicker'
 import { INSERT_IMAGE_COMMAND } from './lexical/commands'
 import { OPEN_FIND_REPLACE_COMMAND } from './lexical/plugins/FindReplacePlugin'
 import { useToast } from '@/components/shared/ToastContext'
@@ -50,6 +51,8 @@ export default function FormattingToolbar() {
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
+  const [textColor, setTextColor] = useState('#000000')
+  const [hasTextColor, setHasTextColor] = useState(false)
   const [blockType, setBlockType] = useState<BlockType>('paragraph')
   const [fontSize, setFontSize] = useState('15px')
   const [showTableDialog, setShowTableDialog] = useState(false)
@@ -118,6 +121,18 @@ export default function FormattingToolbar() {
       const selection = $getSelection()
       if ($isRangeSelection(selection)) {
         $patchStyleText(selection, { 'font-size': size })
+      }
+    })
+  }, [editor])
+
+  const applyTextColor = useCallback((color: string) => {
+    setTextColor(color)
+    setHasTextColor(true)
+
+    editor.update(() => {
+      const selection = $getSelection()
+      if ($isRangeSelection(selection)) {
+        $patchStyleText(selection, { color })
       }
     })
   }, [editor])
@@ -204,6 +219,9 @@ export default function FormattingToolbar() {
       setIsBold(selection.hasFormat('bold'))
       setIsItalic(selection.hasFormat('italic'))
       setIsUnderline(selection.hasFormat('underline'))
+      const currentColor = $getSelectionStyleValueForProperty(selection, 'color', '')
+      setHasTextColor(currentColor !== '')
+      setTextColor(currentColor || '#000000')
 
       // Detect block type
       const anchorNode = selection.anchor.getNode()
@@ -326,6 +344,22 @@ export default function FormattingToolbar() {
       >
         <Underline size={18} />
       </button>
+
+      <DropdownColorPicker
+        buttonClassName={`format-btn format-btn-color ${hasTextColor ? 'active' : ''}`}
+        buttonAriaLabel="Text color"
+        color={textColor}
+        onChange={applyTextColor}
+        buttonIcon={(
+          <span className="color-button-content">
+            <span
+              className="color-swatch"
+              style={{ backgroundColor: textColor }}
+              aria-hidden="true"
+            />
+          </span>
+        )}
+      />
 
       <DropDown
         buttonLabel={fontSize}
